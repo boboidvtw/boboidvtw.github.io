@@ -109,7 +109,7 @@ No, `localStorage` persists across browser sessions. However, clearing your brow
 **Q: How can I report a bug?**
 **Q: 如何回報 Bug？**
 
-Open an [Issue on GitHub](https://github.com/YOUR_USERNAME/super-calculator/issues) with:
+Open an [Issue on GitHub](https://github.com/boboidvtw/super-calculator/issues) with:
 1. Steps to reproduce
 2. Expected result
 3. Actual result

@@ -73,7 +73,7 @@ Design philosophy:
 
 ```bash
 # Or clone this repo
-git clone https://github.com/YOUR_USERNAME/super-calculator.git
+git clone https://github.com/boboidvtw/super-calculator.git
 cd super-calculator
 # Open index.html in your browser
 ```
@@ -171,7 +171,7 @@ A: Yes, stored in browser `localStorage`. History is cleared when browser cache 
 ### Local Development
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/super-calculator.git
+git clone https://github.com/boboidvtw/super-calculator.git
 cd super-calculator
 # Serve with any static HTTP server
 npx serve .
@@ -224,4 +224,4 @@ Copyright © 2026
 
 ---
 
-*Have a question or suggestion? Open an [Issue](https://github.com/YOUR_USERNAME/super-calculator/issues).*
+*Have a question or suggestion? Open an [Issue](https://github.com/boboidvtw/super-calculator/issues).*
