@@ -820,12 +820,7 @@
                             <select id="foreignSelect" class="foreign-select"></select>
                             <input type="number" id="foreignInput" class="currency-amount-input foreign-input" placeholder="金額" min="0" step="any">
                             <span class="currency-amount-unit" id="foreignUnit">USD</span>
-                        </div>
-                        <div id="foreignResult" class="foreign-result hidden">
-                            <span class="foreign-result-expr"></span>
-                            <span class="foreign-result-twd"></span>
-                            <span class="foreign-result-unit">TWD 新台幣</span>
-                            <button class="foreign-result-btn" onclick="sendForeignToCalc()">→ 帶入計算機</button>
+                            <button class="foreign-result-btn" onclick="sendForeignToCalc()" title="帶入計算機">⇒</button>
                         </div>
                     </div>
                     <!-- 工具列 -->
@@ -1320,7 +1315,7 @@
                 document.getElementById(tabName + 'Panel').classList.remove('hidden');
                 if (tabName === 'formula') { renderFormulas(); renderCustomFormulas(); }
                 else if (tabName === 'saved') { renderSaved(); }
-                else if (tabName === 'currency') { renderCurrencyGrid(); if (Object.keys(exchangeRates).length === 0) fetchExchangeRates(); }
+                else if (tabName === 'currency') { renderCurrencyGrid(); syncFromTWD(); if (Object.keys(exchangeRates).length === 0) fetchExchangeRates(); }
             });
         });
 
@@ -1558,29 +1553,37 @@
             ).join('');
         }
 
-        function renderForeignResult() {
+        let _syncingCurrency = false;
+
+        function syncFromForeign() {
+            if (_syncingCurrency) return;
             const code = document.getElementById('foreignSelect').value;
             const amount = parseFloat(document.getElementById('foreignInput').value);
-            const resultEl = document.getElementById('foreignResult');
-            document.getElementById('foreignUnit').textContent = code;
-
-            if (!amount || isNaN(amount) || !exchangeRates[code]) {
-                resultEl.classList.add('hidden');
-                return;
+            if (!isNaN(amount) && amount >= 0 && exchangeRates[code]) {
+                _syncingCurrency = true;
+                document.getElementById('currencyInput').value = (amount / exchangeRates[code]).toFixed(2);
+                _syncingCurrency = false;
             }
+            renderCurrencyGrid();
+        }
 
-            const twdValue = amount / exchangeRates[code];
-            resultEl.classList.remove('hidden');
-            resultEl.querySelector('.foreign-result-expr').textContent = `${amount} ${code}  =`;
-            resultEl.querySelector('.foreign-result-twd').textContent =
-                twdValue.toLocaleString('zh-TW', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function syncFromTWD() {
+            if (_syncingCurrency) return;
+            const code = document.getElementById('foreignSelect').value;
+            const twd = parseFloat(document.getElementById('currencyInput').value);
+            if (!isNaN(twd) && twd >= 0 && exchangeRates[code]) {
+                _syncingCurrency = true;
+                document.getElementById('foreignInput').value = (twd * exchangeRates[code]).toFixed(4);
+                _syncingCurrency = false;
+            }
+            renderCurrencyGrid();
         }
 
         window.sendForeignToCalc = () => {
+            const twdVal = document.getElementById('currencyInput').value;
+            if (!twdVal) return;
             const code = document.getElementById('foreignSelect').value;
-            const amount = parseFloat(document.getElementById('foreignInput').value);
-            if (!amount || !exchangeRates[code]) return;
-            currentDisplay = (amount / exchangeRates[code]).toFixed(2);
+            currentDisplay = parseFloat(twdVal).toFixed(2);
             updateDisplay();
             displayFormula.textContent = `${code} → TWD`;
             document.querySelector('.tab[data-tab="calc"]').click();
@@ -1588,9 +1591,11 @@
 
         document.getElementById('foreignSelect').addEventListener('change', () => {
             document.getElementById('foreignUnit').textContent = document.getElementById('foreignSelect').value;
-            renderForeignResult();
+            syncFromTWD();
         });
-        document.getElementById('foreignInput').addEventListener('input', renderForeignResult);
+        document.getElementById('foreignInput').addEventListener('input', syncFromForeign);
+        document.getElementById('currencyInput').removeEventListener('input', renderCurrencyGrid);
+        document.getElementById('currencyInput').addEventListener('input', syncFromTWD);
 
         // ========== Saved ==========
         function renderSaved() {
