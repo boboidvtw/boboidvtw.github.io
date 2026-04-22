@@ -875,14 +875,14 @@
                     <!-- 換算器 -->
                     <div class="unit-converter">
                         <div class="unit-row">
-                            <input type="number" class="unit-input" id="unitFromVal" placeholder="輸入數值" step="any">
+                            <input type="number" inputmode="decimal" class="unit-input" id="unitFromVal" placeholder="輸入數值" step="any">
                             <select class="unit-select" id="unitFromSel"></select>
                         </div>
                         <div class="unit-swap-row">
                             <button class="unit-swap-btn" id="unitSwapBtn" title="交換">⇅</button>
                         </div>
                         <div class="unit-row">
-                            <input type="number" class="unit-input to-input" id="unitToVal" placeholder="換算結果" step="any">
+                            <input type="number" inputmode="decimal" class="unit-input to-input" id="unitToVal" placeholder="換算結果" step="any">
                             <select class="unit-select" id="unitToSel"></select>
                         </div>
                     </div>
@@ -901,7 +901,7 @@
                             <div class="currency-base-name">新台幣 TWD</div>
                         </div>
                         <div class="currency-amount-wrap">
-                            <input type="number" class="currency-amount-input" id="currencyInput" value="1" min="0" step="any">
+                            <input type="number" inputmode="decimal" class="currency-amount-input" id="currencyInput" value="1" min="0" step="any">
                             <span class="currency-amount-unit">TWD</span>
                         </div>
                         <button class="refresh-btn" id="refreshBtn" title="刷新匯率">🔄</button>
@@ -911,7 +911,7 @@
                         <div class="currency-foreign-label">🛒 當前貨幣 Foreign Currency（輸入外幣金額換算台幣）</div>
                         <div class="currency-foreign-row">
                             <select id="foreignSelect" class="foreign-select"></select>
-                            <input type="number" id="foreignInput" class="currency-amount-input foreign-input" placeholder="金額" min="0" step="any">
+                            <input type="number" inputmode="decimal" id="foreignInput" class="currency-amount-input foreign-input" placeholder="金額" min="0" step="any">
                             <span class="currency-amount-unit" id="foreignUnit">USD</span>
                             <button class="foreign-result-btn" onclick="sendForeignToCalc()" title="帶入計算機">⇒</button>
                         </div>
@@ -1639,7 +1639,7 @@
                     <label>
                         <span class="var-name">${v}</span>
                     </label>
-                    <input type="number" id="var_${v}" placeholder="${desc[v] || '輸入數值'}" step="any">
+                    <input type="number" inputmode="decimal" id="var_${v}" placeholder="${desc[v] || '輸入數值'}" step="any">
                 </div>
             `).join('');
             window.currentFormulaExpr = expr;
