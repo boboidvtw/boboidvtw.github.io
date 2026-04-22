@@ -445,6 +445,7 @@
         .group-工程 { background: rgba(16, 185, 129, 0.15); color: var(--green); }
         .group-科學 { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
         .group-物理 { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        .group-金融 { background: rgba(251, 113, 133, 0.15); color: #fb7185; }
 
         .section-title {
             font-size: 14px; font-weight: 700;
@@ -843,6 +844,7 @@
                         <button class="fcbtn" data-fcat="工程">工程</button>
                         <button class="fcbtn" data-fcat="科學">科學</button>
                         <button class="fcbtn" data-fcat="物理">物理</button>
+                        <button class="fcbtn" data-fcat="金融">金融</button>
                     </div>
 
                     <div class="formula-search">
@@ -1030,8 +1032,15 @@
             { id: 36, name: '分貝(電壓)',     expr: '20*log(V/V0)',           vars: ['V','V0'],            category: '信號',  group: '工程' },
             { id: 37, name: '機械功',         expr: 'F*d',                    vars: ['F','d'],             category: '力學',  group: '工程' },
             { id: 38, name: '機械效率',       expr: '(Pout/Pin)*100',         vars: ['Pout','Pin'],        category: '力學',  group: '工程' },
-            { id: 39, name: '複利終值',       expr: 'P*(1+r/n)^(n*t)',        vars: ['P','r','n','t'],     category: '財務',  group: '工程' },
-            { id: 40, name: '月繳貸款',       expr: 'P*r*(1+r)^n/((1+r)^n-1)', vars: ['P','r','n'],       category: '財務',  group: '工程' },
+            { id: 39, name: '複利終值',       expr: 'P*(1+r/n)^(n*t)',          vars: ['P','r','n','t'],   category: '財務',  group: '金融' },
+            { id: 40, name: '月繳貸款',       expr: 'P*r*(1+r)^n/((1+r)^n-1)', vars: ['P','r','n'],       category: '財務',  group: '金融' },
+            { id: 41, name: '單利終值',       expr: 'P*(1+r*t)',                vars: ['P','r','t'],       category: '財務',  group: '金融' },
+            { id: 42, name: '現值 (PV)',      expr: 'F/(1+r/n)^(n*t)',          vars: ['F','r','n','t'],   category: '財務',  group: '金融' },
+            { id: 43, name: '年金終值',       expr: 'PMT*((1+r)^n-1)/r',        vars: ['PMT','r','n'],     category: '財務',  group: '金融' },
+            { id: 44, name: '年金現值',       expr: 'PMT*(1-(1+r)^(-n))/r',     vars: ['PMT','r','n'],     category: '財務',  group: '金融' },
+            { id: 45, name: '投資報酬率 ROI', expr: '(V2-V1)/V1*100',           vars: ['V2','V1'],         category: '財務',  group: '金融' },
+            { id: 46, name: '72法則',         expr: '72/r',                      vars: ['r'],               category: '財務',  group: '金融' },
+            { id: 47, name: '本益比 P/E',     expr: 'P/E',                       vars: ['P','E'],           category: '財務',  group: '金融' },
 
             // 科學
             { id: 50, name: '理想氣體(壓力)', expr: 'n*8.314*T/V',            vars: ['n','T','V'],         category: '化學',  group: '科學' },
