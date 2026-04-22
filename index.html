@@ -81,6 +81,68 @@
         }
         .theme-btn:hover { background: var(--primary); }
 
+        /* ===== Help Button & Modal ===== */
+        .help-btn {
+            background: var(--bg-dark-tertiary);
+            border: 1px solid var(--border-dark);
+            color: var(--text-dark-secondary);
+            border-radius: 50%; width: 36px; height: 36px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .help-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .help-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            align-items: center; justify-content: center; padding: 16px;
+        }
+        .help-modal.active { display: flex; }
+        .help-modal-content {
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-dark);
+            border-radius: 20px; padding: 24px;
+            width: 100%; max-width: 540px;
+            max-height: 85vh; overflow-y: auto;
+        }
+        body.light .help-modal-content { background: #fff; }
+        .help-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .help-modal-title { font-size: 20px; font-weight: 700; color: var(--primary); }
+        .help-close-btn {
+            background: none; border: none; font-size: 22px;
+            color: var(--text-dark-secondary); cursor: pointer; line-height: 1;
+        }
+        .help-close-btn:hover { color: var(--text-dark); }
+
+        .help-section { border-bottom: 1px solid var(--border-dark); }
+        .help-section:last-child { border-bottom: none; }
+        .help-section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 4px; cursor: pointer; user-select: none;
+        }
+        .help-section-header:hover .help-section-title { color: var(--primary); }
+        .help-section-title { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+        .help-section-icon { font-size: 18px; color: var(--primary); min-width: 28px; }
+        .help-chevron { font-size: 12px; color: var(--text-dark-secondary); transition: transform 0.2s; }
+        .help-section.open .help-chevron { transform: rotate(180deg); }
+        .help-body {
+            display: none; padding: 0 4px 16px;
+            font-size: 13px; color: var(--text-dark-secondary); line-height: 1.9;
+        }
+        .help-section.open .help-body { display: block; }
+        .help-body strong { color: var(--text-dark); }
+        .help-body code {
+            background: rgba(6,182,212,0.12); color: var(--primary);
+            padding: 1px 6px; border-radius: 4px; font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .help-body ul { padding-left: 16px; margin: 4px 0; }
+        .help-body li { margin-bottom: 2px; }
+
         .panel {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--border-dark);
@@ -621,6 +683,7 @@
                     <option value="zh-CN">简体中文</option>
                     <option value="ja">日本語</option>
                 </select>
+                <button class="help-btn" id="helpBtn" title="使用說明">?</button>
                 <button class="theme-btn" id="themeBtn">☀️</button>
             </div>
         </div>
@@ -1029,6 +1092,119 @@
         </div>
     </div>
 
+    <!-- 使用說明 Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <div class="help-modal-title">📖 使用說明</div>
+                <button class="help-close-btn" id="helpCloseBtn">✕</button>
+            </div>
+
+            <div class="help-section open">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">🧮</span> <span class="help-section-title">計算機操作</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li>點擊數字與運算符號進行計算，按 <strong>=</strong> 取得結果</li>
+                        <li><strong>分類按鈕</strong>：數學 / 工程 / 科學 / 物理 / 進位，切換不同按鈕組</li>
+                        <li>支援函數：<code>sin</code> <code>cos</code> <code>log</code> <code>sqrt</code> <code>ln</code> <code>exp</code> 等</li>
+                        <li>次方用 <code>^</code>，例如 <code>2^10</code> = 1024</li>
+                        <li>階乘用 <code>n!</code>，組合數用 <code>nCr(n,r)</code>，排列數用 <code>nPr(n,r)</code></li>
+                        <li>科學記號用 <code>EE</code>，例如 <code>1.5EE3</code> = 1500</li>
+                        <li><strong>進位換算</strong>：切到「進位」分類，可在 DEC / BIN / OCT / HEX 間互換</li>
+                        <li>按 <strong>儲存</strong> 可將結果存到「儲存」tab</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">📐</span> <span class="help-section-title">單位換算</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li>選擇分類（長度 / 重量 / 溫度 / 面積 / 體積 / 速度 / 壓力 / 能量）</li>
+                        <li>在上方輸入數值並選擇來源單位，下方自動顯示換算結果</li>
+                        <li>下方也可輸入，會反向換算到上方（雙向）</li>
+                        <li>按 <strong>⇅</strong> 可交換上下兩個單位</li>
+                        <li>下方清單顯示該分類所有單位的換算值，點擊可設為目標單位</li>
+                        <li>溫度支援 °C / °F / K 三者互換</li>
+                        <li>面積包含台灣常用的 <strong>坪</strong>；重量包含 <strong>台斤、台兩、台錢</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">💱</span> <span class="help-section-title">即時匯率</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li>以 <strong>新台幣（TWD）</strong> 為基準，顯示 16 種主要貨幣的即時匯率</li>
+                        <li>在新台幣欄輸入金額 → 下方自動換算所有幣別</li>
+                        <li><strong>當前貨幣</strong>：選擇外幣並輸入金額 → 台幣欄自動換算（雙向）</li>
+                        <li>點擊下方幣別卡片，可快速切換「當前貨幣」選單</li>
+                        <li>按 <strong>⇒</strong> 可將台幣金額帶入計算機繼續運算</li>
+                        <li>匯率資料來自 ExchangeRate-API，每小時更新一次</li>
+                        <li>按 <strong>🔄</strong> 可手動刷新匯率</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">📚</span> <span class="help-section-title">公式庫</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li>內建 47 條公式，涵蓋 <strong>數學 / 工程 / 科學 / 物理 / 金融</strong> 五大分類</li>
+                        <li>點擊分類 tab 篩選，或在搜尋欄輸入名稱/變數/分類關鍵字</li>
+                        <li>點擊公式卡片 → 跳出輸入框，每個變數都有中文說明</li>
+                        <li>計算後結果自動帶入計算機並存入「儲存」</li>
+                        <li><strong>金融公式</strong>的利率欄位輸入<strong>年利率 %</strong>（如 3），程式自動換算</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">✏️</span> <span class="help-section-title">自建公式</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li>切到「✏️ 自建」tab，填入公式名稱、表達式、選擇分組</li>
+                        <li>表達式使用變數字母（如 <code>P</code> <code>r</code> <code>n</code>），計算時會逐一詢問數值</li>
+                        <li>支援所有內建函數：<code>sin</code> <code>sqrt</code> <code>log</code> <code>^</code> 等</li>
+                        <li>自建公式會出現在對應分組 tab 的下方「✏️ 自建公式」區塊</li>
+                        <li>公式存於瀏覽器本地（localStorage），關閉頁面不會消失</li>
+                        <li>點 <strong>✕</strong> 可刪除單條自建公式</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header">
+                    <span><span class="help-section-icon">💡</span> <span class="help-section-title">其他功能</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li><strong>儲存 tab</strong>：保存最近 10 筆計算結果，點擊可帶回計算機</li>
+                        <li><strong>深色 / 淺色主題</strong>：點右上角 ☀️ / 🌙 切換</li>
+                        <li><strong>語言切換</strong>：支援繁體中文 / 英文 / 簡體中文 / 日文</li>
+                        <li>所有設定（主題、語言、儲存紀錄、自建公式、匯率快取）均存於本地，不需登入</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 公式計算 Modal -->
     <div class="modal" id="formulaModal">
         <div class="modal-content">
@@ -1364,6 +1540,17 @@
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
         }
         themeBtn.addEventListener('click', () => { isDarkMode = !isDarkMode; updateTheme(); });
+
+        // ========== Help Modal ==========
+        const helpModal = document.getElementById('helpModal');
+        document.getElementById('helpBtn').addEventListener('click', () => helpModal.classList.add('active'));
+        document.getElementById('helpCloseBtn').addEventListener('click', () => helpModal.classList.remove('active'));
+        helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('active'); });
+        document.querySelectorAll('.help-section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.closest('.help-section').classList.toggle('open');
+            });
+        });
 
         // ========== Calculate ==========
         function updateDisplay() { display.textContent = currentDisplay; }
