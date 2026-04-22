@@ -408,6 +408,15 @@
             border-color: var(--primary);
         }
         .fcbtn:hover { color: var(--primary); }
+        .fcbtn-custom { color: #fb923c !important; border-color: rgba(251,146,60,0.4) !important; }
+        .fcbtn-custom.active { background: rgba(251,146,60,0.15) !important; border-color: #fb923c !important; }
+        .custom-section-label { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #fb923c; }
+        .custom-formula-group-select {
+            width: 100%; padding: 8px 12px;
+            background: var(--bg-dark-tertiary); border: 1px solid var(--border-dark);
+            border-radius: 8px; color: var(--text-dark); font-size: 14px; cursor: pointer;
+        }
+        body.light .custom-formula-group-select { background: #f8fafc; }
 
         .formula-search { display: flex; gap: 8px; margin-bottom: 12px; }
         .formula-search input {
@@ -847,37 +856,55 @@
                         <button class="fcbtn" data-fcat="科學">科學</button>
                         <button class="fcbtn" data-fcat="物理">物理</button>
                         <button class="fcbtn" data-fcat="金融">金融</button>
+                        <button class="fcbtn fcbtn-custom" data-fcat="custom">✏️ 自建</button>
                     </div>
 
-                    <div class="formula-search">
+                    <!-- 搜尋列（自建 tab 隱藏）-->
+                    <div class="formula-search" id="formulaSearchWrap">
                         <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
                     </div>
 
-                    <div style="margin-bottom: 16px;">
+                    <!-- 內建公式（自建 tab 時隱藏）-->
+                    <div id="formulaBuiltinSection" style="margin-bottom: 16px;">
                         <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary);" data-i18n="formula_builtin">內建公式</div>
                         <div class="formula-list" id="formulaList"></div>
                     </div>
 
-                    <div class="section-title" data-i18n="formula_custom">自建公式</div>
-                    <div class="add-formula-form">
-                        <div class="form-group">
-                            <label data-i18n="formula_name">公式名稱</label>
-                            <input type="text" id="customFormulaName" placeholder="例：圓的面積">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="formula_expr">公式表達式</label>
-                            <input type="text" id="customFormulaExpr" placeholder="例：π*r^2">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="formula_category">分類</label>
-                            <input type="text" id="customFormulaCategory" placeholder="例：幾何">
-                        </div>
-                        <div class="form-buttons">
-                            <button class="btn-submit" id="addFormulaBtn" data-i18n="btn_add">新增</button>
-                            <button class="btn-cancel" id="clearFormulaBtn" data-i18n="btn_clear">清空</button>
-                        </div>
+                    <!-- 同分類的自建公式（非自建 tab 時，有資料才顯示）-->
+                    <div id="customMatchSection" style="display:none; margin-bottom: 12px;">
+                        <div class="custom-section-label">✏️ 自建公式</div>
+                        <div class="formula-list" id="customMatchList"></div>
                     </div>
-                    <div class="formula-list" id="customFormulaList" style="margin-top: 20px;"></div>
+
+                    <!-- 自建 tab 專屬頁面（預設隱藏）-->
+                    <div id="customAddSection" style="display:none;">
+                        <div class="add-formula-form">
+                            <div class="form-group">
+                                <label>公式名稱</label>
+                                <input type="text" id="customFormulaName" placeholder="例：自訂利率公式">
+                            </div>
+                            <div class="form-group">
+                                <label>公式表達式</label>
+                                <input type="text" id="customFormulaExpr" placeholder="例：P*(1+r)^n">
+                            </div>
+                            <div class="form-group">
+                                <label>分組</label>
+                                <select id="customFormulaGroup" class="custom-formula-group-select">
+                                    <option value="數學">數學</option>
+                                    <option value="工程">工程</option>
+                                    <option value="科學">科學</option>
+                                    <option value="物理">物理</option>
+                                    <option value="金融">金融</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons">
+                                <button class="btn-submit" id="addFormulaBtn">新增</button>
+                                <button class="btn-cancel" id="clearFormulaBtn">清空</button>
+                            </div>
+                        </div>
+                        <div class="formula-list" id="customFormulaList" style="margin-top: 16px;"></div>
+                    </div>
                 </div>
 
                 <!-- 儲存區 -->
@@ -1196,7 +1223,7 @@
         const clearFormulaBtn = document.getElementById('clearFormulaBtn');
         const customFormulaName = document.getElementById('customFormulaName');
         const customFormulaExpr = document.getElementById('customFormulaExpr');
-        const customFormulaCategory = document.getElementById('customFormulaCategory');
+
         const formulaModal = document.getElementById('formulaModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const calculateFormulaBtn = document.getElementById('calculateFormulaBtn');
@@ -1410,13 +1437,22 @@
         });
 
         // ========== Formula Category Filter ==========
+        function setFormulaSections(isCustomTab) {
+            document.getElementById('formulaSearchWrap').style.display  = isCustomTab ? 'none' : '';
+            document.getElementById('formulaBuiltinSection').style.display = isCustomTab ? 'none' : '';
+            document.getElementById('customAddSection').style.display   = isCustomTab ? '' : 'none';
+            if (isCustomTab) document.getElementById('customMatchSection').style.display = 'none';
+        }
+
         function initFormulaCats() {
             document.querySelectorAll('.fcbtn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.fcbtn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentFormulaCat = btn.dataset.fcat;
+                    setFormulaSections(currentFormulaCat === 'custom');
                     renderFormulas();
+                    renderCustomFormulas();
                 });
             });
         }
@@ -1452,46 +1488,58 @@
         formulaSearch.addEventListener('input', () => { renderFormulas(); renderCustomFormulas(); });
 
         // ========== Custom Formulas ==========
-        function renderCustomFormulas() {
-            const query = formulaSearch.value.toLowerCase();
-            const filtered = customFormulas.filter(f =>
-                !query ||
-                f.name.toLowerCase().includes(query) ||
-                f.category.toLowerCase().includes(query) ||
-                f.expr.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) { customFormulaList.innerHTML = ''; return; }
-
-            customFormulaList.innerHTML = `
-                <div class="section-title">${t('formula_custom')}（搜尋結果）</div>
-                ${filtered.map(f => `
-                    <div class="formula-item formula-item-custom">
-                        <div class="formula-item-content" onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
-                            <div class="formula-name">${f.name}</div>
-                            <div class="formula-expr">${f.expr}</div>
-                            <div class="formula-category">${f.category}</div>
-                        </div>
-                        <button class="delete-formula-btn" onclick="deleteCustomFormula(${f.id})">✕</button>
+        function customFormulaItem(f) {
+            return `
+                <div class="formula-item formula-item-custom">
+                    <div class="formula-item-content" onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
+                        <div class="formula-name">${f.name}</div>
+                        <div class="formula-expr">${f.expr}</div>
+                        <span class="formula-group-badge group-${f.group || '其他'}">${f.group || '其他'}</span>
                     </div>
-                `).join('')}
-            `;
+                    <button class="delete-formula-btn" onclick="deleteCustomFormula(${f.id})">✕</button>
+                </div>`;
+        }
+
+        function renderCustomFormulas() {
+            const isCustomTab = currentFormulaCat === 'custom';
+
+            if (isCustomTab) {
+                // 自建 tab：顯示全部自建公式
+                const list = document.getElementById('customFormulaList');
+                list.innerHTML = customFormulas.length === 0
+                    ? '<div class="empty-state">尚無自建公式</div>'
+                    : customFormulas.map(customFormulaItem).join('');
+            } else {
+                // 其他 tab：顯示同分類的自建公式
+                const matchSection = document.getElementById('customMatchSection');
+                const matchList = document.getElementById('customMatchList');
+                const matched = customFormulas.filter(f =>
+                    currentFormulaCat === 'all' || (f.group || '其他') === currentFormulaCat
+                );
+                if (matched.length === 0) {
+                    matchSection.style.display = 'none';
+                } else {
+                    matchSection.style.display = '';
+                    matchList.innerHTML = matched.map(customFormulaItem).join('');
+                }
+            }
         }
 
         addFormulaBtn.addEventListener('click', () => {
             const name = customFormulaName.value.trim();
             const expr = customFormulaExpr.value.trim();
-            const category = customFormulaCategory.value.trim() || '自訂';
+            const group = document.getElementById('customFormulaGroup').value || '其他';
             if (!name || !expr) { alert('請輸入公式名稱和表達式'); return; }
-            const vars = [...new Set((expr.match(/[a-zA-Z_]\w*/g) || []))];
-            customFormulas.push({ id: Date.now(), name, expr, category, vars });
+            const reserved = new Set(['Math','sin','cos','tan','asin','acos','atan','sinh','cosh','tanh','log','ln','exp','sqrt','floor','ceil','abs','π','e','nCr','nPr','factorial']);
+            const vars = [...new Set((expr.match(/[a-zA-Z_]\w*/g) || []).filter(v => !reserved.has(v)))];
+            customFormulas.push({ id: Date.now(), name, expr, category: group, group, vars });
             localStorage.setItem('customFormulas', JSON.stringify(customFormulas));
-            customFormulaName.value = ''; customFormulaExpr.value = ''; customFormulaCategory.value = '';
-            renderFormulas(); renderCustomFormulas();
+            customFormulaName.value = ''; customFormulaExpr.value = '';
+            renderCustomFormulas();
         });
 
         clearFormulaBtn.addEventListener('click', () => {
-            customFormulaName.value = ''; customFormulaExpr.value = ''; customFormulaCategory.value = '';
+            customFormulaName.value = ''; customFormulaExpr.value = '';
         });
 
         window.deleteCustomFormula = id => {
