@@ -546,6 +546,17 @@
             color: var(--text-dark); font-size: 14px;
         }
 
+        .formula-category-filter { margin-bottom: 16px; padding: 12px; background: rgba(6, 182, 212, 0.08); border-radius: 12px; }
+        .category-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+        .category-btn {
+            padding: 6px 12px; border: 1.5px solid var(--border-dark);
+            border-radius: 8px; background: transparent;
+            color: var(--text-dark-secondary); cursor: pointer;
+            font-size: 12px; font-weight: 500; transition: all 0.2s;
+        }
+        .category-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .category-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
         .formula-list {
             display: flex; flex-direction: column; gap: 10px;
             max-height: 360px; overflow-y: auto; margin-bottom: 20px;
@@ -1015,8 +1026,15 @@
                     </div>
 
                     <!-- 搜尋列（自建 tab 隱藏）-->
-                    <div class="formula-search" id="formulaSearchWrap">
-                        <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
+                    <div id="formulaSearchWrap">
+                        <div class="formula-search">
+                            <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
+                        </div>
+                        <!-- 分類篩選 -->
+                        <div class="formula-category-filter" id="formulaCategoryFilter">
+                            <div style="font-size: 12px; color: var(--text-dark-secondary); margin-bottom: 6px;" data-i18n="filter_by_category">按分類篩選：</div>
+                            <div class="category-buttons" id="categoryButtons"></div>
+                        </div>
                     </div>
 
                     <!-- 內建公式（自建 tab 時隱藏）-->
@@ -1242,7 +1260,7 @@
                 formula_name: '公式名稱', formula_expr: '公式表達式', formula_category: '分類',
                 search_formula_placeholder: '搜索公式（名稱、變數、類別）...',
                 empty_saved: '還沒有儲存的公式', empty_formula: '沒有找到匹配的公式',
-                update_time: '更新:',
+                update_time: '更新:', filter_by_category: '按分類篩選：', filter_all: '全部',
                 currency_names: { 'USD':'美元','JPY':'日圓','EUR':'歐元','GBP':'英鎊','AUD':'澳元','CAD':'加拿大元','CNY':'人民幣','SGD':'新加坡元','HKD':'港幣','THB':'泰銖','KRW':'韓圓' },
                 unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
@@ -1256,7 +1274,7 @@
                 formula_name: 'Formula Name', formula_expr: 'Expression', formula_category: 'Category',
                 search_formula_placeholder: 'Search formula (name, variable, category)...',
                 empty_saved: 'No saved formulas', empty_formula: 'No matching formulas found',
-                update_time: 'Updated:',
+                update_time: 'Updated:', filter_by_category: 'Filter by category:', filter_all: 'All',
                 currency_names: { 'USD':'US Dollar','JPY':'Japanese Yen','EUR':'Euro','GBP':'British Pound','AUD':'Australian Dollar','CAD':'Canadian Dollar','CNY':'Chinese Yuan','SGD':'Singapore Dollar','HKD':'Hong Kong Dollar','THB':'Thai Baht','KRW':'South Korean Won' },
                 unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
@@ -1270,7 +1288,7 @@
                 formula_name: '公式名称', formula_expr: '公式表达式', formula_category: '分类',
                 search_formula_placeholder: '搜索公式（名称、变量、分类）...',
                 empty_saved: '没有保存的公式', empty_formula: '没有找到匹配的公式',
-                update_time: '更新:',
+                update_time: '更新:', filter_by_category: '按分类筛选：', filter_all: '全部',
                 currency_names: { 'USD':'美元','JPY':'日圆','EUR':'欧元','GBP':'英镑','AUD':'澳元','CAD':'加拿大元','CNY':'人民币','SGD':'新加坡元','HKD':'港币','THB':'泰铢','KRW':'韩圆' },
                 unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
@@ -1284,7 +1302,7 @@
                 formula_name: '公式名', formula_expr: '式', formula_category: 'カテゴリ',
                 search_formula_placeholder: '公式を検索（名前、変数、カテゴリ）...',
                 empty_saved: '保存された式がありません', empty_formula: '一致する公式が見つかりません',
-                update_time: '更新:',
+                update_time: '更新:', filter_by_category: 'カテゴリで絞り込む：', filter_all: 'すべて',
                 currency_names: { 'USD':'米ドル','JPY':'日本円','EUR':'ユーロ','GBP':'ポンド','AUD':'オーストラリアドル','CAD':'カナダドル','CNY':'人民元','SGD':'シンガポールドル','HKD':'香港ドル','THB':'タイバーツ','KRW':'ウォン' },
                 unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             }
@@ -1506,6 +1524,7 @@
             updateTheme();
             langSelector.value = currentLanguage;
             updateLanguage(currentLanguage);
+            initCategoryFilter();
             renderFormulas();
             renderCustomFormulas();
             fetchExchangeRates();
@@ -1514,6 +1533,27 @@
             initFormulaCats();
             initBaseModes();
             initBaseRows();
+        }
+
+        // ========== Formula Category Filter ==========
+        let selectedCategory = 'all';
+        function initCategoryFilter() {
+            const categories = ['all', ...new Set(builtInFormulas.map(f => f.category))];
+            const container = document.getElementById('categoryButtons');
+            if (!container) return;
+            container.innerHTML = categories.map(cat => `
+                <button class="category-btn ${cat === 'all' ? 'active' : ''}" data-cat="${cat}">
+                    ${cat === 'all' ? t('filter_all', 'All') : cat}
+                </button>
+            `).join('');
+            container.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedCategory = btn.dataset.cat;
+                    renderFormulas();
+                });
+            });
         }
 
         // ========== i18n ==========
@@ -1740,14 +1780,24 @@
             const query = formulaSearch.value.toLowerCase();
             let filtered = builtInFormulas.filter(f => {
                 const matchCat = currentFormulaCat === 'all' || f.group === currentFormulaCat;
+                const matchSubCat = selectedCategory === 'all' || f.category === selectedCategory;
                 const matchQuery = !query ||
                     f.name.toLowerCase().includes(query) ||
                     f.category.toLowerCase().includes(query) ||
                     f.group.toLowerCase().includes(query) ||
                     f.vars.some(v => v.toLowerCase().includes(query)) ||
                     f.expr.toLowerCase().includes(query);
-                return matchCat && matchQuery;
+                return matchCat && matchSubCat && matchQuery;
             });
+
+            // 按相關性排序：名稱匹配優先
+            if (query) {
+                filtered.sort((a, b) => {
+                    const aNameMatch = a.name.toLowerCase().startsWith(query) ? 0 : 1;
+                    const bNameMatch = b.name.toLowerCase().startsWith(query) ? 0 : 1;
+                    return aNameMatch - bNameMatch;
+                });
+            }
 
             if (filtered.length === 0) {
                 formulaList.innerHTML = `<div class="empty-state">${t('empty_formula')}</div>`;
