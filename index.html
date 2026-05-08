@@ -546,17 +546,6 @@
             color: var(--text-dark); font-size: 14px;
         }
 
-        .formula-category-filter { margin-bottom: 16px; padding: 12px; background: rgba(6, 182, 212, 0.08); border-radius: 12px; }
-        .category-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-        .category-btn {
-            padding: 6px 12px; border: 1.5px solid var(--border-dark);
-            border-radius: 8px; background: transparent;
-            color: var(--text-dark-secondary); cursor: pointer;
-            font-size: 12px; font-weight: 500; transition: all 0.2s;
-        }
-        .category-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .category-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
         .formula-list {
             display: flex; flex-direction: column; gap: 10px;
             max-height: 360px; overflow-y: auto; margin-bottom: 20px;
@@ -662,68 +651,6 @@
         .btn-calculate:hover { opacity: 0.9; }
         .btn-close-modal { background: var(--bg-dark-tertiary); color: var(--text-dark); }
         .btn-close-modal:hover { background: var(--red); }
-        .btn-plot { background: var(--bg-dark-tertiary); color: var(--primary); border: 1px solid var(--primary); }
-        .btn-plot:hover { background: var(--primary); color: var(--bg-dark); }
-
-        /* ===== Plot Modal ===== */
-        .plot-modal-content { max-width: 720px; width: 95%; }
-        .plot-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .plot-controls .full-row { grid-column: 1 / -1; }
-        .plot-controls .variable-input { margin-bottom: 0; }
-        .plot-controls select, .plot-controls input {
-            flex: 1; padding: 8px;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            background: var(--bg-dark-tertiary); color: var(--text-dark);
-            font-size: 13px;
-        }
-        .plot-fixed-vars {
-            grid-column: 1 / -1;
-            border-top: 1px dashed var(--border-dark);
-            padding-top: 10px; margin-top: 4px;
-        }
-        .plot-fixed-vars-title { font-size: 12px; color: var(--text-dark-secondary); margin-bottom: 8px; }
-        .plot-fixed-vars-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .plot-canvas-wrap {
-            position: relative;
-            background: #0f1729;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        .plot-canvas-wrap canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            cursor: crosshair;
-        }
-        .plot-tooltip {
-            display: none;
-            position: absolute;
-            background: rgba(15, 23, 41, 0.95);
-            border: 1px solid var(--primary);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            color: var(--text-dark);
-            pointer-events: none;
-            z-index: 10;
-            white-space: nowrap;
-        }
-        .plot-hint { font-size: 11px; color: var(--text-dark-secondary); margin-bottom: 8px; text-align: center; }
-        .plot-message {
-            display: none;
-            text-align: center;
-            color: var(--red);
-            font-size: 13px;
-            padding: 12px;
-        }
-        @media (max-width: 600px) {
-            .plot-controls { grid-template-columns: 1fr; }
-            .plot-fixed-vars-grid { grid-template-columns: 1fr; }
-        }
 
         /* ===== Saved list ===== */
         .saved-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; }
@@ -754,6 +681,300 @@
                 display: none !important;
             }
         }
+
+        /* ===== Graph Modal ===== */
+        .graph-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); z-index: 1500;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .graph-modal.active { display: flex; }
+        .graph-modal-content {
+            background: var(--bg-dark-secondary);
+            border-radius: 16px;
+            width: 100%; max-width: 1100px;
+            max-height: 92vh; overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .graph-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+        .graph-modal-title { font-size: 22px; font-weight: 700; color: var(--primary); }
+
+        .graph-controls {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+        }
+        .graph-expr-input {
+            flex: 1; min-width: 240px;
+            padding: 10px 14px;
+            background: var(--bg-dark-tertiary);
+            border: 1.5px solid var(--border-dark);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        .graph-expr-input:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+        }
+        .graph-btn {
+            padding: 10px 14px;
+            border: none; border-radius: 8px;
+            color: #fff; font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .graph-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+        .graph-btn-add { background: var(--green); }
+        .graph-btn-special { background: var(--purple); }
+        .graph-btn-export { background: var(--primary); }
+        .graph-btn-clear { background: var(--red); }
+        .graph-btn-apply { background: var(--primary-dark); padding: 6px 12px; font-size: 12px; }
+
+        .graph-range-controls {
+            display: flex; gap: 12px; align-items: center;
+            margin-bottom: 14px; flex-wrap: wrap;
+            padding: 8px 12px;
+            background: var(--bg-dark-tertiary);
+            border-radius: 8px;
+        }
+        .graph-range-controls label {
+            display: flex; align-items: center; gap: 6px;
+            color: var(--text-dark-secondary);
+            font-size: 13px;
+        }
+        .graph-range-input {
+            width: 70px;
+            padding: 4px 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 5px;
+            color: var(--text-dark);
+            font-family: monospace;
+        }
+
+        .graph-canvas-wrapper {
+            position: relative;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        #graphCanvas {
+            display: block;
+            margin: 0 auto;
+            cursor: crosshair;
+            max-width: 100%;
+            border-radius: 6px;
+        }
+        .graph-hover-info {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            pointer-events: none;
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .graph-side-panels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .graph-panel {
+            background: var(--bg-dark-tertiary);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .graph-panel-title {
+            font-weight: 700; font-size: 13px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .graph-list {
+            max-height: 180px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .graph-list-empty {
+            color: var(--text-dark-secondary);
+            font-size: 12px;
+            font-style: italic;
+            text-align: center;
+            padding: 20px 8px;
+        }
+        .graph-fn-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .graph-fn-item code {
+            flex: 1; font-family: 'Consolas', monospace;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .graph-fn-color {
+            width: 12px; height: 12px; border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .graph-fn-remove {
+            background: transparent;
+            border: none;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+        .graph-fn-remove:hover { color: var(--red-light); }
+
+        .graph-slider-row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 8px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .graph-slider-row label {
+            min-width: 24px; font-weight: 600; color: var(--primary);
+            font-family: monospace;
+        }
+        .graph-slider-row input[type=range] {
+            flex: 1; cursor: pointer; accent-color: var(--primary);
+        }
+        .graph-slider-row span {
+            min-width: 44px; text-align: right;
+            font-family: monospace;
+            color: var(--text-dark-secondary);
+        }
+
+        .graph-mark-item {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 8px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .graph-mark-color { font-size: 10px; }
+
+        @media (max-width: 768px) {
+            .graph-side-panels { grid-template-columns: 1fr; }
+            #graphCanvas { width: 100%; height: auto; }
+        }
+
+        /* ===== Phase 5-8: 進階繪圖 UI ===== */
+        .graph-mode-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .graph-mode-tab {
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+        .graph-mode-tab:hover { background: var(--surface); }
+        .graph-mode-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .graph-tool-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .graph-tool-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .graph-tool {
+            padding: 4px 10px;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.15s ease;
+        }
+        .graph-tool:hover { background: var(--background); }
+        .graph-tool.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .graph-tool-hint {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        .graph-stat-select {
+            padding: 8px 12px;
+            background: var(--background);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .graph-stat-input {
+            margin-bottom: 10px;
+        }
+        .graph-stat-input textarea {
+            width: 100%;
+            padding: 10px;
+            background: var(--background);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .graph-stat-hint {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -768,6 +989,7 @@
                     <option value="ja">日本語</option>
                 </select>
                 <button class="help-btn" id="helpBtn" title="使用說明">?</button>
+                <button class="theme-btn" id="graphBtn" title="函數繪圖" style="font-size: 18px;">📈</button>
                 <button class="theme-btn" id="themeBtn">☀️</button>
             </div>
         </div>
@@ -1088,15 +1310,8 @@
                     </div>
 
                     <!-- 搜尋列（自建 tab 隱藏）-->
-                    <div id="formulaSearchWrap">
-                        <div class="formula-search">
-                            <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
-                        </div>
-                        <!-- 分類篩選 -->
-                        <div class="formula-category-filter" id="formulaCategoryFilter">
-                            <div style="font-size: 12px; color: var(--text-dark-secondary); margin-bottom: 6px;" data-i18n="filter_by_category">按分類篩選：</div>
-                            <div class="category-buttons" id="categoryButtons"></div>
-                        </div>
+                    <div class="formula-search" id="formulaSearchWrap">
+                        <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
                     </div>
 
                     <!-- 內建公式（自建 tab 時隱藏）-->
@@ -1303,28 +1518,113 @@
             <div class="modal-formula" id="modalFormula"></div>
             <div class="modal-variables" id="modalVariables"></div>
             <div class="modal-buttons">
-                <button class="btn-calculate" id="calculateFormulaBtn" data-i18n="btn_calc">計算</button>
-                <button class="btn-plot" id="plotFormulaBtn" data-i18n="btn_plot">📈 繪圖</button>
-                <button class="btn-close-modal" id="closeModalBtn" data-i18n="btn_close">關閉</button>
+                <button class="btn-calculate" id="calculateFormulaBtn">計算</button>
+                <button class="btn-close-modal" id="closeModalBtn">關閉</button>
             </div>
         </div>
     </div>
 
     <!-- 函數繪圖 Modal -->
-    <div class="modal" id="plotModal">
-        <div class="modal-content plot-modal-content">
-            <div class="modal-title" id="plotModalTitle" data-i18n="plot_title">函數繪圖</div>
-            <div class="modal-formula" id="plotModalFormula"></div>
-            <div class="plot-controls" id="plotControls"></div>
-            <div class="plot-hint" data-i18n="plot_hint">提示：滑鼠移到曲線上可查看數值</div>
-            <div class="plot-canvas-wrap">
-                <canvas id="plotCanvas" width="680" height="400"></canvas>
-                <div class="plot-tooltip" id="plotTooltip"></div>
+    <div class="graph-modal" id="graphModal">
+        <div class="graph-modal-content">
+            <div class="graph-modal-header">
+                <div class="graph-modal-title">📈 <span data-i18n="graph_title">函數繪圖</span></div>
+                <button class="help-close-btn" id="graphCloseBtn">✕</button>
             </div>
-            <div class="plot-message" id="plotMessage"></div>
-            <div class="modal-buttons">
-                <button class="btn-calculate" id="drawPlotBtn" data-i18n="btn_draw">繪製</button>
-                <button class="btn-close-modal" id="closePlotModalBtn" data-i18n="btn_close">關閉</button>
+
+            <!-- 模式切換 (函數 / 統計 / 3D) -->
+            <div class="graph-mode-tabs">
+                <button class="graph-mode-tab active" data-mode="function" data-i18n="graph_mode_function">📊 函數</button>
+                <button class="graph-mode-tab" data-mode="statistics" data-i18n="graph_mode_statistics">📉 統計</button>
+                <button class="graph-mode-tab" data-mode="3d" data-i18n="graph_mode_3d">🎲 3D</button>
+            </div>
+
+            <!-- 函數模式控制 -->
+            <div class="graph-mode-panel" data-panel="function">
+                <div class="graph-controls">
+                    <input type="text" id="graphExprInput" placeholder="例如: x^2, sin(x), a*sin(b*x)" class="graph-expr-input">
+                    <button class="graph-btn graph-btn-add" id="graphAddBtn">＋ <span data-i18n="graph_add">新增</span></button>
+                    <button class="graph-btn graph-btn-special" id="graphFindSpecialBtn">🔍 <span data-i18n="graph_special">特殊點</span></button>
+                    <button class="graph-btn graph-btn-special" id="graphFindIntersectBtn">⊕ <span data-i18n="graph_intersect">交點</span></button>
+                    <button class="graph-btn graph-btn-export" id="graphExportPngBtn">📥 PNG</button>
+                    <button class="graph-btn graph-btn-export" id="graphExportSvgBtn">📥 SVG</button>
+                    <button class="graph-btn graph-btn-clear" id="graphClearBtn">🗑 <span data-i18n="graph_clear">清除</span></button>
+                </div>
+
+                <!-- 工具列：標記 / 切線 / 積分 / 斜率場 -->
+                <div class="graph-tool-bar">
+                    <span class="graph-tool-label" data-i18n="graph_tool">工具：</span>
+                    <button class="graph-tool active" data-tool="mark" data-i18n="graph_tool_mark">📍 標記</button>
+                    <button class="graph-tool" data-tool="tangent" data-i18n="graph_tool_tangent">📐 切線</button>
+                    <button class="graph-tool" data-tool="integral" data-i18n="graph_tool_integral">∫ 積分</button>
+                    <button class="graph-tool" data-tool="slope" data-i18n="graph_tool_slope">↗ 斜率場</button>
+                    <span class="graph-tool-hint" id="graphToolHint" data-i18n="graph_tool_hint_mark">點擊曲線以標記座標</span>
+                </div>
+
+                <div class="graph-range-controls">
+                    <label>X<sub>min</sub>: <input type="number" id="graphXMin" value="-10" step="1" class="graph-range-input"></label>
+                    <label>X<sub>max</sub>: <input type="number" id="graphXMax" value="10" step="1" class="graph-range-input"></label>
+                    <button class="graph-btn graph-btn-apply" id="graphApplyRangeBtn"><span data-i18n="graph_apply">套用</span></button>
+                </div>
+            </div>
+
+            <!-- 統計模式控制 -->
+            <div class="graph-mode-panel" data-panel="statistics" style="display:none;">
+                <div class="graph-controls">
+                    <select id="graphStatType" class="graph-stat-select">
+                        <option value="histogram" data-i18n="graph_stat_histogram">直方圖</option>
+                        <option value="scatter" data-i18n="graph_stat_scatter">散佈圖+迴歸</option>
+                        <option value="boxplot" data-i18n="graph_stat_boxplot">盒狀圖</option>
+                    </select>
+                    <button class="graph-btn graph-btn-add" id="graphStatDrawBtn">📊 <span data-i18n="graph_stat_draw">繪製</span></button>
+                    <button class="graph-btn graph-btn-clear" id="graphStatClearBtn">🗑 <span data-i18n="graph_clear">清除</span></button>
+                </div>
+                <div class="graph-stat-input">
+                    <textarea id="graphStatData" rows="3" placeholder="輸入資料：x1,y1; x2,y2; ... 或單列 x1,x2,x3,..."></textarea>
+                    <span class="graph-stat-hint" id="graphStatHint" data-i18n="graph_stat_hint">直方圖/盒狀圖：單列數值；散佈圖：每對 x,y 一組</span>
+                </div>
+            </div>
+
+            <!-- 3D 模式控制 -->
+            <div class="graph-mode-panel" data-panel="3d" style="display:none;">
+                <div class="graph-controls">
+                    <input type="text" id="graph3DExpr" placeholder="例如: sin(x)*cos(y), x^2-y^2" class="graph-expr-input" value="sin(x)*cos(y)">
+                    <button class="graph-btn graph-btn-add" id="graph3DDrawBtn">🎨 <span data-i18n="graph_3d_render">渲染</span></button>
+                    <select id="graph3DStyle" class="graph-stat-select">
+                        <option value="wireframe" data-i18n="graph_3d_wire">線框</option>
+                        <option value="surface" selected data-i18n="graph_3d_surface">表面</option>
+                        <option value="contour" data-i18n="graph_3d_contour">等高</option>
+                    </select>
+                </div>
+                <div class="graph-range-controls">
+                    <label>X: <input type="number" id="graph3DXMin" value="-3" step="0.5" class="graph-range-input">~<input type="number" id="graph3DXMax" value="3" step="0.5" class="graph-range-input"></label>
+                    <label>Y: <input type="number" id="graph3DYMin" value="-3" step="0.5" class="graph-range-input">~<input type="number" id="graph3DYMax" value="3" step="0.5" class="graph-range-input"></label>
+                    <span class="graph-stat-hint" data-i18n="graph_3d_hint">滑鼠拖曳旋轉、滾輪縮放</span>
+                </div>
+            </div>
+
+            <div class="graph-canvas-wrapper">
+                <canvas id="graphCanvas" width="720" height="420"></canvas>
+                <div class="graph-hover-info" id="graphHoverInfo" style="display: none;"></div>
+            </div>
+
+            <div class="graph-side-panels">
+                <div class="graph-panel">
+                    <div class="graph-panel-title"><span data-i18n="graph_functions">函數列表</span></div>
+                    <div id="graphFunctionList" class="graph-list"></div>
+                </div>
+                <div class="graph-panel">
+                    <div class="graph-panel-title"><span data-i18n="graph_parameters">參數動畫</span></div>
+                    <div id="graphParameterSliders" class="graph-list">
+                        <div class="graph-list-empty" data-i18n="graph_no_params">輸入含 a, b, c... 的表達式即會出現滑桿</div>
+                    </div>
+                </div>
+                <div class="graph-panel">
+                    <div class="graph-panel-title"><span data-i18n="graph_marked">標記點</span></div>
+                    <div id="graphMarkedPoints" class="graph-list">
+                        <div class="graph-list-empty" data-i18n="graph_click_to_mark">點擊曲線標記座標</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1342,17 +1642,21 @@
                 formula_name: '公式名稱', formula_expr: '公式表達式', formula_category: '分類',
                 search_formula_placeholder: '搜索公式（名稱、變數、類別）...',
                 empty_saved: '還沒有儲存的公式', empty_formula: '沒有找到匹配的公式',
-                update_time: '更新:', filter_by_category: '按分類篩選：', filter_all: '全部',
+                update_time: '更新:',
+                graph_title: '函數繪圖', graph_add: '新增', graph_apply: '套用', graph_clear: '清除',
+                graph_click_to_mark: '點擊曲線標記座標', graph_functions: '函數列表',
+                graph_marked: '標記點', graph_no_params: '輸入含 a, b, c... 的表達式即會出現滑桿',
+                graph_parameters: '參數動畫', graph_special: '特殊點',
+                graph_mode_function: '📊 函數', graph_mode_statistics: '📉 統計', graph_mode_3d: '🎲 3D',
+                graph_intersect: '交點', graph_tool: '工具：',
+                graph_tool_mark: '📍 標記', graph_tool_tangent: '📐 切線', graph_tool_integral: '∫ 積分', graph_tool_slope: '↗ 斜率場',
+                graph_tool_hint_mark: '點擊曲線以標記座標',
+                graph_stat_histogram: '直方圖', graph_stat_scatter: '散佈圖+迴歸', graph_stat_boxplot: '盒狀圖',
+                graph_stat_draw: '繪製', graph_stat_hint: '直方圖/盒狀圖：單列數值；散佈圖：每對 x,y 一組',
+                graph_3d_render: '渲染', graph_3d_wire: '線框', graph_3d_surface: '表面', graph_3d_contour: '等高',
+                graph_3d_hint: '滑鼠拖曳旋轉、滾輪縮放',
                 currency_names: { 'USD':'美元','JPY':'日圓','EUR':'歐元','GBP':'英鎊','AUD':'澳元','CAD':'加拿大元','CNY':'人民幣','SGD':'新加坡元','HKD':'港幣','THB':'泰銖','KRW':'韓圓' },
-                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' },
-                formulas: { 1:'圓的面積', 2:'矩形面積', 3:'三角形面積', 4:'梯形面積', 5:'圓的周長', 6:'矩形周長', 7:'球的體積', 8:'圓柱體積', 9:'直方體體積', 10:'圓錐體積', 11:'勾股定理', 12:'三角形周長', 13:'平均值', 14:'百分比', 15:'平方', 16:'立方', 17:'平方根', 18:'立方根', 19:'指數', 20:'自然對數', 21:'常用對數', 22:'一次函數', 23:'二次函數', 24:'判別式', 25:'兩點距離', 30:'歐姆定律', 31:'電功率', 32:'電阻串聯', 33:'電阻並聯(2)', 34:'RC時間常數', 35:'電容能量', 36:'分貝(電壓)', 37:'機械功', 38:'機械效率', 39:'複利終值', 40:'月繳貸款', 41:'單利終值', 42:'現值(PV)', 43:'年金終值', 44:'年金現值', 45:'投資報酬率 ROI', 46:'72法則', 47:'本益比 P/E', 50:'理想氣體(壓力)', 51:'莫耳數', 52:'莫耳濃度', 53:'pH值', 54:'稀釋方程', 55:'密度', 56:'化學產率', 57:'波耳模型能量', 70:'牛頓第二定律', 71:'動能', 72:'重力位能', 73:'動量', 74:'均速', 75:'自由落體高度', 76:'波速', 77:'熱量', 78:'庫倫力', 79:'萬有引力', 80:'電場強度', 81:'歐姆定律(電壓)' },
-                categories: { '面積':'面積', '周長':'周長', '體積':'體積', '三角形':'三角形', '統計':'統計', '代數':'代數', '指數':'指數', '對數':'對數', '函數':'函數', '座標':'座標', '電學':'電學', '信號':'信號', '力學':'力學', '財務':'財務', '化學':'化學', '量子':'量子', '波動':'波動', '熱學':'熱學', '電磁':'電磁', '引力':'引力' },
-                groups: { '數學':'數學', '工程':'工程', '科學':'科學', '物理':'物理', '金融':'金融' },
-                btn_plot: '📈 繪圖', btn_calc: '計算', btn_close: '關閉', btn_draw: '繪製',
-                plot_title: '函數繪圖', plot_xvar: 'X 軸變數', plot_xmin: 'X 最小值', plot_xmax: 'X 最大值',
-                plot_steps: '採樣點數', plot_fixed_vars: '其他變數固定值',
-                plot_invalid: '無法繪圖：請檢查輸入範圍', plot_no_data: '此區間無有效輸出',
-                plot_hint: '提示：滑鼠移到曲線上可查看數值'
+                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
             'en': {
                 tab_calc: 'Calc', tab_unit: 'Unit', tab_currency: 'Exchange',
@@ -1364,17 +1668,21 @@
                 formula_name: 'Formula Name', formula_expr: 'Expression', formula_category: 'Category',
                 search_formula_placeholder: 'Search formula (name, variable, category)...',
                 empty_saved: 'No saved formulas', empty_formula: 'No matching formulas found',
-                update_time: 'Updated:', filter_by_category: 'Filter by category:', filter_all: 'All',
+                update_time: 'Updated:',
+                graph_title: 'Function Graphing', graph_add: 'Add', graph_apply: 'Apply', graph_clear: 'Clear',
+                graph_click_to_mark: 'Click curve to mark coordinates', graph_functions: 'Function List',
+                graph_marked: 'Marked Points', graph_no_params: 'Enter expressions with a, b, c... parameters to show sliders',
+                graph_parameters: 'Parameter Animation', graph_special: 'Special Points',
+                graph_mode_function: '📊 Function', graph_mode_statistics: '📉 Statistics', graph_mode_3d: '🎲 3D',
+                graph_intersect: 'Intersect', graph_tool: 'Tool:',
+                graph_tool_mark: '📍 Mark', graph_tool_tangent: '📐 Tangent', graph_tool_integral: '∫ Integral', graph_tool_slope: '↗ Slope Field',
+                graph_tool_hint_mark: 'Click curve to mark coordinates',
+                graph_stat_histogram: 'Histogram', graph_stat_scatter: 'Scatter+Regression', graph_stat_boxplot: 'Box Plot',
+                graph_stat_draw: 'Draw', graph_stat_hint: 'Histogram/Boxplot: single values; Scatter: each line is x,y pair',
+                graph_3d_render: 'Render', graph_3d_wire: 'Wireframe', graph_3d_surface: 'Surface', graph_3d_contour: 'Contour',
+                graph_3d_hint: 'Drag to rotate, wheel to zoom',
                 currency_names: { 'USD':'US Dollar','JPY':'Japanese Yen','EUR':'Euro','GBP':'British Pound','AUD':'Australian Dollar','CAD':'Canadian Dollar','CNY':'Chinese Yuan','SGD':'Singapore Dollar','HKD':'Hong Kong Dollar','THB':'Thai Baht','KRW':'South Korean Won' },
-                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' },
-                formulas: { 1:'Circle Area', 2:'Rectangle Area', 3:'Triangle Area', 4:'Trapezoid Area', 5:'Circle Circumference', 6:'Rectangle Perimeter', 7:'Sphere Volume', 8:'Cylinder Volume', 9:'Rectangular Prism Volume', 10:'Cone Volume', 11:'Pythagorean Theorem', 12:'Triangle Perimeter', 13:'Average', 14:'Percentage', 15:'Square', 16:'Cube', 17:'Square Root', 18:'Cube Root', 19:'Exponential', 20:'Natural Logarithm', 21:'Common Logarithm', 22:'Linear Function', 23:'Quadratic Function', 24:'Discriminant', 25:'Distance Between 2 Points', 30:"Ohm's Law", 31:'Electric Power', 32:'Resistors in Series', 33:'Resistors in Parallel (2)', 34:'RC Time Constant', 35:'Capacitor Energy', 36:'Decibel (Voltage)', 37:'Mechanical Work', 38:'Mechanical Efficiency', 39:'Compound Interest Future Value', 40:'Monthly Loan Payment', 41:'Simple Interest Future Value', 42:'Present Value (PV)', 43:'Annuity Future Value', 44:'Annuity Present Value', 45:'Return on Investment (ROI)', 46:'Rule of 72', 47:'Price-to-Earnings Ratio (P/E)', 50:'Ideal Gas Law', 51:'Molar Amount', 52:'Molar Concentration', 53:'pH Value', 54:'Dilution Equation', 55:'Density', 56:'Chemical Yield', 57:'Bohr Model Energy', 70:"Newton's Second Law", 71:'Kinetic Energy', 72:'Gravitational Potential Energy', 73:'Momentum', 74:'Average Speed', 75:'Free Fall Height', 76:'Wave Speed', 77:'Heat', 78:"Coulomb's Force", 79:'Universal Gravitation', 80:'Electric Field Strength', 81:"Ohm's Law (Voltage)" },
-                categories: { '面積':'Area', '周長':'Perimeter', '體積':'Volume', '三角形':'Triangle', '統計':'Statistics', '代數':'Algebra', '指數':'Exponential', '對數':'Logarithm', '函數':'Function', '座標':'Coordinate', '電學':'Electrical', '信號':'Signal', '力學':'Mechanics', '財務':'Finance', '化學':'Chemistry', '量子':'Quantum', '波動':'Waves', '熱學':'Thermodynamics', '電磁':'Electromagnetism', '引力':'Gravity' },
-                groups: { '數學':'Mathematics', '工程':'Engineering', '科學':'Science', '物理':'Physics', '金融':'Finance' },
-                btn_plot: '📈 Plot', btn_calc: 'Calculate', btn_close: 'Close', btn_draw: 'Draw',
-                plot_title: 'Function Plot', plot_xvar: 'X-Axis Variable', plot_xmin: 'X Min', plot_xmax: 'X Max',
-                plot_steps: 'Sample Points', plot_fixed_vars: 'Fixed Variable Values',
-                plot_invalid: 'Cannot plot: please check input range', plot_no_data: 'No valid output in range',
-                plot_hint: 'Tip: hover over the curve to view values'
+                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
             'zh-CN': {
                 tab_calc: '计算', tab_unit: '单位', tab_currency: '汇率',
@@ -1386,17 +1694,21 @@
                 formula_name: '公式名称', formula_expr: '公式表达式', formula_category: '分类',
                 search_formula_placeholder: '搜索公式（名称、变量、分类）...',
                 empty_saved: '没有保存的公式', empty_formula: '没有找到匹配的公式',
-                update_time: '更新:', filter_by_category: '按分类筛选：', filter_all: '全部',
+                update_time: '更新:',
+                graph_title: '函数绘图', graph_add: '添加', graph_apply: '应用', graph_clear: '清除',
+                graph_click_to_mark: '点击曲线标记坐标', graph_functions: '函数列表',
+                graph_marked: '标记点', graph_no_params: '输入含 a, b, c... 的表达式即会出现滑块',
+                graph_parameters: '参数动画', graph_special: '特殊点',
+                graph_mode_function: '📊 函数', graph_mode_statistics: '📉 统计', graph_mode_3d: '🎲 3D',
+                graph_intersect: '交点', graph_tool: '工具：',
+                graph_tool_mark: '📍 标记', graph_tool_tangent: '📐 切线', graph_tool_integral: '∫ 积分', graph_tool_slope: '↗ 斜率场',
+                graph_tool_hint_mark: '点击曲线以标记坐标',
+                graph_stat_histogram: '直方图', graph_stat_scatter: '散点图+回归', graph_stat_boxplot: '箱线图',
+                graph_stat_draw: '绘制', graph_stat_hint: '直方图/箱线图：单列数值；散点图：每对 x,y 一组',
+                graph_3d_render: '渲染', graph_3d_wire: '线框', graph_3d_surface: '表面', graph_3d_contour: '等高',
+                graph_3d_hint: '鼠标拖拽旋转、滚轮缩放',
                 currency_names: { 'USD':'美元','JPY':'日圆','EUR':'欧元','GBP':'英镑','AUD':'澳元','CAD':'加拿大元','CNY':'人民币','SGD':'新加坡元','HKD':'港币','THB':'泰铢','KRW':'韩圆' },
-                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' },
-                formulas: { 1:'圆的面积', 2:'矩形面积', 3:'三角形面积', 4:'梯形面积', 5:'圆的周长', 6:'矩形周长', 7:'球的体积', 8:'圆柱体积', 9:'直方体体积', 10:'圆锥体积', 11:'勾股定理', 12:'三角形周长', 13:'平均值', 14:'百分比', 15:'平方', 16:'立方', 17:'平方根', 18:'立方根', 19:'指数', 20:'自然对数', 21:'常用对数', 22:'一次函数', 23:'二次函数', 24:'判别式', 25:'两点距离', 30:'欧姆定律', 31:'电功率', 32:'电阻串联', 33:'电阻并联(2)', 34:'RC时间常数', 35:'电容能量', 36:'分贝(电压)', 37:'机械功', 38:'机械效率', 39:'复利终值', 40:'月缴贷款', 41:'单利终值', 42:'现值(PV)', 43:'年金终值', 44:'年金现值', 45:'投资报酬率 ROI', 46:'72法则', 47:'本益比 P/E', 50:'理想气体(压力)', 51:'摩尔数', 52:'摩尔浓度', 53:'pH值', 54:'稀释方程', 55:'密度', 56:'化学产率', 57:'玻尔模型能量', 70:'牛顿第二定律', 71:'动能', 72:'重力位能', 73:'动量', 74:'均速', 75:'自由落体高度', 76:'波速', 77:'热量', 78:'库仑力', 79:'万有引力', 80:'电场强度', 81:'欧姆定律(电压)' },
-                categories: { '面積':'面积', '周長':'周长', '體積':'体积', '三角形':'三角形', '統計':'统计', '代數':'代数', '指數':'指数', '對數':'对数', '函數':'函数', '座標':'座标', '電學':'电学', '信號':'信号', '力學':'力学', '財務':'财务', '化學':'化学', '量子':'量子', '波動':'波动', '熱學':'热学', '電磁':'电磁', '引力':'引力' },
-                groups: { '數學':'数学', '工程':'工程', '科學':'科学', '物理':'物理', '金融':'金融' },
-                btn_plot: '📈 绘图', btn_calc: '计算', btn_close: '关闭', btn_draw: '绘制',
-                plot_title: '函数绘图', plot_xvar: 'X 轴变量', plot_xmin: 'X 最小值', plot_xmax: 'X 最大值',
-                plot_steps: '采样点数', plot_fixed_vars: '其他变量固定值',
-                plot_invalid: '无法绘图：请检查输入范围', plot_no_data: '该区间无有效输出',
-                plot_hint: '提示：鼠标移到曲线上可查看数值'
+                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             },
             'ja': {
                 tab_calc: '計算', tab_unit: '単位', tab_currency: 'レート',
@@ -1408,17 +1720,21 @@
                 formula_name: '公式名', formula_expr: '式', formula_category: 'カテゴリ',
                 search_formula_placeholder: '公式を検索（名前、変数、カテゴリ）...',
                 empty_saved: '保存された式がありません', empty_formula: '一致する公式が見つかりません',
-                update_time: '更新:', filter_by_category: 'カテゴリで絞り込む：', filter_all: 'すべて',
+                update_time: '更新:',
+                graph_title: '関数グラフ', graph_add: '追加', graph_apply: '適用', graph_clear: 'クリア',
+                graph_click_to_mark: '曲線をクリックして座標をマーク', graph_functions: '関数リスト',
+                graph_marked: 'マークされた点', graph_no_params: 'a, b, c... のパラメータを含む式を入力するとスライダーが表示されます',
+                graph_parameters: 'パラメータアニメーション', graph_special: '特殊な点',
+                graph_mode_function: '📊 関数', graph_mode_statistics: '📉 統計', graph_mode_3d: '🎲 3D',
+                graph_intersect: '交点', graph_tool: 'ツール：',
+                graph_tool_mark: '📍 マーク', graph_tool_tangent: '📐 接線', graph_tool_integral: '∫ 積分', graph_tool_slope: '↗ 傾き場',
+                graph_tool_hint_mark: '曲線をクリックして座標をマーク',
+                graph_stat_histogram: 'ヒストグラム', graph_stat_scatter: '散布図+回帰', graph_stat_boxplot: '箱ひげ図',
+                graph_stat_draw: '描画', graph_stat_hint: 'ヒストグラム/箱ひげ：単一値; 散布図：x,y のペア',
+                graph_3d_render: 'レンダリング', graph_3d_wire: 'ワイヤー', graph_3d_surface: 'サーフェス', graph_3d_contour: '等高線',
+                graph_3d_hint: 'ドラッグで回転、ホイールでズーム',
                 currency_names: { 'USD':'米ドル','JPY':'日本円','EUR':'ユーロ','GBP':'ポンド','AUD':'オーストラリアドル','CAD':'カナダドル','CNY':'人民元','SGD':'シンガポールドル','HKD':'香港ドル','THB':'タイバーツ','KRW':'ウォン' },
-                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' },
-                formulas: { 1:'円の面積', 2:'矩形面積', 3:'三角形面積', 4:'台形面積', 5:'円周', 6:'矩形周', 7:'球体積', 8:'シリンダー体積', 9:'直方体体積', 10:'円錐体積', 11:'ピタゴラス定理', 12:'三角形周', 13:'平均', 14:'パーセント', 15:'二乗', 16:'立方', 17:'平方根', 18:'立方根', 19:'指数', 20:'自然対数', 21:'常用対数', 22:'1次関数', 23:'2次関数', 24:'判別式', 25:'2点距離', 30:'オームの法則', 31:'電力', 32:'抵抗直列', 33:'抵抗並列(2)', 34:'RC時定数', 35:'コンデンサエネルギー', 36:'デシベル(電圧)', 37:'機械仕事', 38:'機械効率', 39:'複利終価', 40:'月償却', 41:'単利終価', 42:'現在価値', 43:'年金終価', 44:'年金現価', 45:'投資収益率', 46:'72法則', 47:'PER', 50:'理想気体', 51:'モル数', 52:'モル濃度', 53:'pH', 54:'希釈方程式', 55:'密度', 56:'化学収率', 57:'ボーア模型', 70:'ニュートン第2法則', 71:'運動エネルギー', 72:'重力位置エネルギー', 73:'運動量', 74:'平均速度', 75:'自由落下高さ', 76:'波速', 77:'熱量', 78:'クーロン力', 79:'万有引力', 80:'電場強度', 81:'オームの法則(電圧)' },
-                categories: { '面積':'面積', '周長':'周長', '體積':'体積', '三角形':'三角形', '統計':'統計', '代數':'代数', '指數':'指数', '對數':'対数', '函數':'関数', '座標':'座標', '電學':'電気', '信號':'信号', '力學':'力学', '財務':'財務', '化學':'化学', '量子':'量子', '波動':'波動', '熱學':'熱', '電磁':'電磁', '引力':'重力' },
-                groups: { '數學':'数学', '工程':'工学', '科學':'科学', '物理':'物理', '金融':'金融' },
-                btn_plot: '📈 グラフ', btn_calc: '計算', btn_close: '閉じる', btn_draw: '描画',
-                plot_title: '関数グラフ', plot_xvar: 'X 軸変数', plot_xmin: 'X 最小値', plot_xmax: 'X 最大値',
-                plot_steps: 'サンプル数', plot_fixed_vars: '他の変数の固定値',
-                plot_invalid: '描画できません：入力範囲を確認してください', plot_no_data: 'この範囲に有効な出力なし',
-                plot_hint: 'ヒント：曲線にカーソルを合わせて数値を表示'
+                unit_conversions: { 'm→ft':'m→ft','ft→m':'ft→m','km→mi':'km→mi','mi→km':'mi→km','kg→lb':'kg→lb','lb→kg':'lb→kg','C→F':'°C→°F','F→C':'°F→°C' }
             }
         };
 
@@ -1638,7 +1954,6 @@
             updateTheme();
             langSelector.value = currentLanguage;
             updateLanguage(currentLanguage);
-            initCategoryFilter();
             renderFormulas();
             renderCustomFormulas();
             fetchExchangeRates();
@@ -1647,31 +1962,7 @@
             initFormulaCats();
             initBaseModes();
             initBaseRows();
-        }
-
-        // ========== Formula Category Filter ==========
-        let selectedCategory = 'all';
-        function initCategoryFilter() {
-            const categories = ['all', ...new Set(builtInFormulas.map(f => f.category))];
-            const container = document.getElementById('categoryButtons');
-            if (!container) return;
-            container.innerHTML = categories.map(cat => {
-                const displayName = cat === 'all'
-                    ? t('filter_all', 'All')
-                    : (i18n[currentLanguage]?.categories?.[cat] || cat);
-                return `
-                <button class="category-btn ${cat === 'all' ? 'active' : ''}" data-cat="${cat}">
-                    ${displayName}
-                </button>
-            `}).join('');
-            container.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    container.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedCategory = btn.dataset.cat;
-                    renderFormulas();
-                });
-            });
+            attachGraphSystem();
         }
 
         // ========== i18n ==========
@@ -1693,10 +1984,6 @@
                 const key = el.dataset.i18nPlaceholder;
                 el.placeholder = t(key, el.placeholder);
             });
-            // Re-render formulas and category filter when language changes
-            initCategoryFilter();
-            renderFormulas();
-            renderCustomFormulas();
         }
 
         langSelector.addEventListener('change', e => updateLanguage(e.target.value));
@@ -1724,6 +2011,1595 @@
                 header.closest('.help-section').classList.toggle('open');
             });
         });
+
+        // ========== Graphing System ==========
+        const GRAPH_COLORS = ['#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
+        const MAX_FUNCTIONS = 6;
+        const GRAPH_PADDING = 50;
+
+        const graphState = {
+            functions: [],          // {id, expr, color, visible, compiled}
+            nextId: 1,
+            parameters: {},         // {a: 1, b: 1, ...}
+            markedPoints: [],       // {x, y, color, label}
+            xMin: -10, xMax: 10,
+            yMin: null, yMax: null, // null = 自動計算
+            _currentYMin: -10, _currentYMax: 10,
+            // Phase 5-8 新增
+            mode: 'function',       // 'function' | 'statistics' | '3d'
+            tool: 'mark',           // 'mark' | 'tangent' | 'integral' | 'slope'
+            tangents: [],           // [{fnId, x}]
+            integrals: [],          // [{fnId, a, b}]
+            integralPending: null,  // 暫存使用者選的第一點 {fnId, x}
+            slopeFieldFnId: null,   // 顯示斜率場的函數 id
+            // 統計模式狀態
+            stats: {
+                type: 'histogram',
+                rawData: '',
+                points: [],         // 解析後的數據
+                binCount: 12
+            },
+            // 3D 模式狀態
+            threeD: {
+                expr: 'sin(x)*cos(y)',
+                compiled: null,
+                style: 'surface',
+                xMin: -3, xMax: 3,
+                yMin: -3, yMax: 3,
+                resolution: 32,
+                rotX: -0.6, rotY: 0.4,
+                zoom: 1.0,
+                _dragStart: null
+            }
+        };
+
+        // HTML 轉義：所有 innerHTML 注入 fn.expr 前都應呼叫
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // 表達式編譯：轉為純函數，支援快取避免每幀重編
+        function compileGraphExpr(expr) {
+            let js = expr
+                .replace(/π/g, 'Math.PI')
+                .replace(/(?<![a-zA-Z0-9])e(?![a-zA-Z0-9])/g, 'Math.E')
+                .replace(/\^/g, '**')
+                .replace(/÷/g, '/')
+                .replace(/×/g, '*')
+                .replace(/−/g, '-');
+            // 反三角必須先於 sin/cos/tan 替換
+            ['asin','acos','atan','sinh','cosh','tanh'].forEach(fn => {
+                js = js.replace(new RegExp('\\b' + fn + '\\(', 'g'), 'Math.' + fn + '(');
+            });
+            ['sin','cos','tan','sqrt','exp','abs','floor','ceil','round'].forEach(fn => {
+                js = js.replace(new RegExp('\\b' + fn + '\\(', 'g'), 'Math.' + fn + '(');
+            });
+            js = js.replace(/\bln\(/g, 'Math.log(')
+                   .replace(/\blog\(/g, 'Math.log10(');
+            try {
+                return new Function('vars', 'with(vars){return ' + js + ';}');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function evalGraphExpr(compiled, vars) {
+            if (!compiled) return NaN;
+            try {
+                const r = compiled(vars);
+                return typeof r === 'number' ? r : NaN;
+            } catch (e) {
+                return NaN;
+            }
+        }
+
+        // 從表達式提取參數變數（單字母，排除保留字）
+        const GRAPH_RESERVED = new Set(['x','e','π','PI','E','sin','cos','tan','asin','acos','atan','sinh','cosh','tanh','sqrt','log','ln','exp','abs','floor','ceil','round']);
+        function extractParamsFromExpr(expr) {
+            const matches = expr.match(/[a-zA-Z]+/g) || [];
+            const params = new Set();
+            matches.forEach(m => {
+                if (!GRAPH_RESERVED.has(m) && m.length === 1 && m !== 'x') {
+                    params.add(m);
+                }
+            });
+            return Array.from(params).sort();
+        }
+
+        function getAllGraphParams() {
+            const all = new Set();
+            graphState.functions.forEach(fn => {
+                extractParamsFromExpr(fn.expr).forEach(p => all.add(p));
+            });
+            return Array.from(all).sort();
+        }
+
+        // 函數管理
+        function addGraphFunction(expr) {
+            if (graphState.functions.length >= MAX_FUNCTIONS) {
+                return { success: false, msg: `最多只能新增 ${MAX_FUNCTIONS} 個函數` };
+            }
+            const compiled = compileGraphExpr(expr);
+            if (!compiled) {
+                return { success: false, msg: '表達式語法錯誤：' + expr };
+            }
+            // 試求一次以驗證
+            const test = evalGraphExpr(compiled, { x: 1, ...graphState.parameters,
+                ...Object.fromEntries(extractParamsFromExpr(expr).map(p => [p, 1])) });
+            if (typeof test !== 'number') {
+                return { success: false, msg: '表達式無法求值' };
+            }
+            const id = graphState.nextId++;
+            const color = GRAPH_COLORS[graphState.functions.length % GRAPH_COLORS.length];
+            graphState.functions.push({ id, expr, color, visible: true, compiled });
+            extractParamsFromExpr(expr).forEach(p => {
+                if (graphState.parameters[p] === undefined) graphState.parameters[p] = 1;
+            });
+            return { success: true, id };
+        }
+
+        function removeGraphFunction(id) {
+            graphState.functions = graphState.functions.filter(fn => fn.id !== id);
+            // 清除不再使用的參數
+            const used = new Set(getAllGraphParams());
+            Object.keys(graphState.parameters).forEach(p => {
+                if (!used.has(p)) delete graphState.parameters[p];
+            });
+        }
+
+        function toggleGraphFunction(id) {
+            const fn = graphState.functions.find(f => f.id === id);
+            if (fn) fn.visible = !fn.visible;
+        }
+
+        function clearAllGraphFunctions() {
+            graphState.functions = [];
+            graphState.parameters = {};
+            graphState.markedPoints = [];
+            graphState.nextId = 1;
+        }
+
+        // Y 範圍自動計算
+        function calculateGraphYRange() {
+            let yMin = Infinity, yMax = -Infinity;
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            const visible = graphState.functions.filter(f => f.visible);
+            if (visible.length === 0) return { min: -10, max: 10 };
+            const samples = 200;
+            visible.forEach(fn => {
+                for (let i = 0; i <= samples; i++) {
+                    const x = xMin + (xMax - xMin) * i / samples;
+                    const y = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                    if (typeof y === 'number' && isFinite(y)) {
+                        yMin = Math.min(yMin, y);
+                        yMax = Math.max(yMax, y);
+                    }
+                }
+            });
+            if (!isFinite(yMin) || !isFinite(yMax)) return { min: -10, max: 10 };
+            if (yMin === yMax) { yMin -= 1; yMax += 1; }
+            const pad = (yMax - yMin) * 0.1;
+            return { min: yMin - pad, max: yMax + pad };
+        }
+
+        // 坐標轉換
+        function graphToPixel(x, y, w, h, yMin, yMax) {
+            const gw = w - 2 * GRAPH_PADDING, gh = h - 2 * GRAPH_PADDING;
+            return {
+                px: GRAPH_PADDING + (x - graphState.xMin) / (graphState.xMax - graphState.xMin) * gw,
+                py: h - GRAPH_PADDING - (y - yMin) / (yMax - yMin) * gh
+            };
+        }
+
+        function pixelToGraph(px, py, w, h, yMin, yMax) {
+            const gw = w - 2 * GRAPH_PADDING, gh = h - 2 * GRAPH_PADDING;
+            return {
+                x: graphState.xMin + (px - GRAPH_PADDING) / gw * (graphState.xMax - graphState.xMin),
+                y: yMin + (h - GRAPH_PADDING - py) / gh * (yMax - yMin)
+            };
+        }
+
+        // 繪圖各層
+        function drawGraphAxes(ctx, w, h, yMin, yMax) {
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            const gw = w - 2 * GRAPH_PADDING, gh = h - 2 * GRAPH_PADDING;
+
+            // 網格
+            ctx.strokeStyle = isDarkMode ? '#334155' : '#e2e8f0';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 10; i++) {
+                const px = GRAPH_PADDING + gw * i / 10;
+                const py = GRAPH_PADDING + gh * i / 10;
+                ctx.beginPath(); ctx.moveTo(px, GRAPH_PADDING); ctx.lineTo(px, h - GRAPH_PADDING); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(GRAPH_PADDING, py); ctx.lineTo(w - GRAPH_PADDING, py); ctx.stroke();
+            }
+
+            // 主軸
+            ctx.strokeStyle = isDarkMode ? '#94a3b8' : '#475569';
+            ctx.lineWidth = 1.5;
+            if (yMin <= 0 && yMax >= 0) {
+                const y0 = h - GRAPH_PADDING - (0 - yMin) / (yMax - yMin) * gh;
+                ctx.beginPath(); ctx.moveTo(GRAPH_PADDING, y0); ctx.lineTo(w - GRAPH_PADDING, y0); ctx.stroke();
+            }
+            if (xMin <= 0 && xMax >= 0) {
+                const x0 = GRAPH_PADDING + (0 - xMin) / (xMax - xMin) * gw;
+                ctx.beginPath(); ctx.moveTo(x0, GRAPH_PADDING); ctx.lineTo(x0, h - GRAPH_PADDING); ctx.stroke();
+            }
+
+            // 邊框
+            ctx.strokeStyle = isDarkMode ? '#475569' : '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(GRAPH_PADDING, GRAPH_PADDING, gw, gh);
+
+            // 刻度
+            ctx.fillStyle = isDarkMode ? '#cbd5e1' : '#475569';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 10; i++) {
+                const px = GRAPH_PADDING + gw * i / 10;
+                const xVal = xMin + (xMax - xMin) * i / 10;
+                ctx.fillText(Math.abs(xVal) >= 100 ? xVal.toFixed(0) : xVal.toFixed(xVal === Math.round(xVal) ? 0 : 1), px, h - GRAPH_PADDING + 16);
+            }
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 10; i++) {
+                const py = GRAPH_PADDING + gh * i / 10;
+                const yVal = yMax - (yMax - yMin) * i / 10;
+                ctx.fillText(Math.abs(yVal) >= 100 ? yVal.toFixed(0) : yVal.toFixed(2), GRAPH_PADDING - 6, py + 4);
+            }
+
+            // 軸標題
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+            ctx.fillText('X', w - GRAPH_PADDING / 2, h - GRAPH_PADDING + 18);
+            ctx.fillText('Y', GRAPH_PADDING / 2, GRAPH_PADDING / 2 + 6);
+        }
+
+        function drawGraphCurve(ctx, fn, w, h, yMin, yMax) {
+            const gw = w - 2 * GRAPH_PADDING, gh = h - 2 * GRAPH_PADDING;
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            ctx.strokeStyle = fn.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let prevValid = false;
+            for (let i = 0; i <= gw; i++) {
+                const x = xMin + (xMax - xMin) * i / gw;
+                const y = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                if (typeof y !== 'number' || !isFinite(y)) { prevValid = false; continue; }
+                const px = GRAPH_PADDING + i;
+                const py = h - GRAPH_PADDING - (y - yMin) / (yMax - yMin) * gh;
+                if (py < -50 || py > h + 50) { prevValid = false; continue; }
+                if (!prevValid) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+                prevValid = true;
+            }
+            ctx.stroke();
+        }
+
+        function drawGraphLegend(ctx, w) {
+            if (graphState.functions.length === 0) return;
+            const padding = 8, lineH = 18, boxW = 200;
+            const boxH = graphState.functions.length * lineH + 2 * padding;
+            ctx.fillStyle = isDarkMode ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.95)';
+            ctx.strokeStyle = isDarkMode ? '#475569' : '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.fillRect(w - boxW - 14, 14, boxW, boxH);
+            ctx.strokeRect(w - boxW - 14, 14, boxW, boxH);
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'left';
+            graphState.functions.forEach((fn, i) => {
+                const y = 14 + padding + i * lineH;
+                ctx.fillStyle = fn.color;
+                ctx.fillRect(w - boxW - 4, y + 2, 12, 12);
+                ctx.fillStyle = fn.visible
+                    ? (isDarkMode ? '#cbd5e1' : '#475569')
+                    : (isDarkMode ? '#475569' : '#94a3b8');
+                const label = (fn.visible ? '' : '✕ ') + 'y = ' + fn.expr;
+                ctx.fillText(label.length > 22 ? label.substring(0, 22) + '…' : label, w - boxW + 12, y + 12);
+            });
+        }
+
+        function drawGraphMarkedPoints(ctx, w, h, yMin, yMax) {
+            graphState.markedPoints.forEach(p => {
+                const { px, py } = graphToPixel(p.x, p.y, w, h, yMin, yMax);
+                if (px < GRAPH_PADDING || px > w - GRAPH_PADDING || py < GRAPH_PADDING || py > h - GRAPH_PADDING) return;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+                const text = `(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`;
+                ctx.font = 'bold 11px monospace';
+                const tw = ctx.measureText(text).width;
+                ctx.fillStyle = isDarkMode ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.95)';
+                ctx.fillRect(px + 8, py - 20, tw + 8, 16);
+                ctx.strokeStyle = p.color; ctx.lineWidth = 1;
+                ctx.strokeRect(px + 8, py - 20, tw + 8, 16);
+                ctx.fillStyle = p.color;
+                ctx.fillText(text, px + 12, py - 8);
+            });
+        }
+
+        function drawGraph() {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+            ctx.fillStyle = isDarkMode ? '#0f172a' : '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+
+            if (graphState.functions.length === 0) {
+                ctx.fillStyle = isDarkMode ? '#64748b' : '#94a3b8';
+                ctx.font = '15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入函數表達式以開始繪圖（例：x^2、sin(x)、a*cos(x)）', w / 2, h / 2);
+                return;
+            }
+            const yRange = calculateGraphYRange();
+            const yMin = graphState.yMin !== null ? graphState.yMin : yRange.min;
+            const yMax = graphState.yMax !== null ? graphState.yMax : yRange.max;
+            graphState._currentYMin = yMin;
+            graphState._currentYMax = yMax;
+
+            drawGraphAxes(ctx, w, h, yMin, yMax);
+            graphState.functions.forEach(fn => { if (fn.visible) drawGraphCurve(ctx, fn, w, h, yMin, yMax); });
+            drawGraphMarkedPoints(ctx, w, h, yMin, yMax);
+            drawGraphLegend(ctx, w);
+        }
+
+        // Hover 互動：顯示精確 (x, y) 座標
+        function attachGraphHover() {
+            const canvas = document.getElementById('graphCanvas');
+            const info = document.getElementById('graphHoverInfo');
+            if (!canvas || !info) return;
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (graphState.functions.filter(f => f.visible).length === 0) {
+                    info.style.display = 'none';
+                    return;
+                }
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const px = (e.clientX - rect.left) * scaleX;
+                const py = (e.clientY - rect.top) * scaleY;
+                const w = canvas.width, h = canvas.height;
+                if (px < GRAPH_PADDING || px > w - GRAPH_PADDING || py < GRAPH_PADDING || py > h - GRAPH_PADDING) {
+                    info.style.display = 'none';
+                    return;
+                }
+                const yMin = graphState._currentYMin, yMax = graphState._currentYMax;
+                const { x } = pixelToGraph(px, py, w, h, yMin, yMax);
+                // 對每個可見函數計算 y
+                const lines = ['x = ' + x.toFixed(3)];
+                graphState.functions.filter(f => f.visible).forEach(fn => {
+                    const y = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                    if (typeof y === 'number' && isFinite(y)) {
+                        lines.push(`<span style="color:${fn.color}">●</span> ${escapeHTML(fn.expr)} = ${y.toFixed(3)}`);
+                    }
+                });
+                info.innerHTML = lines.join('<br>');
+                info.style.display = 'block';
+                // 定位（避免越界）
+                const wrapperRect = canvas.parentElement.getBoundingClientRect();
+                const left = e.clientX - wrapperRect.left + 14;
+                const top = e.clientY - wrapperRect.top + 14;
+                info.style.left = Math.min(left, wrapperRect.width - 220) + 'px';
+                info.style.top = Math.min(top, wrapperRect.height - 80) + 'px';
+            });
+            canvas.addEventListener('mouseleave', () => { info.style.display = 'none'; });
+        }
+
+        // ===== UI 渲染：函數列表 / 參數滑桿 / 標記點 =====
+        function renderGraphFunctionList() {
+            const list = document.getElementById('graphFunctionList');
+            if (!list) return;
+            if (graphState.functions.length === 0) {
+                list.innerHTML = '<div class="graph-list-empty">尚未新增任何函數</div>';
+                return;
+            }
+            list.innerHTML = graphState.functions.map(fn => `
+                <div class="graph-fn-item">
+                    <input type="checkbox" ${fn.visible ? 'checked' : ''} data-graph-toggle="${fn.id}" style="cursor:pointer;accent-color:${fn.color};">
+                    <span class="graph-fn-color" style="background:${fn.color};"></span>
+                    <code title="${escapeHTML(fn.expr)}">y = ${escapeHTML(fn.expr)}</code>
+                    <button class="graph-fn-remove" data-graph-remove="${fn.id}" title="移除">✕</button>
+                </div>
+            `).join('');
+            // 事件委派
+            list.querySelectorAll('[data-graph-toggle]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    toggleGraphFunction(parseInt(cb.dataset.graphToggle));
+                    drawGraph();
+                    renderGraphFunctionList();
+                });
+            });
+            list.querySelectorAll('[data-graph-remove]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    removeGraphFunction(parseInt(btn.dataset.graphRemove));
+                    drawGraph();
+                    renderGraphFunctionList();
+                    renderGraphParameterSliders();
+                });
+            });
+        }
+
+        function renderGraphParameterSliders() {
+            const container = document.getElementById('graphParameterSliders');
+            if (!container) return;
+            const params = getAllGraphParams();
+            if (params.length === 0) {
+                container.innerHTML = '<div class="graph-list-empty">輸入含 a, b, c... 的表達式即會出現滑桿</div>';
+                return;
+            }
+            container.innerHTML = params.map(p => {
+                const val = graphState.parameters[p] !== undefined ? graphState.parameters[p] : 1;
+                return `
+                    <div class="graph-slider-row">
+                        <label>${p}</label>
+                        <input type="range" min="-10" max="10" step="0.1" value="${val}" data-graph-param="${p}">
+                        <span data-graph-param-val="${p}">${val.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+            container.querySelectorAll('[data-graph-param]').forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    const p = e.target.dataset.graphParam;
+                    const v = parseFloat(e.target.value);
+                    graphState.parameters[p] = v;
+                    container.querySelector(`[data-graph-param-val="${p}"]`).textContent = v.toFixed(2);
+                    drawGraph();
+                });
+            });
+        }
+
+        function renderGraphMarkedPointsList() {
+            const list = document.getElementById('graphMarkedPoints');
+            if (!list) return;
+            if (graphState.markedPoints.length === 0) {
+                list.innerHTML = '<div class="graph-list-empty">點擊曲線標記座標</div>';
+                return;
+            }
+            list.innerHTML = graphState.markedPoints.map((p, i) => `
+                <div class="graph-mark-item">
+                    <span class="graph-mark-color" style="color:${p.color};">●</span>
+                    <span style="flex:1;">(${p.x.toFixed(3)}, ${p.y.toFixed(3)})</span>
+                    ${p.label ? `<span style="color:${p.color};font-size:10px;">${p.label}</span>` : ''}
+                    <button class="graph-fn-remove" data-graph-mark-remove="${i}" title="移除">✕</button>
+                </div>
+            `).join('');
+            list.querySelectorAll('[data-graph-mark-remove]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    graphState.markedPoints.splice(parseInt(btn.dataset.graphMarkRemove), 1);
+                    drawGraph();
+                    renderGraphMarkedPointsList();
+                });
+            });
+        }
+
+        function refreshGraphAllUI() {
+            renderGraphFunctionList();
+            renderGraphParameterSliders();
+            renderGraphMarkedPointsList();
+            drawGraph();
+        }
+
+        // ===== 主要連接：Modal 開關 + 按鈕事件 =====
+        function attachGraphSystem() {
+            const modal = document.getElementById('graphModal');
+            const openBtn = document.getElementById('graphBtn');
+            const closeBtn = document.getElementById('graphCloseBtn');
+            if (!modal || !openBtn) return;
+
+            openBtn.addEventListener('click', () => {
+                modal.classList.add('active');
+                if (graphState.functions.length === 0) {
+                    addGraphFunction('x^2');
+                }
+                refreshGraphAllUI();
+            });
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', e => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+
+            // 新增函數
+            const exprInput = document.getElementById('graphExprInput');
+            const addBtn = document.getElementById('graphAddBtn');
+            const tryAdd = () => {
+                const expr = exprInput.value.trim();
+                if (!expr) return;
+                const result = addGraphFunction(expr);
+                if (!result.success) {
+                    alert(result.msg);
+                    return;
+                }
+                exprInput.value = '';
+                refreshGraphAllUI();
+            };
+            addBtn.addEventListener('click', tryAdd);
+            exprInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryAdd(); });
+
+            // 清除全部
+            document.getElementById('graphClearBtn').addEventListener('click', () => {
+                clearAllGraphFunctions();
+                refreshGraphAllUI();
+            });
+
+            // 套用 X 範圍
+            document.getElementById('graphApplyRangeBtn').addEventListener('click', () => {
+                const xMin = parseFloat(document.getElementById('graphXMin').value);
+                const xMax = parseFloat(document.getElementById('graphXMax').value);
+                if (isNaN(xMin) || isNaN(xMax) || xMin >= xMax) {
+                    alert('X 範圍無效（X_min 必須小於 X_max）');
+                    return;
+                }
+                graphState.xMin = xMin;
+                graphState.xMax = xMax;
+                drawGraph();
+            });
+
+            // PNG 匯出
+            document.getElementById('graphExportPngBtn').addEventListener('click', () => {
+                const canvas = document.getElementById('graphCanvas');
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `graph_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            // SVG 匯出
+            document.getElementById('graphExportSvgBtn').addEventListener('click', () => {
+                const svg = generateGraphSVG();
+                const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `graph_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.svg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+
+            // 特殊點偵測：零點 + 局部極值
+            document.getElementById('graphFindSpecialBtn').addEventListener('click', () => {
+                const visible = graphState.functions.filter(f => f.visible);
+                if (visible.length === 0) { alert('請先新增可見的函數'); return; }
+                graphState.markedPoints = [];
+                const xMin = graphState.xMin, xMax = graphState.xMax;
+                const samples = 500;
+                visible.forEach(fn => {
+                    const ys = [];
+                    for (let i = 0; i <= samples; i++) {
+                        const x = xMin + (xMax - xMin) * i / samples;
+                        const y = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                        ys.push({ x, y: typeof y === 'number' && isFinite(y) ? y : null });
+                    }
+                    // 零點：相鄰點符號相反 → 線性插值
+                    for (let i = 1; i < ys.length; i++) {
+                        const a = ys[i - 1], b = ys[i];
+                        if (a.y === null || b.y === null) continue;
+                        if (a.y === 0) {
+                            graphState.markedPoints.push({ x: a.x, y: 0, color: fn.color, label: '零點' });
+                        } else if (a.y * b.y < 0) {
+                            const ratio = Math.abs(a.y) / (Math.abs(a.y) + Math.abs(b.y));
+                            graphState.markedPoints.push({
+                                x: a.x + (b.x - a.x) * ratio, y: 0,
+                                color: fn.color, label: '零點'
+                            });
+                        }
+                    }
+                    // 極值：三點判斷導數符號變化（中間點是極值）
+                    for (let i = 1; i < ys.length - 1; i++) {
+                        const a = ys[i - 1], b = ys[i], c = ys[i + 1];
+                        if (a.y === null || b.y === null || c.y === null) continue;
+                        if (a.y < b.y && b.y > c.y) {
+                            graphState.markedPoints.push({ x: b.x, y: b.y, color: fn.color, label: '極大' });
+                        } else if (a.y > b.y && b.y < c.y) {
+                            graphState.markedPoints.push({ x: b.x, y: b.y, color: fn.color, label: '極小' });
+                        }
+                    }
+                });
+                drawGraph();
+                renderGraphMarkedPointsList();
+            });
+
+            // 點擊曲線標記座標點
+            const canvas = document.getElementById('graphCanvas');
+            canvas.addEventListener('click', (e) => {
+                if (graphState.mode !== 'function') return;
+                const visible = graphState.functions.filter(f => f.visible);
+                if (visible.length === 0) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const px = (e.clientX - rect.left) * scaleX;
+                const py = (e.clientY - rect.top) * scaleY;
+                const w = canvas.width, h = canvas.height;
+                if (px < GRAPH_PADDING || px > w - GRAPH_PADDING) return;
+                const yMin = graphState._currentYMin, yMax = graphState._currentYMax;
+                const { x, y: clickY } = pixelToGraph(px, py, w, h, yMin, yMax);
+
+                // 工具模式分派（切線 / 積分 / 斜率場）
+                if (graphState.tool !== 'mark') {
+                    const handled = handleAdvancedToolClick(x, clickY);
+                    if (handled) return;
+                }
+
+                // mark 模式：原本行為
+                let nearest = null, minDist = 25;
+                visible.forEach(fn => {
+                    const yVal = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                    if (typeof yVal !== 'number' || !isFinite(yVal)) return;
+                    const { py: curvePy } = graphToPixel(x, yVal, w, h, yMin, yMax);
+                    const d = Math.abs(curvePy - py);
+                    if (d < minDist) { minDist = d; nearest = { fn, x, y: yVal }; }
+                });
+                if (nearest) {
+                    graphState.markedPoints.push({
+                        x: nearest.x, y: nearest.y,
+                        color: nearest.fn.color, label: ''
+                    });
+                    drawGraph();
+                    renderGraphMarkedPointsList();
+                }
+            });
+
+            // Hover 互動
+            attachGraphHover();
+
+            // 進階工具初始化
+            attachAdvancedTools();
+        }
+
+        // SVG 生成器（純文字 / 向量）
+        function generateGraphSVG() {
+            const w = 720, h = 420, p = GRAPH_PADDING;
+            const gw = w - 2 * p, gh = h - 2 * p;
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            const yRange = calculateGraphYRange();
+            const yMin = graphState.yMin !== null ? graphState.yMin : yRange.min;
+            const yMax = graphState.yMax !== null ? graphState.yMax : yRange.max;
+            const dark = isDarkMode;
+            const bg = dark ? '#0f172a' : '#ffffff';
+            const grid = dark ? '#334155' : '#e2e8f0';
+            const axis = dark ? '#94a3b8' : '#475569';
+            const text = dark ? '#cbd5e1' : '#475569';
+
+            let svg = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+            svg += `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">\n`;
+            svg += `  <rect width="${w}" height="${h}" fill="${bg}"/>\n`;
+
+            // 網格
+            for (let i = 0; i <= 10; i++) {
+                const x = p + gw * i / 10, y = p + gh * i / 10;
+                svg += `  <line x1="${x}" y1="${p}" x2="${x}" y2="${h - p}" stroke="${grid}" stroke-width="0.5"/>\n`;
+                svg += `  <line x1="${p}" y1="${y}" x2="${w - p}" y2="${y}" stroke="${grid}" stroke-width="0.5"/>\n`;
+            }
+            // 主軸
+            if (yMin <= 0 && yMax >= 0) {
+                const y0 = h - p - (0 - yMin) / (yMax - yMin) * gh;
+                svg += `  <line x1="${p}" y1="${y0}" x2="${w - p}" y2="${y0}" stroke="${axis}" stroke-width="1.5"/>\n`;
+            }
+            if (xMin <= 0 && xMax >= 0) {
+                const x0 = p + (0 - xMin) / (xMax - xMin) * gw;
+                svg += `  <line x1="${x0}" y1="${p}" x2="${x0}" y2="${h - p}" stroke="${axis}" stroke-width="1.5"/>\n`;
+            }
+            svg += `  <rect x="${p}" y="${p}" width="${gw}" height="${gh}" fill="none" stroke="${axis}" stroke-width="1"/>\n`;
+
+            // 刻度標籤
+            for (let i = 0; i <= 10; i++) {
+                const x = p + gw * i / 10;
+                const xVal = xMin + (xMax - xMin) * i / 10;
+                const xLabel = Math.abs(xVal) >= 100 ? xVal.toFixed(0) : xVal.toFixed(xVal === Math.round(xVal) ? 0 : 1);
+                svg += `  <text x="${x}" y="${h - p + 16}" font-family="monospace" font-size="11" fill="${text}" text-anchor="middle">${xLabel}</text>\n`;
+                const y = p + gh * i / 10;
+                const yVal = yMax - (yMax - yMin) * i / 10;
+                const yLabel = Math.abs(yVal) >= 100 ? yVal.toFixed(0) : yVal.toFixed(2);
+                svg += `  <text x="${p - 6}" y="${y + 4}" font-family="monospace" font-size="11" fill="${text}" text-anchor="end">${yLabel}</text>\n`;
+            }
+
+            // 曲線
+            graphState.functions.forEach(fn => {
+                if (!fn.visible) return;
+                let d = '', valid = false;
+                for (let i = 0; i <= gw; i++) {
+                    const x = xMin + (xMax - xMin) * i / gw;
+                    const y = evalGraphExpr(fn.compiled, { x, ...graphState.parameters });
+                    if (typeof y !== 'number' || !isFinite(y)) { valid = false; continue; }
+                    const px = p + i;
+                    const py = h - p - (y - yMin) / (yMax - yMin) * gh;
+                    if (py < -50 || py > h + 50) { valid = false; continue; }
+                    d += valid ? ` L${px.toFixed(2)},${py.toFixed(2)}` : `M${px.toFixed(2)},${py.toFixed(2)}`;
+                    valid = true;
+                }
+                if (d) svg += `  <path d="${d}" stroke="${fn.color}" stroke-width="2" fill="none"/>\n`;
+            });
+
+            // 標記點
+            graphState.markedPoints.forEach(point => {
+                const px = p + (point.x - xMin) / (xMax - xMin) * gw;
+                const py = h - p - (point.y - yMin) / (yMax - yMin) * gh;
+                if (px < p || px > w - p || py < p || py > h - p) return;
+                svg += `  <circle cx="${px.toFixed(2)}" cy="${py.toFixed(2)}" r="5" fill="${point.color}" stroke="#fff" stroke-width="1.5"/>\n`;
+                const lbl = `(${point.x.toFixed(2)}, ${point.y.toFixed(2)})`;
+                svg += `  <text x="${(px + 12).toFixed(2)}" y="${(py - 8).toFixed(2)}" font-family="monospace" font-size="11" font-weight="bold" fill="${point.color}">${lbl}</text>\n`;
+            });
+
+            // 圖例
+            if (graphState.functions.length > 0) {
+                const lh = 18, bw = 200;
+                const bh = graphState.functions.length * lh + 16;
+                const bx = w - bw - 14, by = 14;
+                const legendBg = dark ? 'rgba(15,23,42,0.92)' : 'rgba(248,250,252,0.95)';
+                svg += `  <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${legendBg}" stroke="${axis}" stroke-width="1"/>\n`;
+                graphState.functions.forEach((fn, i) => {
+                    const ly = by + 8 + i * lh;
+                    svg += `  <rect x="${bx + 10}" y="${ly + 2}" width="12" height="12" fill="${fn.color}"/>\n`;
+                    const label = (fn.visible ? '' : '✕ ') + 'y = ' + fn.expr;
+                    const truncated = label.length > 22 ? label.substring(0, 22) + '…' : label;
+                    svg += `  <text x="${bx + 28}" y="${ly + 12}" font-family="monospace" font-size="12" fill="${text}">${escapeXML(truncated)}</text>\n`;
+                });
+            }
+
+            svg += `</svg>\n`;
+            return svg;
+        }
+
+        function escapeXML(str) {
+            return String(str).replace(/[<>&"']/g, c => ({
+                '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'
+            }[c]));
+        }
+
+        // ========== Phase 5-8: 進階繪圖功能 ==========
+        // ----- 數值方法 -----
+        function numericalDerivative(fn, x, params, h = 1e-5) {
+            try {
+                const a = evalGraphExpr(fn.compiled, { x: x + h, ...params });
+                const b = evalGraphExpr(fn.compiled, { x: x - h, ...params });
+                if (typeof a !== 'number' || typeof b !== 'number') return NaN;
+                return (a - b) / (2 * h);
+            } catch (e) { return NaN; }
+        }
+
+        // 自適應 Simpson 1/3 積分
+        function numericalIntegral(fn, a, b, params, n = 1000) {
+            if (b < a) [a, b] = [b, a];
+            if (n % 2) n++;
+            const h = (b - a) / n;
+            let sum = 0;
+            try {
+                const fa = evalGraphExpr(fn.compiled, { x: a, ...params });
+                const fb = evalGraphExpr(fn.compiled, { x: b, ...params });
+                if (typeof fa !== 'number' || typeof fb !== 'number') return NaN;
+                sum = fa + fb;
+                for (let i = 1; i < n; i++) {
+                    const xi = a + i * h;
+                    const yi = evalGraphExpr(fn.compiled, { x: xi, ...params });
+                    if (typeof yi !== 'number' || !isFinite(yi)) return NaN;
+                    sum += yi * (i % 2 === 0 ? 2 : 4);
+                }
+                return (h / 3) * sum;
+            } catch (e) { return NaN; }
+        }
+
+        // Newton-Raphson 求根
+        function newtonRaphson(fn, x0, params, maxIter = 50, tol = 1e-9) {
+            let x = x0;
+            for (let i = 0; i < maxIter; i++) {
+                const fx = evalGraphExpr(fn.compiled, { x, ...params });
+                const dfx = numericalDerivative(fn, x, params);
+                if (typeof fx !== 'number' || !isFinite(fx)) return null;
+                if (Math.abs(dfx) < 1e-12) return null;
+                const next = x - fx / dfx;
+                if (Math.abs(next - x) < tol) return next;
+                x = next;
+            }
+            return Math.abs(evalGraphExpr(fn.compiled, { x, ...params })) < 1e-4 ? x : null;
+        }
+
+        // ----- Phase 5: 切線繪製 -----
+        function drawTangentLine(ctx, w, h, yMin, yMax) {
+            graphState.tangents.forEach(t => {
+                const fn = graphState.functions.find(f => f.id === t.fnId);
+                if (!fn || !fn.visible) return;
+                const y0 = evalGraphExpr(fn.compiled, { x: t.x, ...graphState.parameters });
+                const slope = numericalDerivative(fn, t.x, graphState.parameters);
+                if (!isFinite(y0) || !isFinite(slope)) return;
+                // 切線方程: y - y0 = slope * (x - t.x)
+                const xMin = graphState.xMin, xMax = graphState.xMax;
+                const y1 = y0 + slope * (xMin - t.x);
+                const y2 = y0 + slope * (xMax - t.x);
+                const p1 = graphToPixel(xMin, y1, w, h, yMin, yMax);
+                const p2 = graphToPixel(xMax, y2, w, h, yMin, yMax);
+                ctx.save();
+                ctx.strokeStyle = fn.color;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 4]);
+                ctx.globalAlpha = 0.85;
+                ctx.beginPath();
+                ctx.moveTo(p1.px, p1.py);
+                ctx.lineTo(p2.px, p2.py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                // 切點
+                const c = graphToPixel(t.x, y0, w, h, yMin, yMax);
+                ctx.fillStyle = fn.color;
+                ctx.globalAlpha = 1;
+                ctx.beginPath();
+                ctx.arc(c.px, c.py, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+                // 標籤：斜率
+                ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+                ctx.font = '11px monospace';
+                ctx.textAlign = 'left';
+                const label = `f'(${t.x.toFixed(2)})=${slope.toFixed(3)}`;
+                ctx.fillText(label, c.px + 8, c.py - 8);
+                ctx.restore();
+            });
+        }
+
+        // ----- Phase 5: 積分區域著色 -----
+        function drawIntegralArea(ctx, w, h, yMin, yMax) {
+            graphState.integrals.forEach(it => {
+                const fn = graphState.functions.find(f => f.id === it.fnId);
+                if (!fn || !fn.visible) return;
+                const a = Math.min(it.a, it.b), b = Math.max(it.a, it.b);
+                const N = 200;
+                const dx = (b - a) / N;
+                ctx.save();
+                ctx.fillStyle = fn.color;
+                ctx.globalAlpha = 0.25;
+                ctx.beginPath();
+                const start = graphToPixel(a, 0, w, h, yMin, yMax);
+                ctx.moveTo(start.px, start.py);
+                for (let i = 0; i <= N; i++) {
+                    const xi = a + i * dx;
+                    const yi = evalGraphExpr(fn.compiled, { x: xi, ...graphState.parameters });
+                    const p = graphToPixel(xi, isFinite(yi) ? yi : 0, w, h, yMin, yMax);
+                    ctx.lineTo(p.px, p.py);
+                }
+                const end = graphToPixel(b, 0, w, h, yMin, yMax);
+                ctx.lineTo(end.px, end.py);
+                ctx.closePath();
+                ctx.fill();
+                // 邊界垂線
+                ctx.globalAlpha = 0.7;
+                ctx.strokeStyle = fn.color;
+                ctx.lineWidth = 1;
+                [a, b].forEach(xv => {
+                    const yv = evalGraphExpr(fn.compiled, { x: xv, ...graphState.parameters });
+                    const top = graphToPixel(xv, isFinite(yv) ? yv : 0, w, h, yMin, yMax);
+                    const bot = graphToPixel(xv, 0, w, h, yMin, yMax);
+                    ctx.beginPath();
+                    ctx.moveTo(top.px, top.py);
+                    ctx.lineTo(bot.px, bot.py);
+                    ctx.stroke();
+                });
+                // 積分值
+                const value = numericalIntegral(fn, a, b, graphState.parameters, 500);
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+                ctx.font = 'bold 12px monospace';
+                ctx.textAlign = 'center';
+                const mid = graphToPixel((a + b) / 2, 0, w, h, yMin, yMax);
+                const label = `∫=${isFinite(value) ? value.toFixed(3) : 'NaN'}`;
+                ctx.fillText(label, mid.px, mid.py + 18);
+                ctx.restore();
+            });
+        }
+
+        // ----- Phase 5: 斜率場 -----
+        function drawSlopeField(ctx, w, h, yMin, yMax) {
+            if (!graphState.slopeFieldFnId) return;
+            const fn = graphState.functions.find(f => f.id === graphState.slopeFieldFnId);
+            if (!fn || !fn.visible) return;
+            const cols = 22, rows = 14;
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            const dx = (xMax - xMin) / cols;
+            const dy = (yMax - yMin) / rows;
+            const segLen = Math.min((w - 2 * GRAPH_PADDING) / cols, (h - 2 * GRAPH_PADDING) / rows) * 0.4;
+            ctx.save();
+            ctx.strokeStyle = fn.color;
+            ctx.globalAlpha = 0.55;
+            ctx.lineWidth = 1.2;
+            for (let i = 0; i <= cols; i++) {
+                for (let j = 0; j <= rows; j++) {
+                    const x = xMin + i * dx;
+                    // 斜率場：dy/dx = f'(x)（這裡視為 y' = fn 的導數，視覺化 ODE）
+                    const slope = numericalDerivative(fn, x, graphState.parameters);
+                    if (!isFinite(slope)) continue;
+                    const y = yMin + j * dy;
+                    const center = graphToPixel(x, y, w, h, yMin, yMax);
+                    const angle = Math.atan(slope);
+                    const dxp = Math.cos(angle) * segLen;
+                    const dyp = -Math.sin(angle) * segLen;
+                    ctx.beginPath();
+                    ctx.moveTo(center.px - dxp, center.py - dyp);
+                    ctx.lineTo(center.px + dxp, center.py + dyp);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // ----- Phase 6: 多函數交點 -----
+        function refinePairBisection(fA, fB, lo, hi, params, maxIter = 60, tol = 1e-9) {
+            const g = (xv) => evalGraphExpr(fA.compiled, { x: xv, ...params }) - evalGraphExpr(fB.compiled, { x: xv, ...params });
+            let gLo = g(lo), gHi = g(hi);
+            if (!isFinite(gLo) || !isFinite(gHi)) return null;
+            // 端點若已是 0，直接回傳
+            if (Math.abs(gLo) < tol) return lo;
+            if (Math.abs(gHi) < tol) return hi;
+            if (gLo * gHi > 0) return null; // 同號無法 bisection
+            for (let i = 0; i < maxIter; i++) {
+                const mid = (lo + hi) / 2;
+                const gMid = g(mid);
+                if (!isFinite(gMid)) return null;
+                if (Math.abs(gMid) < tol || (hi - lo) / 2 < tol) return mid;
+                if (gLo * gMid < 0) { hi = mid; gHi = gMid; }
+                else { lo = mid; gLo = gMid; }
+            }
+            return (lo + hi) / 2;
+        }
+
+        function findFunctionIntersections() {
+            const visible = graphState.functions.filter(f => f.visible);
+            if (visible.length < 2) {
+                alert('需要至少 2 個顯示中的函數才能找交點');
+                return;
+            }
+            const xMin = graphState.xMin, xMax = graphState.xMax;
+            const N = 800;
+            const dx = (xMax - xMin) / N;
+            const collected = []; // {x, y, label}
+            const dedup = (newX) => collected.some(p => Math.abs(p.x - newX) < dx * 0.5);
+            for (let a = 0; a < visible.length; a++) {
+                for (let b = a + 1; b < visible.length; b++) {
+                    const fA = visible[a], fB = visible[b];
+                    const params = graphState.parameters;
+                    const g = (xv) => evalGraphExpr(fA.compiled, { x: xv, ...params }) - evalGraphExpr(fB.compiled, { x: xv, ...params });
+                    let prev = null;
+                    for (let i = 0; i <= N; i++) {
+                        const x = xMin + i * dx;
+                        const diff = g(x);
+                        if (typeof diff !== 'number' || !isFinite(diff)) { prev = null; continue; }
+                        // case 1: 取樣點本身是零點
+                        if (Math.abs(diff) < 1e-9) {
+                            if (!dedup(x)) {
+                                const y = evalGraphExpr(fA.compiled, { x, ...params });
+                                if (isFinite(y)) collected.push({ x, y, label: `${fA.expr} ∩ ${fB.expr}` });
+                            }
+                        }
+                        // case 2: 上一段有號變化 → bisection 精化
+                        if (prev !== null && prev.diff * diff < 0) {
+                            const refined = refinePairBisection(fA, fB, prev.x, x, params);
+                            if (refined !== null && !dedup(refined)) {
+                                const y = evalGraphExpr(fA.compiled, { x: refined, ...params });
+                                if (isFinite(y)) collected.push({ x: refined, y, label: `${fA.expr} ∩ ${fB.expr}` });
+                            }
+                        }
+                        prev = { x, diff };
+                    }
+                }
+            }
+            collected.forEach(p => graphState.markedPoints.push({
+                x: p.x, y: p.y, color: '#f97316', label: p.label
+            }));
+            if (collected.length === 0) alert('在當前 X 範圍內找不到交點');
+            drawGraph();
+            renderGraphMarkedPointsList();
+        }
+
+        // ----- Phase 7: 統計圖表 -----
+        function parseStatData(text) {
+            // 支援 "x,y;x,y;..." 或 ";"/換行 / 空白 分隔
+            const cleaned = text.replace(/\n/g, ';').replace(/\s+/g, ' ').trim();
+            const groups = cleaned.split(/[;]+/).map(s => s.trim()).filter(Boolean);
+            const points = [];
+            const singleVals = [];
+            groups.forEach(g => {
+                const parts = g.split(/[, ]+/).map(s => parseFloat(s)).filter(v => isFinite(v));
+                if (parts.length === 2) points.push({ x: parts[0], y: parts[1] });
+                else if (parts.length === 1) singleVals.push(parts[0]);
+                else if (parts.length > 2) parts.forEach(v => singleVals.push(v));
+            });
+            return { points, singleVals };
+        }
+
+        function drawHistogram(ctx, w, h) {
+            const { singleVals } = graphState.stats;
+            if (singleVals.length === 0) {
+                ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入資料後點「繪製」', w / 2, h / 2);
+                return;
+            }
+            const min = Math.min(...singleVals), max = Math.max(...singleVals);
+            const bins = graphState.stats.binCount;
+            const binW = (max - min) / bins || 1;
+            const counts = new Array(bins).fill(0);
+            singleVals.forEach(v => {
+                const idx = Math.min(bins - 1, Math.floor((v - min) / binW));
+                counts[idx]++;
+            });
+            const maxC = Math.max(...counts);
+            const padding = GRAPH_PADDING;
+            const chartW = w - 2 * padding;
+            const chartH = h - 2 * padding;
+            // 軸
+            ctx.strokeStyle = isDarkMode ? '#475569' : '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, h - padding);
+            ctx.lineTo(w - padding, h - padding);
+            ctx.stroke();
+            // 直方
+            const barW = chartW / bins;
+            ctx.fillStyle = '#06b6d4';
+            ctx.globalAlpha = 0.85;
+            counts.forEach((c, i) => {
+                const barH = (c / maxC) * chartH;
+                const bx = padding + i * barW;
+                const by = h - padding - barH;
+                ctx.fillRect(bx + 1, by, barW - 2, barH);
+                // 計數
+                ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+                ctx.globalAlpha = 1;
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                if (c > 0) ctx.fillText(c, bx + barW / 2, by - 4);
+                ctx.fillStyle = '#06b6d4';
+                ctx.globalAlpha = 0.85;
+            });
+            ctx.globalAlpha = 1;
+            // X 標籤
+            ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= bins; i += Math.ceil(bins / 6)) {
+                const xv = min + i * binW;
+                ctx.fillText(xv.toFixed(2), padding + i * barW, h - padding + 14);
+            }
+            // 統計資訊
+            const mean = singleVals.reduce((a, b) => a + b, 0) / singleVals.length;
+            const variance = singleVals.reduce((s, v) => s + (v - mean) ** 2, 0) / singleVals.length;
+            ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`n=${singleVals.length}  mean=${mean.toFixed(3)}  σ=${Math.sqrt(variance).toFixed(3)}  min=${min.toFixed(2)}  max=${max.toFixed(2)}`, padding, padding - 8);
+        }
+
+        function drawScatterRegression(ctx, w, h) {
+            const { points } = graphState.stats;
+            if (points.length === 0) {
+                ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入 x,y 對組後點「繪製」', w / 2, h / 2);
+                return;
+            }
+            const xs = points.map(p => p.x), ys = points.map(p => p.y);
+            const xMin = Math.min(...xs), xMax = Math.max(...xs);
+            const yMin = Math.min(...ys), yMax = Math.max(...ys);
+            const xR = (xMax - xMin) || 1, yR = (yMax - yMin) || 1;
+            const xMinP = xMin - xR * 0.1, xMaxP = xMax + xR * 0.1;
+            const yMinP = yMin - yR * 0.1, yMaxP = yMax + yR * 0.1;
+            // 軸 + 網格（重用 drawGraphAxes 風格簡化版）
+            const padding = GRAPH_PADDING;
+            ctx.strokeStyle = isDarkMode ? '#475569' : '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, h - padding);
+            ctx.lineTo(w - padding, h - padding);
+            ctx.stroke();
+            // 投影函數
+            const proj = (x, y) => ({
+                px: padding + ((x - xMinP) / (xMaxP - xMinP)) * (w - 2 * padding),
+                py: h - padding - ((y - yMinP) / (yMaxP - yMinP)) * (h - 2 * padding)
+            });
+            // 線性迴歸 (最小平方)
+            const n = points.length;
+            const sumX = xs.reduce((a, b) => a + b, 0);
+            const sumY = ys.reduce((a, b) => a + b, 0);
+            const sumXY = points.reduce((s, p) => s + p.x * p.y, 0);
+            const sumXX = xs.reduce((s, v) => s + v * v, 0);
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            const meanY = sumY / n;
+            const ssTot = ys.reduce((s, v) => s + (v - meanY) ** 2, 0);
+            const ssRes = points.reduce((s, p) => s + (p.y - (slope * p.x + intercept)) ** 2, 0);
+            const r2 = ssTot > 0 ? 1 - ssRes / ssTot : 1;
+            // 迴歸線
+            const reg1 = proj(xMinP, slope * xMinP + intercept);
+            const reg2 = proj(xMaxP, slope * xMaxP + intercept);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(reg1.px, reg1.py);
+            ctx.lineTo(reg2.px, reg2.py);
+            ctx.stroke();
+            // 散點
+            ctx.fillStyle = '#06b6d4';
+            ctx.globalAlpha = 0.85;
+            points.forEach(p => {
+                const c = proj(p.x, p.y);
+                ctx.beginPath();
+                ctx.arc(c.px, c.py, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            // 統計資訊
+            ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`y = ${slope.toFixed(4)}·x + ${intercept.toFixed(4)}    R²=${r2.toFixed(4)}    n=${n}`, padding, padding - 8);
+        }
+
+        function drawBoxPlot(ctx, w, h) {
+            const { singleVals } = graphState.stats;
+            if (singleVals.length === 0) {
+                ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入單列數值後點「繪製」', w / 2, h / 2);
+                return;
+            }
+            const sorted = [...singleVals].sort((a, b) => a - b);
+            const n = sorted.length;
+            const q = (p) => {
+                const i = (n - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+                return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+            };
+            const min = sorted[0], max = sorted[n - 1];
+            const q1 = q(0.25), median = q(0.5), q3 = q(0.75);
+            const iqr = q3 - q1;
+            const lowerWhisker = Math.max(min, q1 - 1.5 * iqr);
+            const upperWhisker = Math.min(max, q3 + 1.5 * iqr);
+            const outliers = sorted.filter(v => v < lowerWhisker || v > upperWhisker);
+            const padding = GRAPH_PADDING;
+            const chartW = w - 2 * padding;
+            const xRange = max - min || 1;
+            const proj = (v) => padding + ((v - min) / xRange) * chartW;
+            const cy = h / 2;
+            const boxH = 60;
+            // 軸
+            ctx.strokeStyle = isDarkMode ? '#475569' : '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, cy + boxH + 30);
+            ctx.lineTo(w - padding, cy + boxH + 30);
+            ctx.stroke();
+            // 鬚線
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(proj(lowerWhisker), cy);
+            ctx.lineTo(proj(q1), cy);
+            ctx.moveTo(proj(q3), cy);
+            ctx.lineTo(proj(upperWhisker), cy);
+            // 鬚帽
+            [lowerWhisker, upperWhisker].forEach(v => {
+                ctx.moveTo(proj(v), cy - 12);
+                ctx.lineTo(proj(v), cy + 12);
+            });
+            ctx.stroke();
+            // 箱子
+            ctx.fillStyle = '#0ea5e9';
+            ctx.globalAlpha = 0.3;
+            ctx.fillRect(proj(q1), cy - boxH / 2, proj(q3) - proj(q1), boxH);
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(proj(q1), cy - boxH / 2, proj(q3) - proj(q1), boxH);
+            // 中位數
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(proj(median), cy - boxH / 2);
+            ctx.lineTo(proj(median), cy + boxH / 2);
+            ctx.stroke();
+            // 離群點
+            ctx.fillStyle = '#ef4444';
+            outliers.forEach(v => {
+                ctx.beginPath();
+                ctx.arc(proj(v), cy, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            // 標籤
+            ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            const ticks = [
+                ['min', min], ['Q1', q1], ['Med', median], ['Q3', q3], ['max', max]
+            ];
+            ticks.forEach(([label, v]) => {
+                ctx.fillText(label, proj(v), cy + boxH / 2 + 18);
+                ctx.fillText(v.toFixed(2), proj(v), cy + boxH / 2 + 32);
+            });
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`n=${n}  IQR=${iqr.toFixed(3)}  outliers=${outliers.length}`, padding, padding);
+        }
+
+        // ----- Phase 8: 3D 表面繪圖 -----
+        function compile3DExpr(expr) {
+            try {
+                let js = expr
+                    .replace(/π/g, 'Math.PI')
+                    .replace(/(?<![a-zA-Z0-9])e(?![a-zA-Z0-9])/g, 'Math.E')
+                    .replace(/\^/g, '**')
+                    .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                ['asin','acos','atan','sinh','cosh','tanh','sin','cos','tan','sqrt','log','ln','exp','abs','floor','ceil','round'].forEach(f => {
+                    const target = f === 'ln' ? 'Math.log' : `Math.${f}`;
+                    js = js.replace(new RegExp(`\\b${f}\\b`, 'g'), target);
+                });
+                const fn = new Function('vars', 'with(vars){return ' + js + ';}');
+                return { call: fn };
+            } catch (e) { return null; }
+        }
+
+        function project3D(x, y, z, state, w, h) {
+            // 簡單的旋轉投影：先繞 X 軸（仰角），再繞 Y 軸（方位）
+            const cx = Math.cos(state.rotX), sx = Math.sin(state.rotX);
+            const cy = Math.cos(state.rotY), sy = Math.sin(state.rotY);
+            // X 軸旋轉
+            let y1 = y * cx - z * sx;
+            let z1 = y * sx + z * cx;
+            // Y 軸旋轉
+            let x2 = x * cy + z1 * sy;
+            let z2 = -x * sy + z1 * cy;
+            // 正交投影 + 縮放
+            const scale = Math.min(w, h) * 0.18 * state.zoom;
+            return {
+                px: w / 2 + x2 * scale,
+                py: h / 2 - y1 * scale,
+                depth: z2
+            };
+        }
+
+        function draw3DSurface(ctx, w, h) {
+            const td = graphState.threeD;
+            if (!td.compiled) {
+                ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入 z=f(x,y) 表達式後點「渲染」', w / 2, h / 2);
+                return;
+            }
+            const N = td.resolution;
+            const xs = [], ys = [], zs = [];
+            for (let i = 0; i <= N; i++) {
+                const xv = td.xMin + (td.xMax - td.xMin) * i / N;
+                xs.push(xv);
+            }
+            for (let j = 0; j <= N; j++) {
+                const yv = td.yMin + (td.yMax - td.yMin) * j / N;
+                ys.push(yv);
+            }
+            // 計算 z
+            let zMin = Infinity, zMax = -Infinity;
+            for (let i = 0; i <= N; i++) {
+                zs[i] = [];
+                for (let j = 0; j <= N; j++) {
+                    let zv;
+                    try { zv = td.compiled.call({ x: xs[i], y: ys[j] }); } catch (e) { zv = NaN; }
+                    if (!isFinite(zv)) zv = NaN;
+                    zs[i][j] = zv;
+                    if (isFinite(zv)) {
+                        if (zv < zMin) zMin = zv;
+                        if (zv > zMax) zMax = zv;
+                    }
+                }
+            }
+            if (!isFinite(zMin)) zMin = -1;
+            if (!isFinite(zMax)) zMax = 1;
+            const zR = zMax - zMin || 1;
+            // 投影所有點
+            const pts = [];
+            for (let i = 0; i <= N; i++) {
+                pts[i] = [];
+                for (let j = 0; j <= N; j++) {
+                    const zNorm = isFinite(zs[i][j]) ? (zs[i][j] - zMin) / zR * 2 - 1 : 0;
+                    pts[i][j] = project3D(
+                        (xs[i] - (td.xMin + td.xMax) / 2) / ((td.xMax - td.xMin) / 2),
+                        (ys[j] - (td.yMin + td.yMax) / 2) / ((td.yMax - td.yMin) / 2),
+                        zNorm,
+                        td, w, h
+                    );
+                    pts[i][j].zVal = zs[i][j];
+                }
+            }
+            // 收集面（quad），按平均深度排序（畫家算法）
+            const quads = [];
+            for (let i = 0; i < N; i++) {
+                for (let j = 0; j < N; j++) {
+                    const a = pts[i][j], b = pts[i + 1][j], c = pts[i + 1][j + 1], d = pts[i][j + 1];
+                    if (!isFinite(a.zVal) || !isFinite(b.zVal) || !isFinite(c.zVal) || !isFinite(d.zVal)) continue;
+                    quads.push({
+                        a, b, c, d,
+                        depth: (a.depth + b.depth + c.depth + d.depth) / 4,
+                        avgZ: (a.zVal + b.zVal + c.zVal + d.zVal) / 4
+                    });
+                }
+            }
+            quads.sort((p, q) => p.depth - q.depth);
+            // 顏色映射 (HSL：低 z = 藍，高 z = 紅)
+            const hueFor = (zNorm) => 240 - 240 * zNorm;
+            // 繪製
+            ctx.save();
+            quads.forEach(q => {
+                const zNorm = (q.avgZ - zMin) / zR;
+                if (td.style === 'wireframe') {
+                    ctx.strokeStyle = `hsl(${hueFor(zNorm)}, 70%, 55%)`;
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(q.a.px, q.a.py);
+                    ctx.lineTo(q.b.px, q.b.py);
+                    ctx.lineTo(q.c.px, q.c.py);
+                    ctx.lineTo(q.d.px, q.d.py);
+                    ctx.closePath();
+                    ctx.stroke();
+                } else if (td.style === 'contour') {
+                    // 等高線：用同色填充
+                    const band = Math.floor(zNorm * 10);
+                    ctx.fillStyle = `hsl(${hueFor(band / 10)}, 65%, 50%)`;
+                    ctx.beginPath();
+                    ctx.moveTo(q.a.px, q.a.py);
+                    ctx.lineTo(q.b.px, q.b.py);
+                    ctx.lineTo(q.c.px, q.c.py);
+                    ctx.lineTo(q.d.px, q.d.py);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    // surface
+                    ctx.fillStyle = `hsl(${hueFor(zNorm)}, 65%, 55%)`;
+                    ctx.strokeStyle = `hsl(${hueFor(zNorm)}, 65%, 35%)`;
+                    ctx.lineWidth = 0.4;
+                    ctx.beginPath();
+                    ctx.moveTo(q.a.px, q.a.py);
+                    ctx.lineTo(q.b.px, q.b.py);
+                    ctx.lineTo(q.c.px, q.c.py);
+                    ctx.lineTo(q.d.px, q.d.py);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            });
+            // 軸線（簡化）
+            const origin = project3D(0, 0, 0, td, w, h);
+            const axX = project3D(1.2, 0, 0, td, w, h);
+            const axY = project3D(0, 1.2, 0, td, w, h);
+            const axZ = project3D(0, 0, 1.2, td, w, h);
+            ctx.lineWidth = 1.5;
+            const axes = [['X', axX, '#ef4444'], ['Y', axY, '#10b981'], ['Z', axZ, '#3b82f6']];
+            axes.forEach(([label, p, color]) => {
+                ctx.strokeStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(origin.px, origin.py);
+                ctx.lineTo(p.px, p.py);
+                ctx.stroke();
+                ctx.fillStyle = color;
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(label, p.px + 4, p.py - 4);
+            });
+            // 資訊
+            ctx.fillStyle = isDarkMode ? '#e2e8f0' : '#1e293b';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`z = ${graphState.threeD.expr}`, GRAPH_PADDING, 14);
+            ctx.fillText(`z ∈ [${zMin.toFixed(2)}, ${zMax.toFixed(2)}]`, GRAPH_PADDING, 28);
+            ctx.fillText(`旋轉: rotX=${(td.rotX * 180 / Math.PI).toFixed(0)}° rotY=${(td.rotY * 180 / Math.PI).toFixed(0)}° zoom=${td.zoom.toFixed(2)}`, GRAPH_PADDING, h - 14);
+            ctx.restore();
+        }
+
+        // ----- 模式分派 (覆寫 drawGraph) -----
+        const _drawGraphFunctionMode = drawGraph;
+        function drawGraphDispatch() {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+            ctx.fillStyle = isDarkMode ? '#0f172a' : '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            if (graphState.mode === 'statistics') {
+                if (graphState.stats.type === 'histogram') drawHistogram(ctx, w, h);
+                else if (graphState.stats.type === 'scatter') drawScatterRegression(ctx, w, h);
+                else if (graphState.stats.type === 'boxplot') drawBoxPlot(ctx, w, h);
+                return;
+            }
+            if (graphState.mode === '3d') {
+                draw3DSurface(ctx, w, h);
+                return;
+            }
+            // function 模式：含微積分疊圖
+            if (graphState.functions.length === 0) {
+                ctx.fillStyle = isDarkMode ? '#64748b' : '#94a3b8';
+                ctx.font = '15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('輸入函數表達式以開始繪圖（例：x^2、sin(x)、a*cos(x)）', w / 2, h / 2);
+                return;
+            }
+            const yRange = calculateGraphYRange();
+            const yMin = graphState.yMin !== null ? graphState.yMin : yRange.min;
+            const yMax = graphState.yMax !== null ? graphState.yMax : yRange.max;
+            graphState._currentYMin = yMin;
+            graphState._currentYMax = yMax;
+            drawGraphAxes(ctx, w, h, yMin, yMax);
+            // 斜率場優先繪製（在曲線下層）
+            drawSlopeField(ctx, w, h, yMin, yMax);
+            // 積分區域在曲線下層
+            drawIntegralArea(ctx, w, h, yMin, yMax);
+            graphState.functions.forEach(fn => { if (fn.visible) drawGraphCurve(ctx, fn, w, h, yMin, yMax); });
+            // 切線在曲線上層
+            drawTangentLine(ctx, w, h, yMin, yMax);
+            drawGraphMarkedPoints(ctx, w, h, yMin, yMax);
+            drawGraphLegend(ctx, w);
+        }
+        // 替換全域 drawGraph
+        window.__origDrawGraph = drawGraph;
+        drawGraph = drawGraphDispatch;
+
+        // ----- 模式 / 工具 切換 -----
+        function attachAdvancedTools() {
+            // 模式 tabs
+            document.querySelectorAll('.graph-mode-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const mode = tab.dataset.mode;
+                    graphState.mode = mode;
+                    document.querySelectorAll('.graph-mode-tab').forEach(t => t.classList.toggle('active', t === tab));
+                    document.querySelectorAll('.graph-mode-panel').forEach(p => {
+                        p.style.display = p.dataset.panel === mode ? '' : 'none';
+                    });
+                    // 側邊面板僅在 function 模式顯示
+                    const sidePanels = document.querySelector('.graph-side-panels');
+                    if (sidePanels) sidePanels.style.display = mode === 'function' ? '' : 'none';
+                    drawGraph();
+                });
+            });
+            // 工具 tabs
+            document.querySelectorAll('.graph-tool').forEach(t => {
+                t.addEventListener('click', () => {
+                    graphState.tool = t.dataset.tool;
+                    document.querySelectorAll('.graph-tool').forEach(x => x.classList.toggle('active', x === t));
+                    const hints = {
+                        mark: '點擊曲線以標記座標',
+                        tangent: '點擊曲線顯示該點切線（再點同處可清除）',
+                        integral: '依序點擊兩點以著色積分區域',
+                        slope: '點擊任一條函數啟用該函數的斜率場'
+                    };
+                    const hint = document.getElementById('graphToolHint');
+                    if (hint) hint.textContent = hints[graphState.tool] || '';
+                });
+            });
+            // 找交點
+            const findIntBtn = document.getElementById('graphFindIntersectBtn');
+            if (findIntBtn) findIntBtn.addEventListener('click', findFunctionIntersections);
+            // 統計按鈕
+            const statDraw = document.getElementById('graphStatDrawBtn');
+            const statClear = document.getElementById('graphStatClearBtn');
+            const statType = document.getElementById('graphStatType');
+            const statData = document.getElementById('graphStatData');
+            if (statDraw) statDraw.addEventListener('click', () => {
+                const text = statData.value;
+                const parsed = parseStatData(text);
+                graphState.stats.points = parsed.points;
+                graphState.stats.singleVals = parsed.singleVals;
+                graphState.stats.type = statType.value;
+                graphState.stats.rawData = text;
+                drawGraph();
+            });
+            if (statClear) statClear.addEventListener('click', () => {
+                statData.value = '';
+                graphState.stats.points = [];
+                graphState.stats.singleVals = [];
+                drawGraph();
+            });
+            if (statType) statType.addEventListener('change', () => {
+                graphState.stats.type = statType.value;
+                drawGraph();
+            });
+            // 3D 按鈕
+            const threeDDraw = document.getElementById('graph3DDrawBtn');
+            const threeDExpr = document.getElementById('graph3DExpr');
+            const threeDStyle = document.getElementById('graph3DStyle');
+            const get3DRange = () => ({
+                xMin: parseFloat(document.getElementById('graph3DXMin').value),
+                xMax: parseFloat(document.getElementById('graph3DXMax').value),
+                yMin: parseFloat(document.getElementById('graph3DYMin').value),
+                yMax: parseFloat(document.getElementById('graph3DYMax').value)
+            });
+            if (threeDDraw) threeDDraw.addEventListener('click', () => {
+                const expr = threeDExpr.value.trim();
+                if (!expr) return;
+                const compiled = compile3DExpr(expr);
+                if (!compiled) { alert('3D 表達式無法解析'); return; }
+                graphState.threeD.expr = expr;
+                graphState.threeD.compiled = compiled;
+                graphState.threeD.style = threeDStyle.value;
+                Object.assign(graphState.threeD, get3DRange());
+                drawGraph();
+            });
+            if (threeDStyle) threeDStyle.addEventListener('change', () => {
+                graphState.threeD.style = threeDStyle.value;
+                if (graphState.threeD.compiled) drawGraph();
+            });
+            // 3D 滑鼠互動
+            const canvas = document.getElementById('graphCanvas');
+            if (canvas) {
+                canvas.addEventListener('mousedown', (e) => {
+                    if (graphState.mode !== '3d') return;
+                    graphState.threeD._dragStart = { x: e.clientX, y: e.clientY, rotX: graphState.threeD.rotX, rotY: graphState.threeD.rotY };
+                });
+                canvas.addEventListener('mousemove', (e) => {
+                    if (graphState.mode !== '3d' || !graphState.threeD._dragStart) return;
+                    const ds = graphState.threeD._dragStart;
+                    graphState.threeD.rotY = ds.rotY + (e.clientX - ds.x) * 0.01;
+                    graphState.threeD.rotX = ds.rotX + (e.clientY - ds.y) * 0.01;
+                    drawGraph();
+                });
+                canvas.addEventListener('mouseup', () => { graphState.threeD._dragStart = null; });
+                canvas.addEventListener('wheel', (e) => {
+                    if (graphState.mode !== '3d') return;
+                    e.preventDefault();
+                    graphState.threeD.zoom *= e.deltaY < 0 ? 1.1 : 0.9;
+                    graphState.threeD.zoom = Math.max(0.2, Math.min(5, graphState.threeD.zoom));
+                    drawGraph();
+                }, { passive: false });
+            }
+        }
+
+        // 工具模式下的點擊處理（覆寫原 click 行為）
+        function handleAdvancedToolClick(graphX, graphY) {
+            if (graphState.mode !== 'function') return false;
+            // 找最近的曲線
+            const visible = graphState.functions.filter(f => f.visible);
+            if (visible.length === 0) return false;
+            let best = null;
+            visible.forEach(fn => {
+                const y = evalGraphExpr(fn.compiled, { x: graphX, ...graphState.parameters });
+                if (typeof y === 'number' && isFinite(y)) {
+                    const dy = Math.abs(y - graphY);
+                    if (!best || dy < best.dy) best = { fn, x: graphX, y, dy };
+                }
+            });
+            if (!best) return false;
+            const tool = graphState.tool;
+            if (tool === 'tangent') {
+                // 切換：若已有同函數同 x，則移除
+                const existing = graphState.tangents.findIndex(t => t.fnId === best.fn.id && Math.abs(t.x - best.x) < 0.05);
+                if (existing >= 0) graphState.tangents.splice(existing, 1);
+                else graphState.tangents.push({ fnId: best.fn.id, x: best.x });
+                drawGraph();
+                return true;
+            }
+            if (tool === 'integral') {
+                if (!graphState.integralPending || graphState.integralPending.fnId !== best.fn.id) {
+                    graphState.integralPending = { fnId: best.fn.id, x: best.x };
+                } else {
+                    graphState.integrals.push({ fnId: best.fn.id, a: graphState.integralPending.x, b: best.x });
+                    graphState.integralPending = null;
+                    drawGraph();
+                }
+                return true;
+            }
+            if (tool === 'slope') {
+                graphState.slopeFieldFnId = (graphState.slopeFieldFnId === best.fn.id) ? null : best.fn.id;
+                drawGraph();
+                return true;
+            }
+            return false; // mark 模式回退至原處理
+        }
 
         // ========== Calculate ==========
         function updateDisplay() { display.textContent = currentDisplay; }
@@ -1902,50 +3778,28 @@
             const query = formulaSearch.value.toLowerCase();
             let filtered = builtInFormulas.filter(f => {
                 const matchCat = currentFormulaCat === 'all' || f.group === currentFormulaCat;
-                const matchSubCat = selectedCategory === 'all' || f.category === selectedCategory;
-                const translatedName = i18n[currentLanguage]?.formulas?.[f.id] || f.name;
-                const translatedCategory = i18n[currentLanguage]?.categories?.[f.category] || f.category;
-                const translatedGroup = i18n[currentLanguage]?.groups?.[f.group] || f.group;
                 const matchQuery = !query ||
-                    translatedName.toLowerCase().includes(query) ||
                     f.name.toLowerCase().includes(query) ||
-                    translatedCategory.toLowerCase().includes(query) ||
                     f.category.toLowerCase().includes(query) ||
-                    translatedGroup.toLowerCase().includes(query) ||
                     f.group.toLowerCase().includes(query) ||
                     f.vars.some(v => v.toLowerCase().includes(query)) ||
                     f.expr.toLowerCase().includes(query);
-                return matchCat && matchSubCat && matchQuery;
+                return matchCat && matchQuery;
             });
-
-            // 按相關性排序：名稱匹配優先
-            if (query) {
-                filtered.sort((a, b) => {
-                    const aTransName = i18n[currentLanguage]?.formulas?.[a.id] || a.name;
-                    const bTransName = i18n[currentLanguage]?.formulas?.[b.id] || b.name;
-                    const aNameMatch = aTransName.toLowerCase().startsWith(query) ? 0 : 1;
-                    const bNameMatch = bTransName.toLowerCase().startsWith(query) ? 0 : 1;
-                    return aNameMatch - bNameMatch;
-                });
-            }
 
             if (filtered.length === 0) {
                 formulaList.innerHTML = `<div class="empty-state">${t('empty_formula')}</div>`;
                 return;
             }
 
-            formulaList.innerHTML = filtered.map(f => {
-                const translatedName = i18n[currentLanguage]?.formulas?.[f.id] || f.name;
-                const translatedCategory = i18n[currentLanguage]?.categories?.[f.category] || f.category;
-                const translatedGroup = i18n[currentLanguage]?.groups?.[f.group] || f.group;
-                return `
-                <div class="formula-item" onclick="selectFormula(${f.id}, '${translatedName.replace(/'/g, "\\'")}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
-                    <div class="formula-name">${translatedName}</div>
+            formulaList.innerHTML = filtered.map(f => `
+                <div class="formula-item" onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
+                    <div class="formula-name">${f.name}</div>
                     <div class="formula-expr">${f.expr}</div>
-                    <span class="formula-category">${translatedCategory}</span>
-                    <span class="formula-group-badge group-${f.group}">${translatedGroup}</span>
+                    <span class="formula-category">${f.category}</span>
+                    <span class="formula-group-badge group-${f.group}">${f.group}</span>
                 </div>
-            `}).join('');
+            `).join('');
         }
 
         formulaSearch.addEventListener('input', () => { renderFormulas(); renderCustomFormulas(); });
@@ -2052,288 +3906,6 @@
             }
             formulaModal.classList.remove('active');
         });
-
-        // ========== Function Plot ==========
-        const plotModal = document.getElementById('plotModal');
-        const plotFormulaBtn = document.getElementById('plotFormulaBtn');
-        const closePlotModalBtn = document.getElementById('closePlotModalBtn');
-        const drawPlotBtn = document.getElementById('drawPlotBtn');
-        const plotCanvas = document.getElementById('plotCanvas');
-        const plotTooltip = document.getElementById('plotTooltip');
-        const plotMessage = document.getElementById('plotMessage');
-
-        function evalAt(expr, varValues) {
-            let processed = expr;
-            for (const [v, val] of Object.entries(varValues)) {
-                processed = processed.replace(new RegExp(`\\b${v}\\b`, 'g'), `(${val})`);
-            }
-            return calculate(processed);
-        }
-
-        function openPlotModal() {
-            const expr = window.currentFormulaExpr;
-            const vars = window.currentFormulaVars;
-            const name = window.currentFormulaName;
-
-            document.getElementById('plotModalTitle').textContent = `${t('plot_title', 'Function Plot')} — ${name}`;
-            document.getElementById('plotModalFormula').textContent = `f = ${expr}`;
-
-            const xVarLabel = t('plot_xvar', 'X-Axis Variable');
-            const xMinLabel = t('plot_xmin', 'X Min');
-            const xMaxLabel = t('plot_xmax', 'X Max');
-            const stepsLabel = t('plot_steps', 'Sample Points');
-            const fixedTitle = t('plot_fixed_vars', 'Fixed Variable Values');
-
-            const controls = document.getElementById('plotControls');
-            controls.innerHTML = `
-                <div class="variable-input">
-                    <label><span class="var-name">${xVarLabel}</span></label>
-                    <select id="plotXVar">${vars.map(v => `<option value="${v}">${v}</option>`).join('')}</select>
-                </div>
-                <div class="variable-input">
-                    <label><span class="var-name">${stepsLabel}</span></label>
-                    <input type="number" id="plotSteps" value="200" min="10" max="2000" step="1">
-                </div>
-                <div class="variable-input">
-                    <label><span class="var-name">${xMinLabel}</span></label>
-                    <input type="number" id="plotXMin" value="-10" step="any">
-                </div>
-                <div class="variable-input">
-                    <label><span class="var-name">${xMaxLabel}</span></label>
-                    <input type="number" id="plotXMax" value="10" step="any">
-                </div>
-                ${vars.length > 1 ? `
-                <div class="plot-fixed-vars">
-                    <div class="plot-fixed-vars-title">${fixedTitle}</div>
-                    <div class="plot-fixed-vars-grid">
-                        ${vars.map(v => `
-                            <div class="variable-input fixed-var-row" data-var="${v}">
-                                <label><span class="var-name">${v}</span></label>
-                                <input type="number" id="plotFixed_${v}" value="1" step="any">
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>` : ''}
-            `;
-
-            document.getElementById('plotXVar').addEventListener('change', () => {
-                updateFixedVarsVisibility();
-                drawPlot();
-            });
-            ['plotXMin','plotXMax','plotSteps'].forEach(id => {
-                document.getElementById(id).addEventListener('change', drawPlot);
-            });
-            vars.forEach(v => {
-                const el = document.getElementById(`plotFixed_${v}`);
-                if (el) el.addEventListener('change', drawPlot);
-            });
-
-            updateFixedVarsVisibility();
-            plotModal.classList.add('active');
-            requestAnimationFrame(drawPlot);
-        }
-
-        function updateFixedVarsVisibility() {
-            const xVarEl = document.getElementById('plotXVar');
-            if (!xVarEl) return;
-            const xvar = xVarEl.value;
-            document.querySelectorAll('.fixed-var-row').forEach(row => {
-                row.style.display = row.dataset.var === xvar ? 'none' : 'flex';
-            });
-        }
-
-        function showPlotMessage(msg) {
-            plotMessage.textContent = msg;
-            plotMessage.style.display = 'block';
-        }
-        function clearPlotMessage() {
-            plotMessage.textContent = '';
-            plotMessage.style.display = 'none';
-        }
-
-        function drawPlot() {
-            const ctx = plotCanvas.getContext('2d');
-            const W = plotCanvas.width;
-            const H = plotCanvas.height;
-            ctx.clearRect(0, 0, W, H);
-
-            const expr = window.currentFormulaExpr;
-            const vars = window.currentFormulaVars;
-            const xvar = document.getElementById('plotXVar').value;
-            const xmin = parseFloat(document.getElementById('plotXMin').value);
-            const xmax = parseFloat(document.getElementById('plotXMax').value);
-            const steps = Math.max(10, Math.min(2000, parseInt(document.getElementById('plotSteps').value) || 200));
-
-            if (!isFinite(xmin) || !isFinite(xmax) || xmin >= xmax) {
-                showPlotMessage(t('plot_invalid', 'Cannot plot: please check input range'));
-                return;
-            }
-
-            const fixedVars = {};
-            for (const v of vars) {
-                if (v !== xvar) {
-                    const el = document.getElementById(`plotFixed_${v}`);
-                    fixedVars[v] = el ? (parseFloat(el.value) || 0) : 0;
-                }
-            }
-
-            const data = [];
-            let ymin = Infinity, ymax = -Infinity;
-            for (let i = 0; i <= steps; i++) {
-                const x = xmin + (xmax - xmin) * i / steps;
-                const y = evalAt(expr, { ...fixedVars, [xvar]: x });
-                if (typeof y === 'number' && isFinite(y)) {
-                    data.push({ x, y });
-                    if (y < ymin) ymin = y;
-                    if (y > ymax) ymax = y;
-                } else {
-                    data.push({ x, y: NaN });
-                }
-            }
-
-            if (ymin === Infinity) {
-                showPlotMessage(t('plot_no_data', 'No valid output in range'));
-                return;
-            }
-            clearPlotMessage();
-
-            if (ymin === ymax) { ymin -= 1; ymax += 1; }
-            const yPad = (ymax - ymin) * 0.1;
-            ymin -= yPad; ymax += yPad;
-
-            const padL = 60, padR = 20, padT = 20, padB = 40;
-            const plotW = W - padL - padR;
-            const plotH = H - padT - padB;
-
-            const px = x => padL + (x - xmin) / (xmax - xmin) * plotW;
-            const py = y => padT + (ymax - y) / (ymax - ymin) * plotH;
-
-            ctx.fillStyle = '#0f1729';
-            ctx.fillRect(padL, padT, plotW, plotH);
-
-            ctx.strokeStyle = '#2a3550';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '11px sans-serif';
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'middle';
-
-            const yTicks = 5;
-            for (let i = 0; i <= yTicks; i++) {
-                const y = ymin + (ymax - ymin) * i / yTicks;
-                const yp = py(y);
-                ctx.beginPath();
-                ctx.moveTo(padL, yp);
-                ctx.lineTo(padL + plotW, yp);
-                ctx.stroke();
-                ctx.fillText(formatTick(y), padL - 6, yp);
-            }
-
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            const xTicks = 6;
-            for (let i = 0; i <= xTicks; i++) {
-                const x = xmin + (xmax - xmin) * i / xTicks;
-                const xp = px(x);
-                ctx.beginPath();
-                ctx.moveTo(xp, padT);
-                ctx.lineTo(xp, padT + plotH);
-                ctx.stroke();
-                ctx.fillText(formatTick(x), xp, padT + plotH + 6);
-            }
-
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 1.5;
-            if (ymin <= 0 && ymax >= 0) {
-                ctx.beginPath(); ctx.moveTo(padL, py(0)); ctx.lineTo(padL + plotW, py(0)); ctx.stroke();
-            }
-            if (xmin <= 0 && xmax >= 0) {
-                ctx.beginPath(); ctx.moveTo(px(0), padT); ctx.lineTo(px(0), padT + plotH); ctx.stroke();
-            }
-
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(padL, padT, plotW, plotH);
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(padL, padT, plotW, plotH);
-            ctx.clip();
-            ctx.strokeStyle = '#06b6d4';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            let drawing = false;
-            for (const p of data) {
-                if (isNaN(p.y)) { drawing = false; continue; }
-                const xp = px(p.x);
-                const yp = py(p.y);
-                if (!drawing) { ctx.moveTo(xp, yp); drawing = true; }
-                else { ctx.lineTo(xp, yp); }
-            }
-            ctx.stroke();
-            ctx.restore();
-
-            ctx.fillStyle = '#cbd5e1';
-            ctx.textAlign = 'center';
-            ctx.font = '12px sans-serif';
-            ctx.fillText(xvar, padL + plotW / 2, H - 8);
-            ctx.save();
-            ctx.translate(14, padT + plotH / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('f(' + xvar + ')', 0, 0);
-            ctx.restore();
-
-            window.currentPlotData = { data, padL, padR, padT, padB, plotW, plotH, xmin, xmax, ymin, ymax, xvar, W, H };
-        }
-
-        function formatTick(v) {
-            if (v === 0) return '0';
-            const abs = Math.abs(v);
-            if (abs >= 10000 || abs < 0.01) return v.toExponential(2);
-            return parseFloat(v.toPrecision(4)).toString();
-        }
-
-        plotCanvas.addEventListener('mousemove', (e) => {
-            const pd = window.currentPlotData;
-            if (!pd) return;
-            const rect = plotCanvas.getBoundingClientRect();
-            const sx = pd.W / rect.width;
-            const sy = pd.H / rect.height;
-            const mx = (e.clientX - rect.left) * sx;
-            const my = (e.clientY - rect.top) * sy;
-
-            if (mx < pd.padL || mx > pd.padL + pd.plotW || my < pd.padT || my > pd.padT + pd.plotH) {
-                plotTooltip.style.display = 'none';
-                return;
-            }
-
-            const x = pd.xmin + (mx - pd.padL) / pd.plotW * (pd.xmax - pd.xmin);
-            const idx = Math.round((x - pd.xmin) / (pd.xmax - pd.xmin) * (pd.data.length - 1));
-            const point = pd.data[Math.max(0, Math.min(pd.data.length - 1, idx))];
-            if (point && !isNaN(point.y)) {
-                plotTooltip.style.display = 'block';
-                const cssX = (e.clientX - rect.left) + 12;
-                const cssY = (e.clientY - rect.top) - 36;
-                plotTooltip.style.left = cssX + 'px';
-                plotTooltip.style.top = Math.max(0, cssY) + 'px';
-                plotTooltip.innerHTML = `${pd.xvar} = ${formatTick(point.x)}<br>f = ${formatTick(point.y)}`;
-            } else {
-                plotTooltip.style.display = 'none';
-            }
-        });
-        plotCanvas.addEventListener('mouseleave', () => {
-            plotTooltip.style.display = 'none';
-        });
-
-        plotFormulaBtn.addEventListener('click', () => {
-            formulaModal.classList.remove('active');
-            openPlotModal();
-        });
-        closePlotModalBtn.addEventListener('click', () => {
-            plotModal.classList.remove('active');
-            plotTooltip.style.display = 'none';
-        });
-        drawPlotBtn.addEventListener('click', drawPlot);
 
         // ========== Exchange Rates ==========
         let rateUpdatedAt = localStorage.getItem('rateUpdatedAt') || '';
@@ -2676,16 +4248,8 @@
         function formatUnitVal(v) {
             if (isNaN(v)) return '';
             if (Math.abs(v) >= 1e10 || (Math.abs(v) < 1e-4 && v !== 0)) return v.toExponential(4);
+            if (Math.abs(v) >= 1000) return parseFloat(v.toPrecision(8)).toLocaleString('zh-TW');
             return parseFloat(v.toPrecision(8)).toString();
-        }
-
-        function formatUnitDisplay(v) {
-            const numStr = formatUnitVal(v);
-            if (!numStr) return '';
-            if (Math.abs(parseFloat(numStr)) >= 1000) {
-                return parseFloat(numStr).toLocaleString('zh-TW');
-            }
-            return numStr;
         }
 
         function populateUnitSelects(cat) {
@@ -2739,7 +4303,7 @@
                         <span class="unit-ref-name">${u.name}</span>
                         <span class="unit-ref-code">${u.code}</span>
                     </div>
-                    <span class="unit-ref-value">${formatUnitDisplay(result)}</span>
+                    <span class="unit-ref-value">${formatUnitVal(result)}</span>
                 </div>`;
             }).join('');
         }
