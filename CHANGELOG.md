@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.0] - 2026-05-08 — Pro Tier with PayPal Live Subscriptions
+
+### Added
+
+#### 💎 Pro Subscription System
+- **Two pricing tiers** with PayPal Smart Subscribe Buttons:
+  - **Monthly** — `$2.99 USD / month` (Plan ID `P-7YN578147A145924NNH6Y32I`)
+  - **Annual** — `$19.99 USD / year` (Plan ID `P-6XU39039F20435621NH6Y5GI`, ~44% savings)
+- **7-day free trial** on both plans, no charge until day 8
+- **Production-ready PayPal Live integration** — real subscriptions, real revenue
+- **Sandbox credentials retained in source comments** for fast switch-back during development
+
+#### 🔐 License Activation System
+- **Auto-generated license code** on successful subscription: `SUPC-XXXX-XXXX-XXXX`
+- **Crockford alphabet** — excludes confusable chars `0/O`, `1/I/L` for human-friendly typing
+- **Per-character independent FNV-1a hashing** with position salt — eliminates leading-zero patterns
+- **localStorage persistence** — license survives browser restart, validates on every load
+- **Cross-device recovery** — paste license code into any device to re-activate Pro
+
+#### 🎨 Header Pro Badge (state-aware)
+- **`✨ 升級 Pro`** (orange/red gradient) — Free state, click to open upgrade modal
+- **`⏱️ 試用 N 天`** (cyan) — Trial active, shows remaining days
+- **`💎 Pro`** (gold gradient) — License active, click to view subscription info
+
+#### 🚪 Pro Feature Gates (7 protection points)
+- `tangent` — Phase 5 tangent line tool
+- `integral` — Phase 5 integral region shading
+- `slope` — Phase 5 slope field
+- `intersect` — Phase 6 multi-function intersection solver
+- `statistics` — Phase 7 statistics mode (histogram / regression / box plot)
+- `3d` — Phase 8 3D surface plotting mode
+- `svg` — SVG vector export
+
+#### 🎁 Upgrade Modal
+- **Side-by-side tier comparison** — Free vs Pro feature lists
+- **Monthly / Annual toggle** with auto-computed price equivalent (`$1.67/月 if billed annually`)
+- **Trigger-aware messaging** — modal shows which feature blocked entry (e.g., "切線可視化 是 Pro 專屬功能")
+- **License entry section** — collapsible, accepts any input format (with/without dashes, lower/upper case)
+- **PayPal Subscribe button + Debit/Credit card alternative** — both rendered by PayPal SDK
+- **Success state** with copyable license display + Subscription ID
+
+### Architecture
+- **`gateProFeature(featureKey, callback)`** helper — wraps any function behind Pro check
+- **`ProManager`** state object — `isProActive()`, `hasValidLicense()`, `isTrialActive()`, `setSubscription()`, `reset()`
+- **`generateLicenseFromSubscription(subId)`** — deterministic per-subscription license derivation
+- **Modular injection** — Pro CSS / HTML / JS designed as 4 separate blocks for clean integration into any single-file app
+
+### Security
+- License validation client-side only (MVP — known limitation, suitable for honor-system pricing)
+- PayPal handles all payment processing; no credit card data ever touches our origin
+- `Secret key` never embedded in client code (Live API secrets only used for backend OAuth, which we don't run)
+
+### Documentation
+- Added `docs/PRO_TIER.md` — full technical reference for the Pro module (architecture, API, gating points, PayPal setup walkthrough)
+- Updated `README.md` and `README_EN.md` with Pro tier sections
+
+### Verification
+- **Local smoke test**: Live PayPal SDK loads without error; Subscribe button renders 2 iframes (PayPal + card) for both Monthly and Annual plans
+- **All 7 gates verified**: blocked when Free, unlocked when Trial or Pro
+- **Phase 5/6/7/8 features end-to-end tested under Pro**:
+  - `x² ∩ (x+6)` returns `{(-2, 4), (3, 9)}` — exact analytical match
+  - `N(5, 2)` sample (n=200) → mean `4.952` (within tolerance)
+  - `z = sin(x)·cos(y)` renders saddle surface with HSL heat-map
+- **License code format check**: regex `/^SUPC-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/` validates both old (Sandbox) and new (Crockford) formats
+- **Production deploy verified**: `https://boboidvtw.github.io/` serves 252KB index with `client-id=BAAwe...prky-9L0` (Live)
+
+### Changed
+- `index.html` grew from `225 KB` to `252 KB` (+27 KB, +788 LOC) — Pro module fully embedded, single-file architecture preserved
+
+### Known Limitations
+- Client-side license validation can be bypassed by tech-savvy users via DevTools (acceptable for v1; backend validation planned for v4 if revenue justifies)
+- No automated email delivery of license codes — users see code in success modal and must save it themselves (compensated by `localStorage` persistence)
+- License regeneration requires re-subscribing (no "lost license" recovery flow yet — falls back to manual support email)
+
+---
+
 ## [3.0.0] - 2026-05-08 — Advanced Math Visualization
 
 ### Added

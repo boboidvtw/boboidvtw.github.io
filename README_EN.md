@@ -5,7 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](CHANGELOG.md)
+[![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v31--pro-tier)
 
 🌐 **Live demo**: https://boboidvtw.github.io/
 
@@ -14,6 +15,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [What's New in v3.1 💎 (Pro Tier)](#whats-new-in-v31--pro-tier)
 - [What's New in v3.0 ⭐](#whats-new-in-v30-)
 - [Feature Overview](#feature-overview)
 - [Quick Start](#quick-start)
@@ -41,6 +43,76 @@ Super Calculator is a browser-based calculator and math visualization tool built
 - 🔒 **Security-conscious**: User input is XSS-protected and expressions run in isolated scope
 - 🌏 **Cross-platform**: Works on desktop, tablet, and mobile browsers
 - 🌍 **Multilingual**: Full i18n for Traditional Chinese, English, Simplified Chinese, and Japanese
+
+---
+
+## What's New in v3.1 💎 (Pro Tier)
+
+v3.1 introduces a **Pro subscription tier** that gates the advanced math visualization features behind a low-cost recurring subscription, processed by **PayPal Live**. The free tier remains fully functional — all basic calculation and function plotting features stay free; only the v3.0 Phase 5/6/7/8 features become Pro.
+
+### Two pricing tiers
+
+| Plan | Monthly | Annual (recommended) |
+|------|---------|----------------------|
+| Price | **$2.99 USD / mo** | **$19.99 USD / yr** |
+| Effective monthly | $2.99 | $1.67 (**save 44%**) |
+| 7-day free trial | ✅ | ✅ |
+| Cancel anytime | ✅ | ✅ |
+
+### Free tier (unchanged)
+
+- ✅ Full basic and scientific calculation (arithmetic, base conversion, units, formula library)
+- ✅ Function plotting + marking + special-point detection (zeros / extrema)
+- ✅ PNG export
+- ✅ 4 languages + Light/Dark theme
+- 🟡 Includes Google AdSense ads
+
+### Pro tier features
+
+| Pro Feature | Phase | Free? |
+|-------------|-------|:-----:|
+| 📐 Tangent line tool | Phase 5 | ❌ |
+| ∫ Integral region shading | Phase 5 | ❌ |
+| ↗ Slope field | Phase 5 | ❌ |
+| ⊕ Multi-function intersection solver | Phase 6 | ❌ |
+| 📊 Statistics charts (histogram / regression / box plot) | Phase 7 | ❌ |
+| 🎲 3D surface plotting | Phase 8 | ❌ |
+| 📥 SVG vector export | v2 enhancement | ❌ |
+
+### Full user journey
+
+```
+Free visitor
+  → Clicks a Pro feature (e.g. 📐 Tangent)
+  → Upgrade modal pops up (with the triggering feature name)
+  → Toggles Monthly / Annual → PayPal Subscribe button renders
+  → Clicks → PayPal checkout window
+  → Approves subscription (first 7 days free)
+  → License code SUPC-XXXX-XXXX-XXXX auto-generated and stored in localStorage
+  → Modal flips to success state with copyable license + Subscription ID
+  → Header badge changes to 💎 Pro
+  → All Pro features instantly unlocked
+
+On a different device / cleared cache
+  → Click ✨ Upgrade Pro button in header
+  → Expand "Already purchased?" → paste license code
+  → Pro re-activates instantly
+```
+
+### License code design
+
+- Format: `SUPC-XXXX-XXXX-XXXX` (3 segments × 4 chars = 12 alphanumeric)
+- **Crockford alphabet**: excludes `0/O`, `1/I/L` to avoid confusable characters
+- **Per-position independent FNV-1a hashing** — eliminates leading-zero patterns
+- **Format-tolerant input**: accepts any case, with or without dashes
+
+### Customer support
+
+```
+💌 boboidvtw+supercalc@gmail.com
+```
+
+Full Pro module technical reference in [docs/PRO_TIER.md](docs/PRO_TIER.md).
 
 ---
 
@@ -436,6 +508,13 @@ const presets = [
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for the full history.
+
+### v3.1.0 (2026-05-08) 💎
+- 💳 PayPal Live subscriptions ($2.99/mo or $19.99/yr, with 7-day free trial)
+- 🔐 License code system (`SUPC-XXXX-XXXX-XXXX`, Crockford alphabet)
+- 🎨 State-aware Pro badge in header (Free / Trial / Pro)
+- 🚪 7 Pro feature gates (Phase 5/6/7/8 + SVG export)
+- 🎁 Upgrade modal with monthly/annual toggle, trigger-aware messaging, license activation
 
 ### v3.0.0 (2026-05-08) ⭐
 - 📐 Calculus visualization (tangent / integral / slope field)
