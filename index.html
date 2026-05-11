@@ -1721,6 +1721,9 @@
 
                 <!-- 儲存區 -->
                 <div id="savedPanel" class="tab-content hidden">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+                        <button id="exportHistoryBtn" class="btn-submit" style="padding: 8px 16px; font-size: 13px;">📥 匯出 CSV</button>
+                    </div>
                     <div class="saved-list" id="savedList"></div>
                 </div>
             </div>
@@ -2365,6 +2368,17 @@
             attachGraphSystem();
             initCopyToClipboard();
             registerServiceWorker();
+            handleUrlHash();
+        }
+
+        // ========== URL Hash Parsing ==========
+        function handleUrlHash() {
+            if (window.location.hash.startsWith('#calc=')) {
+                let expr = decodeURIComponent(window.location.hash.substring(6));
+                currentDisplay = expr;
+                updateDisplay();
+                document.querySelector('.tab[data-tab="calc"]').click();
+            }
         }
 
         // ========== Toast Notification ==========
@@ -4156,7 +4170,7 @@
                     const result = calculate(currentDisplay);
                     if (result !== 'Error') {
                         savedFormulas.unshift({ id: Date.now(), formula: currentDisplay, result });
-                        if (savedFormulas.length > 10) savedFormulas.pop();
+                        if (savedFormulas.length > 50) savedFormulas.pop();
                         localStorage.setItem('savedFormulas', JSON.stringify(savedFormulas));
                         currentDisplay = result.toString();
                         displayFormula.textContent = '';
@@ -4360,7 +4374,7 @@
                 displayFormula.textContent = window.currentFormulaName;
                 updateDisplay();
                 savedFormulas.unshift({ id: Date.now(), formula: window.currentFormulaName, result });
-                if (savedFormulas.length > 10) savedFormulas.pop();
+                if (savedFormulas.length > 50) savedFormulas.pop();
                 localStorage.setItem('savedFormulas', JSON.stringify(savedFormulas));
                 renderSaved();
             }
@@ -4540,6 +4554,30 @@
             localStorage.setItem('savedFormulas', JSON.stringify(savedFormulas));
             renderSaved();
         };
+
+        // ========== Export History ==========
+        document.getElementById('exportHistoryBtn')?.addEventListener('click', () => {
+            if (savedFormulas.length === 0) {
+                showToast('沒有可匯出的紀錄');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "時間,公式/計算,結果\n";
+            savedFormulas.forEach(row => {
+                let d = new Date(row.id).toLocaleString();
+                let f = `"${row.formula.replace(/"/g, '""')}"`;
+                let r = `"${row.result.replace(/"/g, '""')}"`;
+                csvContent += `${d},${f},${r}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "calc_history.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('✅ 紀錄已匯出');
+        });
 
         // ========== Base Conversion ==========
         const BASE_VALID_DIGITS = { DEC: '0123456789', BIN: '01', OCT: '01234567', HEX: '0123456789ABCDEF' };
