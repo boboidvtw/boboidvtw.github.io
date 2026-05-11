@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI 怎麼算？男女標準體重計算完全指南 - ∑ Calc</title>
+<meta name="description" content="BMI (身體質量指數) 是國際通用的體重健康標準。本文教你 BMI 的計算公式，附上衛福部標準對照表，並教你如何快速計算自己的 BMI 值。">
+<link rel="canonical" href="https://boboidvtw.github.io/docs/bmi-guide.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∑</text></svg>">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.8; padding: 30px 20px; max-width: 800px; margin: 0 auto; color: #cbd5e1; background: #0f172a; }
+  h1, h2, h3 { color: #06b6d4; margin-top: 1.5em; }
+  h1 { font-size: 2rem; border-bottom: 2px solid #06b6d4; padding-bottom: 12px; }
+  h2 { font-size: 1.4rem; }
+  a { color: #38bdf8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-btn { display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: #1e293b; color: #fff; border-radius: 8px; transition: background 0.2s; }
+  .back-btn:hover { background: #06b6d4; text-decoration: none; }
+  code, pre { background: #1e293b; padding: 4px 8px; border-radius: 6px; font-family: 'SF Mono', monospace; color: #fbbf24; }
+  .callout { background: rgba(6, 182, 212, 0.1); border-left: 4px solid #06b6d4; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+  ul { margin-left: 20px; }
+  .cta { display: inline-block; margin-top: 20px; padding: 12px 28px; background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; border-radius: 10px; font-weight: 600; font-size: 1rem; text-decoration: none; text-align: center; }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,182,212,0.3); text-decoration: none; }
+  footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #334155; text-align: center; color: #64748b; font-size: 0.85rem; }
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; background: #1e293b; border-radius: 8px; overflow: hidden; }
+  th, td { padding: 12px 16px; text-align: center; border-bottom: 1px solid #334155; }
+  th { background: rgba(6, 182, 212, 0.15); color: #06b6d4; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; }
+  .tag-yellow { background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; }
+  .tag-red { background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; }
+</style>
+<!-- MathJax for rendering math formulas -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<a href="../index.html" class="back-btn">← 返回計算機</a>
+
+<h1>BMI 怎麼算？男女標準體重計算完全指南</h1>
+
+<p>你今天量體重了嗎？體重計上的數字，其實不能完全代表你的健康狀況。醫學界與世界衛生組織（WHO）最常使用的健康標準，是 **身體質量指數 (Body Mass Index, 簡稱 BMI)**。</p>
+
+<p>本文將教你 BMI 的計算公式，並附上台灣衛生福利部國民健康署的標準對照表，讓你一秒掌握自己的健康區間！</p>
+
+<h2>1. BMI 計算公式是什麼？</h2>
+<p>BMI 的計算邏輯非常直觀，它同時考量了你的「身高」與「體重」。公式如下：</p>
+
+<div class="callout" style="text-align: center; font-size: 1.2rem;">
+  $$ BMI = \frac{\text{體重 (公斤)}}{\text{身高 (公尺)}^2} $$
+</div>
+
+<p><strong>特別注意：</strong> 身高的單位是**「公尺 (m)」**，不是公分！如果你身高 170 公分，在公式裡必須帶入 <code>1.7</code>。</p>
+
+<h3>實際計算範例：</h3>
+<p>假設小明體重 70 公斤，身高 175 公分（1.75 公尺）。他的 BMI 計算方式為：</p>
+<pre>70 ÷ (1.75 × 1.75) = 70 ÷ 3.0625 ≈ 22.86</pre>
+<p>小明的 BMI 大約是 <strong>22.9</strong>。</p>
+
+<h2>2. 台灣衛福部 BMI 標準對照表</h2>
+<p>算出 BMI 後，數字代表什麼意思呢？台灣的標準與歐美略有不同，以下是衛福部針對 18 歲以上成人的標準：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>BMI 數值範圍</th>
+      <th>狀態判定</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>BMI ＜ 18.5</td>
+      <td><span class="tag-yellow">體重過輕</span></td>
+    </tr>
+    <tr>
+      <td>18.5 ≤ BMI ＜ 24</td>
+      <td><span class="tag-green">正常範圍</span></td>
+    </tr>
+    <tr>
+      <td>24 ≤ BMI ＜ 27</td>
+      <td><span class="tag-yellow">過重</span></td>
+    </tr>
+    <tr>
+      <td>27 ≤ BMI ＜ 30</td>
+      <td><span class="tag-red">輕度肥胖</span></td>
+    </tr>
+    <tr>
+      <td>30 ≤ BMI ＜ 35</td>
+      <td><span class="tag-red">中度肥胖</span></td>
+    </tr>
+    <tr>
+      <td>BMI ≥ 35</td>
+      <td><span class="tag-red">重度肥胖</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>以剛才的小明 (BMI 22.9) 為例，他落在 <code>18.5 ~ 24</code> 之間，屬於非常標準的**健康體位**！</p>
+
+<h2>3. 如何用 ∑ Calc 快速計算？</h2>
+<p>每次都要手動平方身高再相除，實在有點麻煩。這時候可以使用 <strong><a href="../index.html">∑ Calc 超強萬能計算機</a></strong>！</p>
+
+<p>只要在計算機中輸入你的體重與身高（記得轉換成公尺），例如 70 公斤、1.75 公尺：</p>
+
+<pre>70 / (1.75^2)</pre>
+
+<p>按下 Enter，立刻就能得出精確的 BMI 值！</p>
+
+<div class="callout">
+    <strong>💡 進階小知識：</strong><br>
+    BMI 雖然好用，但它有一個盲點：它無法區分「肌肉」和「脂肪」。因此，健美選手的 BMI 經常超標被判定為肥胖，但他們其實非常健康。對於一般人，BMI 是很好的參考指標；但若有在重訓，建議搭配測量**體脂率**會更準確喔！
+</div>
+
+<div style="text-align: center; margin-top: 40px;">
+    <a href="../index.html#calc=70%20%2F%20(1.75%5E2)" class="cta">🚀 立即用 ∑ Calc 算算看你的 BMI</a>
+</div>
+
+<footer>
+    <p>© 2026 ∑ Calc. All rights reserved.</p>
+    <p style="margin-top: 8px;">
+        <a href="about.html">關於我們</a> · 
+        <a href="privacy.html">隱私權政策</a> · 
+        <a href="terms.html">服務條款</a>
+    </p>
+</footer>
+</body>
+</html>
