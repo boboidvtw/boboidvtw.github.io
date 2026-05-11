@@ -3,7 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>∑ Calc - 超強萬能計算機</title>
+    <title>∑ Calc - 超強萬能計算機 | 公式庫、函數繪圖、單位匯率換算</title>
+    <meta name="description" content="∑ Calc 是一款免費、零依賴的線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。支援離線使用，單一 HTML 檔案，開箱即用。">
+    <meta name="keywords" content="計算機,科學計算機,公式庫,函數繪圖,單位換算,匯率換算,線上計算機,calculator,formula,graphing">
+    <meta name="author" content="boboidvtw">
+    <link rel="canonical" href="https://boboidvtw.github.io/">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="∑ Calc - 超強萬能計算機">
+    <meta property="og:description" content="免費線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。">
+    <meta property="og:url" content="https://boboidvtw.github.io/">
+    <meta property="og:site_name" content="∑ Calc">
+    <meta property="og:locale" content="zh_TW">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="∑ Calc - 超強萬能計算機">
+    <meta name="twitter:description" content="免費線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、單位換算與即時匯率。">
+    <!-- Favicon (emoji fallback) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∑</text></svg>">
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://api.exchangerate-api.com">
+    <link rel="preconnect" href="https://www.paypal.com">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3360648495679709"
      crossorigin="anonymous"></script>
     <style>
@@ -887,7 +907,7 @@
             display: flex;
             gap: 6px;
             margin-bottom: 12px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-dark);
             padding-bottom: 8px;
         }
         .graph-mode-tab {
@@ -901,7 +921,7 @@
             font-weight: 500;
             transition: all 0.15s ease;
         }
-        .graph-mode-tab:hover { background: var(--surface); }
+        .graph-mode-tab:hover { background: var(--bg-dark-tertiary); }
         .graph-mode-tab.active {
             background: var(--primary);
             color: white;
@@ -914,42 +934,42 @@
             flex-wrap: wrap;
             margin-bottom: 10px;
             padding: 8px 12px;
-            background: var(--surface);
+            background: var(--bg-dark-tertiary);
             border-radius: 8px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-dark);
         }
         .graph-tool-label {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--text-dark-secondary);
             font-weight: 600;
         }
         .graph-tool {
             padding: 4px 10px;
             background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.15s ease;
         }
-        .graph-tool:hover { background: var(--background); }
+        .graph-tool:hover { background: var(--bg-dark); }
         .graph-tool.active {
-            background: var(--accent);
+            background: var(--primary);
             color: white;
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
         .graph-tool-hint {
             margin-left: auto;
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--text-dark-secondary);
             font-style: italic;
         }
         .graph-stat-select {
             padding: 8px 12px;
-            background: var(--background);
-            color: var(--text);
-            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
             border-radius: 8px;
             font-size: 13px;
             cursor: pointer;
@@ -960,9 +980,9 @@
         .graph-stat-input textarea {
             width: 100%;
             padding: 10px;
-            background: var(--background);
-            color: var(--text);
-            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
             border-radius: 8px;
             font-family: monospace;
             font-size: 12px;
@@ -973,7 +993,7 @@
             display: block;
             margin-top: 4px;
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--text-dark-secondary);
         }
 
         /* =====================================================================
@@ -4011,7 +4031,8 @@
                     // factorial: 5! → factorial(5)
                     .replace(/(\d+(?:\.\d+)?)!/g, (_, n) => `factorial(${n})`);
 
-                const result = eval(processed);
+                const calcFn = new Function('factorial', 'nCr', 'nPr', 'Math', 'return (' + processed + ')');
+                const result = calcFn(factorial, nCr, nPr, Math);
                 return typeof result === 'number' && isFinite(result) ? parseFloat(result.toFixed(12)) : 'Error';
             } catch (e) {
                 return 'Error';
