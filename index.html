@@ -1928,6 +1928,38 @@
                 </div>
             </div>
         </div>
+
+        <!-- Content Enrichment for AdSense & SEO -->
+        <section id="guide" style="max-width: 900px; margin: 40px auto; padding: 20px; background: var(--bg-dark-secondary); border-radius: 12px; color: var(--text-dark-secondary); line-height: 1.6; font-size: 0.95rem;">
+            <h2 style="color: var(--primary); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; margin-bottom: 20px;">📖 ∑ Calc 終極使用指南與計算原理</h2>
+            
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">1. 基礎與科學計算</h3>
+            <p>除了加減乘除，∑ Calc 提供了完整的科學與工程計算功能。支援 <code>sin</code>、<code>cos</code>、<code>tan</code>、自然對數 <code>ln</code> 與常用對數 <code>log</code>。使用 <code>^</code> 進行次方運算（例如 2^10 = 1024）。在處理極大或極小的物理數值時，您可以使用 <code>EE</code> 代表科學記號（例如 1.5EE3 = 1500）。內建階乘 <code>n!</code>，以及機率統計常用的組合數 <code>nCr</code> 與排列數 <code>nPr</code>。</p>
+            
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">2. 進位制換算</h3>
+            <p>在 ∑ Calc 中切換到「進位」分類，您可以自由在 DEC (十進位)、BIN (二進位)、OCT (八進位) 與 HEX (十六進位) 之間無縫換算，適合軟體工程師與資訊科學學生使用。</p>
+
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">3. 單位換算與即時匯率</h3>
+            <p>內建長度、重量、溫度、面積等八大類別。特別支援台灣常見的「坪」（1 坪 ≈ 3.305785 平方公尺）與「台斤」（1 台斤 = 0.6 公斤）。透過串接 ExchangeRate-API，我們提供每小時更新一次的即時匯率資料，您可以一鍵將換算出的金額帶回計算機中繼續運算。</p>
+
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">4. 內建公式與自建公式</h3>
+            <p>涵蓋數學、工程、科學、物理、金融五大領域的 47 條公式。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--primary); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。</p>
+            
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">常見問題 (FAQ)</h3>
+            <p><strong>Q: ∑ Calc 的資料需要連上網路才能用嗎？</strong><br>A: 除了「即時匯率」需連網外，所有計算皆在您的瀏覽器端離線執行。</p>
+            <p><strong>Q: 我的歷史紀錄會被上傳嗎？</strong><br>A: 絕對不會。我們無後端資料庫，所有設定均存於本地。詳見<a href="docs/privacy.html" style="color: var(--primary); text-decoration: underline;">隱私權政策</a>。</p>
+        </section>
+
+        <!-- Footer / Trust Pages -->
+        <footer style="text-align: center; padding: 20px; border-top: 1px solid var(--border-dark); color: var(--text-dark-secondary); font-size: 0.9rem; margin-top: 20px; width: 100%;">
+            <p>© 2026 ∑ Calc. All rights reserved.</p>
+            <p style="margin-top: 10px;">
+                <a href="docs/mortgage.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">教學專欄</a> |
+                <a href="docs/privacy.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">隱私權政策</a> | 
+                <a href="docs/terms.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">服務條款</a> | 
+                <a href="mailto:boboidvtw+supercalc@gmail.com" style="color: var(--primary); text-decoration: none; margin: 0 10px;">聯絡我們</a>
+            </p>
+        </footer>
     </div>
 
     <script>
