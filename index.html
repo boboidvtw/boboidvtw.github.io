@@ -24,6 +24,28 @@
     <!-- Preconnect -->
     <link rel="preconnect" href="https://api.exchangerate-api.com">
     <link rel="preconnect" href="https://www.paypal.com">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "∑ Calc - 超強萬能計算機",
+      "url": "https://boboidvtw.github.io/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "免費線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
+      "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
+      "softwareVersion": "3.1.0",
+      "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
+      "author": { "@type": "Person", "name": "boboidvtw" }
+    }
+    </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3360648495679709"
      crossorigin="anonymous"></script>
     <style>
@@ -1290,10 +1312,29 @@
         .pro-success button {
             background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
             color: #fff; border: none;
-            padding: .85rem 2rem;
-            border-radius: 10px;
-            font-size: 1rem; font-weight: 600;
-            cursor: pointer; margin-top: 1rem;
+        }
+
+        /* ===== Toast Notification ===== */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+            background: rgba(16, 185, 129, 0.95); color: #fff;
+            padding: 12px 28px; border-radius: 12px;
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 9999; pointer-events: none;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.show {
+            opacity: 1; transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== Display copy hint ===== */
+        .display { cursor: pointer; position: relative; }
+        .display:hover::after {
+            content: '📋 點擊複製';
+            position: absolute; top: 6px; left: 12px;
+            font-size: 11px; color: var(--text-dark-secondary);
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -1974,6 +2015,7 @@
         <footer style="text-align: center; padding: 20px; border-top: 1px solid var(--border-dark); color: var(--text-dark-secondary); font-size: 0.9rem; margin-top: 20px; width: 100%;">
             <p>© 2026 ∑ Calc. All rights reserved.</p>
             <p style="margin-top: 10px;">
+                <a href="docs/about.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">關於我們</a> |
                 <a href="docs/mortgage.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">教學專欄</a> |
                 <a href="docs/privacy.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">隱私權政策</a> | 
                 <a href="docs/terms.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">服務條款</a> | 
@@ -1981,6 +2023,9 @@
             </p>
         </footer>
     </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
 
     <script>
         // ========== 多語系翻譯 ==========
@@ -2253,7 +2298,9 @@
         let savedFormulas = JSON.parse(localStorage.getItem('savedFormulas')) || [];
         let customFormulas = JSON.parse(localStorage.getItem('customFormulas')) || [];
         let exchangeRates = JSON.parse(localStorage.getItem('exchangeRates')) || {};
-        let isDarkMode = localStorage.getItem('theme') !== 'light';
+        let isDarkMode = localStorage.getItem('theme')
+            ? localStorage.getItem('theme') !== 'light'
+            : !window.matchMedia('(prefers-color-scheme: light)').matches;
         let currentLanguage = localStorage.getItem('language') || 'zh-TW';
 
         const currencyList = { 'USD':'美元','JPY':'日圓','EUR':'歐元','GBP':'英鎊','AUD':'澳元','CAD':'加拿大元','CNY':'人民幣','SGD':'新加坡元','HKD':'港幣','THB':'泰銖','KRW':'韓圓' };
@@ -2316,6 +2363,42 @@
             initBaseModes();
             initBaseRows();
             attachGraphSystem();
+            initCopyToClipboard();
+            registerServiceWorker();
+        }
+
+        // ========== Toast Notification ==========
+        function showToast(msg, duration = 2500) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), duration);
+        }
+
+        // ========== Copy to Clipboard ==========
+        function initCopyToClipboard() {
+            const displayDiv = document.querySelector('.display');
+            displayDiv.addEventListener('click', () => {
+                const text = display.textContent;
+                if (!text || text === '0') return;
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('✅ 已複製: ' + text);
+                }).catch(() => {
+                    // fallback for older browsers
+                    const ta = document.createElement('textarea');
+                    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('✅ 已複製: ' + text);
+                });
+            });
+        }
+
+        // ========== Service Worker Registration ==========
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
         }
 
         // ========== i18n ==========

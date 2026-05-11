@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>關於我們 - ∑ Calc 超強萬能計算機</title>
+<meta name="description" content="了解 ∑ Calc 超強萬能計算機的開發理念、技術特色與團隊資訊。一款免費、零依賴、離線可用的純前端科學計算工具。">
+<link rel="canonical" href="https://boboidvtw.github.io/docs/about.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∑</text></svg>">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.8; padding: 30px 20px; max-width: 800px; margin: 0 auto; color: #cbd5e1; background: #0f172a; }
+  h1, h2, h3 { color: #06b6d4; margin-top: 1.8em; }
+  h1 { font-size: 2rem; border-bottom: 2px solid #06b6d4; padding-bottom: 12px; }
+  h2 { font-size: 1.4rem; }
+  a { color: #38bdf8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-btn { display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: #1e293b; color: #fff; border-radius: 8px; transition: background 0.2s; }
+  .back-btn:hover { background: #06b6d4; text-decoration: none; }
+  .hero { text-align: center; padding: 40px 0 20px; }
+  .hero-icon { font-size: 4rem; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(6,182,212,0.5)); }
+  .hero p { color: #94a3b8; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+  .feature-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 20px; text-align: center; }
+  .feature-card .emoji { font-size: 2rem; margin-bottom: 8px; }
+  .feature-card h3 { color: #06b6d4; margin: 8px 0 4px; font-size: 1rem; }
+  .feature-card p { color: #94a3b8; font-size: 0.85rem; margin: 0; }
+  .stats { display: flex; justify-content: center; gap: 40px; margin: 30px 0; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: #06b6d4; font-family: 'Courier New', monospace; }
+  .stat-label { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+  .callout { background: rgba(6, 182, 212, 0.1); border-left: 4px solid #06b6d4; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+  .callout strong { color: #06b6d4; }
+  ul { margin-left: 20px; }
+  li { margin-bottom: 6px; }
+  .cta { display: inline-block; margin-top: 20px; padding: 12px 28px; background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; border-radius: 10px; font-weight: 600; font-size: 1rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,182,212,0.3); text-decoration: none; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #334155; text-align: center; color: #64748b; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-btn">← 返回計算機</a>
+
+<div class="hero">
+    <div class="hero-icon">∑</div>
+    <h1 style="border: none; text-align: center;">關於 ∑ Calc</h1>
+    <p>一款專為學生、工程師與專業人士打造的免費線上萬能計算機。零依賴、單一檔案、開箱即用。</p>
+</div>
+
+<div class="stats">
+    <div class="stat"><div class="stat-num">80+</div><div class="stat-label">內建公式</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">語言支援</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">外部依賴</div></div>
+    <div class="stat"><div class="stat-num">262</div><div class="stat-label">KB 單檔</div></div>
+</div>
+
+<h2>🎯 我們的使命</h2>
+<p>在資訊爆炸的時代，我們相信<strong>好的工具應該是免費且易用的</strong>。∑ Calc 誕生的初衷很簡單：打造一個不需要安裝、不需要註冊、不需要網路連線，打開就能使用的強大計算工具。</p>
+
+<p>無論你是高中生在學三角函數、大學生在解微積分、工程師在算電路參數、還是上班族在規劃房貸理財，∑ Calc 都能成為你的得力助手。</p>
+
+<h2>✨ 核心特色</h2>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <div class="emoji">🧮</div>
+        <h3>科學計算</h3>
+        <p>三角函數、對數、指數、階乘、排列組合、進位轉換</p>
+    </div>
+    <div class="feature-card">
+        <div class="emoji">📚</div>
+        <h3>公式庫</h3>
+        <p>數學、物理、工程、科學、金融五大領域 80+ 公式</p>
+    </div>
+    <div class="feature-card">
+        <div class="emoji">📈</div>
+        <h3>函數繪圖</h3>
+        <p>多函數同時繪製、參數動畫、特殊點偵測、PNG/SVG 匯出</p>
+    </div>
+    <div class="feature-card">
+        <div class="emoji">📐</div>
+        <h3>微積分工具</h3>
+        <p>切線可視化、積分區域著色、斜率場、數值微分</p>
+    </div>
+    <div class="feature-card">
+        <div class="emoji">🎲</div>
+        <h3>3D 繪圖</h3>
+        <p>z=f(x,y) 曲面、三種渲染風格、拖曳旋轉、滾輪縮放</p>
+    </div>
+    <div class="feature-card">
+        <div class="emoji">💱</div>
+        <h3>匯率換算</h3>
+        <p>16 種主要貨幣即時匯率、雙向即時換算</p>
+    </div>
+</div>
+
+<h2>🔒 隱私與安全</h2>
+<div class="callout">
+    <strong>您的資料永遠留在您的設備上。</strong><br>
+    ∑ Calc 沒有後端伺服器、沒有資料庫、不收集任何個人資訊。所有計算都在瀏覽器端完成，歷史紀錄和設定僅儲存於您的 localStorage 中。
+</div>
+
+<h2>🛠️ 技術架構</h2>
+<p>∑ Calc 的核心設計哲學是<strong>「單一檔案、零依賴」</strong>：</p>
+<ul>
+    <li><strong>純 HTML + CSS + JavaScript</strong>，不使用任何前端框架</li>
+    <li><strong>自製 3D 引擎</strong>：使用 Canvas 2D API 實現旋轉投影與畫家算法</li>
+    <li><strong>數值方法</strong>：中央差分法（微分）、Simpson 1/3 法則（積分）、Bisection 二分法（求根）</li>
+    <li><strong>響應式設計</strong>：桌面與手機端自動適配，CSS Variables 驅動深/淺色主題</li>
+    <li><strong>PWA 支援</strong>：可安裝到手機桌面，離線使用</li>
+    <li><strong>多語系</strong>：繁中、英文、簡中、日文完整 i18n（100+ 翻譯鍵）</li>
+</ul>
+
+<h2>📧 聯絡我們</h2>
+<p>如果您有任何問題、建議或發現 bug，歡迎透過以下方式聯繫：</p>
+<ul>
+    <li><strong>Email</strong>：<a href="mailto:boboidvtw+supercalc@gmail.com">boboidvtw+supercalc@gmail.com</a></li>
+    <li><strong>GitHub Issues</strong>：<a href="https://github.com/boboidvtw/boboidvtw.github.io/issues" target="_blank">提交 Issue</a></li>
+    <li><strong>GitHub Repo</strong>：<a href="https://github.com/boboidvtw/boboidvtw.github.io" target="_blank">查看原始碼</a></li>
+</ul>
+
+<div style="text-align: center; margin-top: 40px;">
+    <a href="../index.html" class="cta">🚀 立即使用 ∑ Calc</a>
+</div>
+
+<footer>
+    <p>© 2026 ∑ Calc. All rights reserved.</p>
+    <p style="margin-top: 8px;">
+        <a href="privacy.html">隱私權政策</a> · 
+        <a href="terms.html">服務條款</a> · 
+        <a href="mortgage.html">教學專欄</a>
+    </p>
+</footer>
+
+</body>
+</html>

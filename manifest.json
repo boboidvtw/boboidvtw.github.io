@@ -1,0 +1,26 @@
+{
+  "name": "∑ Calc - 超強萬能計算機",
+  "short_name": "∑ Calc",
+  "description": "免費線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#06b6d4",
+  "orientation": "any",
+  "categories": ["utilities", "education"],
+  "lang": "zh-TW",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%230f172a'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='320' fill='%2306b6d4'>∑</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='36' fill='%230f172a'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='120' fill='%2306b6d4'>∑</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
