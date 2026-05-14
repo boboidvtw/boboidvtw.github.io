@@ -18,3 +18,7 @@ Thumbs.db
 # Node (if using local dev tools)
 node_modules/
 npm-debug.log*
+
+# Local dev tools
+.claude/
+*.bak
