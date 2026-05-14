@@ -72,13 +72,16 @@
             }
         } catch (err) {
             console.error('License issue failed:', err);
-            const isTimeout = err.status === 404;
+            // 404 或 403+pending → 顯示重試（webhook 時序問題）
+            const isRetryable =
+                err.status === 404 ||
+                (err.status === 403 && err.body?.currentStatus === 'pending');
             container.innerHTML = `
                 <p class="paypal-error">
                     ❌ 訂閱成功但授權簽發失敗：${err.message}<br>
                     <small>Subscription ID: ${subscriptionID}</small><br>
-                    ${isTimeout
-                        ? '<small>PayPal Webhook 可能延遲。請複製上方 ID，<a href="#" id="retry-issue" style="color:#fbbf24">點此重試</a></small>'
+                    ${isRetryable
+                        ? '<small>PayPal 訂閱仍在啟用中。請複製上方 ID，<a href="#" id="retry-issue" style="color:#fbbf24">點此重試</a></small>'
                         : '<small>請聯絡客服並提供上方 ID</small>'}
                 </p>`;
             const retryBtn = document.getElementById('retry-issue');

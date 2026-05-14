@@ -61,9 +61,16 @@
     }
 
     /**
-     * issue() 加 retry 機制 — 只對 404 (subscription not found) retry
-     * 理由：PayPal Webhook 寫入 KV 有 1-5 秒延遲，前端 onApprove 立刻打 issue 可能還沒到
-     * 403 (not active) 等其他錯誤直接拋出，不 retry
+     * issue() 加 retry 機制 — 處理 PayPal Webhook 的時序問題
+     *
+     * 兩種 retryable 情況：
+     *   1) 404 "subscription not found" — webhook 完全還沒到（CREATED 都沒寫 KV）
+     *   2) 403 "subscription not active" + currentStatus='pending'
+     *      — CREATED 已寫入但 ACTIVATED 還沒到，pending → active 過渡期
+     *
+     * 不 retry 的情況：
+     *   - 403 + currentStatus='cancelled'/'suspended'/'expired'/'refunded'/'disputed'
+     *   - 500 / 網路錯誤等
      *
      * @param {string} subscriptionId
      * @param {{retries?: number, delayMs?: number, onRetry?: (attempt: number, total: number) => void}} opts
@@ -76,12 +83,16 @@
                 return await issue(subscriptionId);
             } catch (err) {
                 lastErr = err;
-                if (err.status === 404 && attempt < retries) {
+                const isPending404 = err.status === 404;
+                const isPending403 = err.status === 403 && err.body?.currentStatus === 'pending';
+                const shouldRetry = (isPending404 || isPending403) && attempt < retries;
+
+                if (shouldRetry) {
                     if (typeof onRetry === 'function') onRetry(attempt, retries);
                     await new Promise(r => setTimeout(r, delayMs));
                     continue;
                 }
-                throw err;  // 403 / 500 / 網路錯 → 直接拋
+                throw err;
             }
         }
         throw lastErr;
