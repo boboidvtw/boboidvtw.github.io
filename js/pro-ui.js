@@ -225,9 +225,35 @@
     }
 
     /* =====================================================================
+       Sandbox 模式視覺提示
+       ===================================================================== */
+    function showSandboxBanner() {
+        if (!PRO_CONFIG.IS_SANDBOX) return;
+        if (document.getElementById('sandbox-mode-banner')) return;  // 防重複
+
+        const banner = document.createElement('div');
+        banner.id = 'sandbox-mode-banner';
+        banner.style.cssText = `
+            position: fixed; top: 0; left: 0; right: 0;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            color: #fff; text-align: center; padding: 6px 12px;
+            font-size: 13px; font-weight: 600; z-index: 99999;
+            box-shadow: 0 2px 8px rgba(0,0,0,.2);
+            font-family: -apple-system, system-ui, sans-serif;
+        `;
+        banner.innerHTML = `
+            🧪 SANDBOX 測試模式 — 訂閱不會真扣款
+            <a href="${location.pathname}" style="color:#fff;text-decoration:underline;margin-left:1rem">切回 Live</a>
+        `;
+        document.body.appendChild(banner);
+        document.body.style.paddingTop = '32px';
+    }
+
+    /* =====================================================================
        初始化
        ===================================================================== */
     function initProModule() {
+        showSandboxBanner();
         setupPlanToggle();
         updatePriceDisplay('monthly');
         setupLicenseInput();
@@ -237,7 +263,7 @@
         const proBtn = document.getElementById('proBadgeBtn');
         if (proBtn) proBtn.addEventListener('click', () => showProModal());
 
-        PayPalIntegration.waitForPayPalSDK('monthly');
+        PayPalIntegration.loadAndRender('monthly');
 
         // 背景驗證 token（不阻塞 UI）— 確認 KV 中訂閱仍 active
         ProManager.verifyWithServer().then((res) => {

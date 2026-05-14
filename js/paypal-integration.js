@@ -15,6 +15,37 @@
     const { PRO_CONFIG, ProManager } = window;
 
     /**
+     * 動態載入 PayPal SDK
+     * 為什麼動態：sandbox/live 使用不同 client-id，無法在 index.html 寫死
+     * @returns {Promise<void>} resolves 後可使用 window.paypal
+     */
+    function loadPayPalSDK() {
+        return new Promise((resolve, reject) => {
+            if (typeof paypal !== 'undefined') {
+                resolve();
+                return;
+            }
+            // 若 script 已存在（避免重複載入）
+            const existing = document.querySelector('script[data-paypal-sdk]');
+            if (existing) {
+                existing.addEventListener('load', () => resolve());
+                existing.addEventListener('error', () => reject(new Error('PayPal SDK load failed')));
+                return;
+            }
+
+            const clientId = PRO_CONFIG.PAYPAL_CLIENT_ID;
+            const script = document.createElement('script');
+            script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&vault=true&intent=subscription&currency=USD`;
+            script.dataset.sdkIntegrationSource = 'button-factory';
+            script.dataset.paypalSdk = '1';  // marker for dedup
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('PayPal SDK script failed to load'));
+            document.head.appendChild(script);
+        });
+    }
+
+    /**
      * 處理 PayPal onApprove 事件 — 抽成獨立函式以便 retry 按鈕重用
      */
     async function handleApprove(subscriptionID, container) {
@@ -117,24 +148,29 @@
     }
 
     /**
-     * 等待 PayPal SDK 載入後渲染按鈕（最多 3 秒）
+     * 載入 SDK + 渲染按鈕（取代舊的 waitForPayPalSDK）
+     * SDK 動態載入後立即 render
      */
-    function waitForPayPalSDK(plan = 'monthly') {
-        let attempts = 0;
-        const timer = setInterval(() => {
-            attempts++;
-            if (typeof paypal !== 'undefined') {
-                clearInterval(timer);
-                renderPayPalButton(plan);
-            } else if (attempts > 30) {
-                clearInterval(timer);
-                renderPayPalButton(plan);  // 觸發錯誤訊息
+    async function loadAndRender(plan = 'monthly') {
+        const container = document.getElementById('paypal-button-container');
+        if (container) {
+            container.innerHTML = `<div style="padding:1rem;text-align:center;color:#94a3b8">⏳ PayPal SDK 載入中…</div>`;
+        }
+        try {
+            await loadPayPalSDK();
+            renderPayPalButton(plan);
+        } catch (err) {
+            if (container) {
+                container.innerHTML = `<p class="paypal-error">⚠️ PayPal SDK 載入失敗：${err.message}</p>`;
             }
-        }, 100);
+        }
     }
 
     window.PayPalIntegration = Object.freeze({
         renderPayPalButton,
-        waitForPayPalSDK,
+        loadAndRender,
+        loadPayPalSDK,
+        // 保留舊名作 alias（向下相容）
+        waitForPayPalSDK: loadAndRender,
     });
 })();

@@ -4969,24 +4969,17 @@
         </div>
     </div>
 
-    <!--
-        🟢 LIVE PayPal SDK（會真的扣款）
-        🧪 切回 Sandbox 測試請改用：
-        client-id=ARsg9OYpS2sah6TGWw_DPxyj-p2O6j_JRmUcgInTsuWKreOVUH9jdliSBzYRXg1xKuFsUe0jMF4rmyDL
-    -->
-    <script
-        src="https://www.paypal.com/sdk/js?client-id=BAAwe1vut4JSk6JhmXFWzzvQRUswxr3UWYOPNvhFYnsd60xmFL44_mEqaXSFr4mlRyW-eIlo7yprky-9L0&vault=true&intent=subscription&currency=USD"
-        data-sdk-integration-source="button-factory"
-    ></script>
-
     <!-- ============================================================
-         Pro 模組（v3.2 模組化拆解，2026-05-14）
+         Pro 模組（v3.3 — Sandbox/Live dual-mode, 2026-05-14）
          載入順序：config → api → manager → integration → ui
+         PayPal SDK 由 paypal-integration.js 動態載入
+         （因 sandbox/live 使用不同 client-id，無法 hardcode）
+         切換 Sandbox: https://boboidvtw.github.io/?sandbox=1
          ============================================================ -->
-    <script src="js/pro-config.js?v=3.2.1"></script>
-    <script src="js/license-api.js?v=3.2.1"></script>
-    <script src="js/pro-manager.js?v=3.2.1"></script>
-    <script src="js/paypal-integration.js?v=3.2.1"></script>
-    <script src="js/pro-ui.js?v=3.2.1"></script>
+    <script src="js/pro-config.js?v=3.3.0"></script>
+    <script src="js/license-api.js?v=3.3.0"></script>
+    <script src="js/pro-manager.js?v=3.3.0"></script>
+    <script src="js/paypal-integration.js?v=3.3.0"></script>
+    <script src="js/pro-ui.js?v=3.3.0"></script>
 </body>
 </html>
