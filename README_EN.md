@@ -5,8 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](CHANGELOG.md)
-[![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v31--pro-tier)
+[![Version](https://img.shields.io/badge/version-3.3.1-blue.svg)](CHANGELOG.md)
+[![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
+[![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
 🌐 **Live demo**: https://boboidvtw.github.io/
 
@@ -15,6 +16,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [What's New in v3.3 🔐 (Security Architecture)](#whats-new-in-v33--security-architecture)
 - [What's New in v3.1 💎 (Pro Tier)](#whats-new-in-v31--pro-tier)
 - [What's New in v3.0 ⭐](#whats-new-in-v30-)
 - [Feature Overview](#feature-overview)
@@ -46,9 +48,121 @@ Super Calculator is a browser-based calculator and math visualization tool built
 
 ---
 
+## What's New in v3.3 🔐 (Security Architecture)
+
+The v3.3 series (completed in a single day on 2026-05-14, spanning v3.2.0 → v3.3.1) replaces v3.1's pure-frontend license code system with a **server-signed JWT + KV-backed instant revocation** architecture. This closes a critical license-forging vulnerability and introduces a permanent Sandbox/Live dual-mode for future testing.
+
+### Why the upgrade was needed
+
+v3.1 generated Crockford-alphabet codes (`SUPC-XXXX-XXXX-XXXX`) using a pure-frontend FNV-1a hash. **There was no actual verification** — anyone who read the JS source could produce valid codes locally and bypass payment. v3.2.1 onwards replaces this with **JWT + Cloudflare Worker + KV-backed subscription state verification**, fully closing that hole.
+
+### Architecture overview
+
+```
+┌────────────────────────────────────────────────────────────┐
+│  GitHub Pages (boboidvtw.github.io)                         │
+│    └─ index.html + 5 JS modules                              │
+│       ├─ pro-config.js          settings (mode-aware)        │
+│       ├─ license-api.js         JWT API client + retry       │
+│       ├─ pro-manager.js         state mgmt + auto-renew      │
+│       ├─ paypal-integration.js  dynamic SDK loading          │
+│       └─ pro-ui.js              modal, badge, sandbox banner │
+└──────────────────────────┬─────────────────────────────────┘
+                           │ HTTPS (CORS)
+                           ↓
+┌────────────────────────────────────────────────────────────┐
+│  Cloudflare Workers + KV                                    │
+│    ┌─ Live Worker        :  *.workers.dev (real money)       │
+│    │   └─ KV: LICENSES                                       │
+│    └─ Sandbox Worker     :  *-sandbox.workers.dev (test)     │
+│        └─ KV: LICENSES_SANDBOX                               │
+│                                                              │
+│    Endpoints:                                                │
+│      GET  /health           Health check (incl. KV ping)     │
+│      POST /license/issue    Requires KV active → signs 7d JWT│
+│      POST /license/validate JWT verify + KV revocation check │
+│      POST /webhook/paypal   PayPal signature verify + KV update │
+│      GET  /subscription/:id Inspect KV state (debug)         │
+└──────────────────────────┬─────────────────────────────────┘
+                           │ verify-webhook-signature API
+                           ↓
+                       PayPal
+```
+
+### Security defense matrix
+
+| Attack vector | Defense | Verified |
+|---|---|---|
+| Forge `subscriptionId` to mint a JWT | ❌ 404 — KV has no such subscription | Real test passed |
+| Forge a PayPal webhook (no real cert) | ❌ 401 — `verify-webhook-signature` API rejects | Simulator confirmed |
+| Real PayPal webhook (real cert) | ✅ 200 — signature verified | Sandbox e2e verified |
+| Reuse old JWT after subscription cancel | ❌ 401 — KV checked on every validate | Sandbox e2e verified |
+| Try to re-issue after cancel | ❌ 403 — KV `status !== 'active'` | Endpoint tested |
+| Steal `SECRET_KEY` | ❌ Stored as Cloudflare Worker Secret, never in code/KV | Design-level guarantee |
+
+### Instant revocation mechanism (core improvement)
+
+| Stage | Behavior | Time to invalidation |
+|---|---|---|
+| User cancels subscription | PayPal fires `BILLING.SUBSCRIPTION.CANCELLED` webhook | T |
+| Worker verifies signature + updates KV `status='cancelled'` | T + ~1s |
+| User's next operation triggers `/license/validate` | T + ? (depends on activity) |
+| Worker reads KV `cancelled` → 401 | **Immediate** |
+| Frontend `verifyWithServer` runs every 6 hours | **Within 6 hours at the latest** |
+
+The old architecture (pure JWT, 1-year lifetime) would allow a cancelled user to keep using Pro for the full year. The new architecture **invalidates within 6 hours at worst**, and instantly on next active operation.
+
+### Sandbox dual-mode
+
+Because of a PayPal policy restriction (Taiwan-registered seller accounts cannot receive payment from Taiwan-registered buyer accounts), the seller cannot self-test in Live mode. v3.3 introduces a query-param switch:
+
+| Mode | Entry point | Purpose |
+|---|---|---|
+| Live | `https://boboidvtw.github.io/` | Real paying customers |
+| Sandbox | `https://boboidvtw.github.io/?sandbox=1` | Test mode, no real charges, **orange warning banner at top** |
+
+Sandbox mode uses an independent PayPal test account, an independent Cloudflare Worker, and an independent KV namespace. `localStorage` keys are suffixed with `_sb` to prevent cross-contamination.
+
+### Module responsibilities
+
+| Module | Lines | Responsibility |
+|---|---|---|
+| `pro-config.js` | 95 | Central config. Detects `?sandbox=1` to switch endpoints, PayPal client-id, plan IDs, storage keys |
+| `license-api.js` | 124 | Worker API client. Exposes `issueWithRetry` (retries on both 404 and 403+pending), `validate`, `parsePayload` |
+| `pro-manager.js` | 236 | Pro state mgmt. `isProActive` for sync UI check; `verifyWithServer` for background re-validation (6h interval); `refreshTokenIfNeeded` for auto-renew (triggers at <48h remaining) |
+| `paypal-integration.js` | 140 | PayPal Subscribe button. `loadPayPalSDK` dynamically loads the SDK (no longer hardcoded client-id); `onApprove` shows retry progress |
+| `pro-ui.js` | 320 | Modal, Pro badge, plan toggle, sandbox warning banner, init |
+
+### Deployment checklist
+
+| Item | Location | Required |
+|---|---|---|
+| Cloudflare Worker (Live) | `supercalc-license-validator.boboidvtw.workers.dev` | 5 env vars + `LICENSES` KV binding |
+| Cloudflare Worker (Sandbox) | `supercalc-license-validator-sandbox.boboidvtw.workers.dev` | Same 5 env vars (sandbox values) + `LICENSES_SANDBOX` KV binding |
+| PayPal Live Webhook | PayPal Dashboard | URL → Live Worker, subscribed to 8+ events |
+| PayPal Sandbox Webhook | PayPal Sandbox Dashboard | URL → Sandbox Worker |
+
+Worker secrets: `SECRET_KEY` (JWT signing), `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`. Plaintext variables: `PAYPAL_API_BASE`, `PAYPAL_WEBHOOK_ID`.
+
+### For developers: local testing
+
+You don't need a real PayPal account to test the frontend modules:
+
+```bash
+cd boboidvtw.github.io
+python3 -m http.server 8765
+# Visit http://localhost:8765/?sandbox=1
+```
+
+Sandbox mode hits the deployed Sandbox Worker (not a local one). For local Worker development, use `wrangler dev`.
+
+---
+
 ## What's New in v3.1 💎 (Pro Tier)
 
 v3.1 introduces a **Pro subscription tier** that gates the advanced math visualization features behind a low-cost recurring subscription, processed by **PayPal Live**. The free tier remains fully functional — all basic calculation and function plotting features stay free; only the v3.0 Phase 5/6/7/8 features become Pro.
+
+> 💡 Starting from v3.3, the license system has been upgraded from pure-frontend Crockford codes to JWT + KV-backed instant revocation. See [v3.3 Security Architecture](#whats-new-in-v33--security-architecture).
 
 ### Two pricing tiers
 

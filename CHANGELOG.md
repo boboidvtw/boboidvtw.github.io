@@ -7,6 +7,128 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.3.1] - 2026-05-14 — Webhook timing retry fix
+
+### Fixed
+
+#### Retry on `403 + currentStatus='pending'`
+- **Bug discovered during sandbox e2e test**: PayPal often sends `BILLING.SUBSCRIPTION.CREATED` (status=`pending`) before `BILLING.SUBSCRIPTION.ACTIVATED` (status=`active`). Old `issueWithRetry` only retried on `404`, so it gave up during the pending→active transition window, leaving the user with a "subscription not active" error even though the subscription was about to become active.
+- **Fix**: `issueWithRetry` now also retries when `err.status === 403` AND `err.body.currentStatus === 'pending'`.
+- Terminal statuses (`cancelled`/`suspended`/`expired`/`refunded`/`disputed`) still fail fast without retry.
+- Error UI in `paypal-integration.js` now shows the manual "retry" link for both `404` and `403+pending` scenarios.
+
+### Verified
+
+- Sandbox subscription `I-R2SFXX7U1SW2` reached `status=active` after PayPal's webhook flow completed.
+- Manual `ProManager.activateSubscription()` succeeded against the active KV record.
+- PayPal `BILLING.SUBSCRIPTION.CANCELLED` webhook arrived within 5 seconds and the previously-issued JWT was invalidated by the next `/license/validate` call.
+
+---
+
+## [3.3.0] - 2026-05-14 — Sandbox / Live dual-mode
+
+### Added
+
+#### 🧪 Sandbox / Live dual-mode switching
+- **Query-param toggle**: visit `https://boboidvtw.github.io/?sandbox=1` to switch the entire frontend to PayPal Sandbox + Sandbox Worker.
+- **Orange banner** at the top of the page when sandbox mode is active, with a one-click "switch back to Live" link.
+- **`localStorage` key isolation**: sandbox tokens use `_sb` suffix (`super_calc_pro_license_sb`) so test data never contaminates the production license.
+- **Dynamic PayPal SDK loading**: the SDK script tag is no longer hardcoded in `index.html`. `paypal-integration.js` now injects the correct client-id based on mode (Live or Sandbox), enabling clean mode switching without rebuilding the page.
+
+#### Sandbox infrastructure (deployed alongside Live)
+- **Separate Cloudflare Worker**: `supercalc-license-validator-sandbox.boboidvtw.workers.dev`
+- **Separate KV namespace**: `LICENSES_SANDBOX` (`1378f7ee501c4cc3921f1b8f80d1650d`)
+- **Separate PayPal Webhook**: ID `1L223054P9312233E`, points to the sandbox worker
+- **Sandbox env vars**: `PAYPAL_API_BASE=https://api-m.sandbox.paypal.com`, sandbox `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`
+- Shared `SECRET_KEY` with Live (JWTs from each environment can't cross-validate due to different worker URLs anyway).
+
+### Changed
+
+- `index.html` no longer ships the static `<script src="paypal.com/sdk/js?client-id=...">` tag. `paypal-integration.js` loads the SDK dynamically with the active mode's client-id.
+- `pro-config.js` exposes new flags: `IS_SANDBOX`, `PAYPAL_CLIENT_ID`, and mode-aware `STORAGE_KEY` / `SUBSCRIPTION_KEY` / `VERIFIED_AT_KEY`.
+
+### Why sandbox mode exists
+
+PayPal blocks Taiwan-registered seller accounts from receiving payments from Taiwan-registered buyer accounts (including guest checkout). Live self-testing is therefore impossible from the seller's own market. Sandbox mode allows full end-to-end verification using PayPal-provided test buyer accounts at zero cost.
+
+---
+
+## [3.2.1] - 2026-05-14 — KV-backed license validation (security upgrade)
+
+### 🚨 Security: Closes critical license-forging vulnerability
+
+In v3.2.0, `/license/issue` accepted **any** `subscriptionId` and signed a JWT for it, with no verification that the ID corresponded to a real PayPal subscription. Anyone could `POST /license/issue` with a fake ID and receive a valid Pro license. **This release closes that hole.**
+
+### Added
+
+#### Cloudflare Worker v2.0.0 (KV-backed)
+- **`LICENSES` KV namespace** stores subscription state by `subscriptionId`:
+  - `status`: `pending` / `active` / `cancelled` / `suspended` / `expired` / `refunded` / `disputed`
+  - `planId`, `activatedAt`, `cancelledAt`, `lastEventType`, `lastEventId`, etc.
+- **`POST /webhook/paypal`**: receives PayPal webhook events
+  - Verifies signature via PayPal `/v1/notifications/verify-webhook-signature` API (requires real PayPal cert — attackers can't forge)
+  - Idempotency: event IDs cached in KV for 30 days, duplicates return `{status: 'duplicate'}`
+  - Maps 8 subscription events + 3 payment/dispute events into KV state updates
+- **`POST /license/issue` now requires KV record**: only signs a JWT if `status === 'active'` in KV. Fake IDs return `404`. Pending/cancelled IDs return `403`.
+- **`POST /license/validate` checks KV on every call**: even if the JWT signature is valid and not expired, validation fails if KV shows the subscription was cancelled. This is the **instant revocation** mechanism.
+- **`GET /subscription/:id`**: debug endpoint to inspect KV state.
+- **Short-lived JWT**: lifetime reduced from 1 year → 7 days. Combined with KV-backed validate, revocation propagates within ≤6 hours (reverify interval).
+- **OAuth token caching**: PayPal `client_credentials` token cached in KV for 8 hours to avoid token churn.
+
+#### Frontend (5 modules, +123 lines)
+- `LicenseAPI.issueWithRetry`: handles webhook delay (404 → retry up to 6×, 1.5s between attempts)
+- `ProManager.refreshTokenIfNeeded`: auto-renews token when <48 h remaining before JWT expiry
+- `ProManager.verifyWithServer`: background re-validation every 6 hours, clears token if KV says cancelled
+- PayPal `onApprove` shows live retry progress and a manual retry link on timeout
+- Legacy `SUPC-XXXX-XXXX-XXXX` format auto-detected on startup → cleared (no security value)
+
+### Security model
+
+| Attack vector | Defense |
+|---|---|
+| Forge `subscriptionId` to mint a JWT | ❌ 404 — KV has no such subscription |
+| Forge a PayPal webhook | ❌ 401 — signature verification fails without real PayPal cert |
+| Reuse a valid JWT after subscription cancel | ❌ 401 — KV state checked on every validate |
+| Steal `SECRET_KEY` | ❌ Stored as Cloudflare Worker Secret, never in code or KV |
+| DDoS `/license/issue` | 🟡 Not rate-limited yet (planned) |
+
+### Verification
+
+- **Test A** (vulnerability patch): `POST /license/issue` with fake `subscriptionId` returns `404 "subscription not found"` ✅
+- **Test B** (KV-backed flow): manually seeded KV `sub:I-TEST-MANUAL-001` with `status=active` → issue succeeded → validate succeeded ✅
+- **Test C** (signature verification): PayPal Webhook Simulator events return `401` because the simulator doesn't use the real PayPal cert — confirms verification is active ✅
+- **Test D** (revocation): manually flipped KV `status` to `cancelled` → next `validate` returns `401 "subscription no longer active"`, next `issue` returns `403 "subscription not active"` ✅
+
+---
+
+## [3.2.0] - 2026-05-14 — Modular frontend refactor
+
+### Changed
+
+#### 🧩 Modular extraction of Pro module
+- **`index.html` reduced from 5,326 → 4,992 lines** (`-334` lines of inline JS).
+- **5 standalone JS modules** under `/js/`:
+  - `pro-config.js` (~52 lines): central config constants
+  - `license-api.js` (~92 lines): Cloudflare Worker JWT client
+  - `pro-manager.js` (~188 lines): Pro state management
+  - `paypal-integration.js` (~119 lines): PayPal Subscribe button + onApprove handler
+  - `pro-ui.js` (~285 lines): modal, badge, plan toggle, init
+- Service worker `sw.js` bumped to `v3.2.0` and now caches the 5 JS modules.
+- All inline `onclick=` handlers replaced with `addEventListener` (CSP-friendly).
+
+### Removed
+
+- Crockford `makeSegment` / `generateLicenseFromSubscription` (pure-frontend FNV-1a hashing — no actual security value)
+- Inline 341-line `<script>` block in `index.html`
+
+### Why modularize
+
+- High cohesion / low coupling
+- 200–400 lines per file (target), 800 max
+- Easier to review, test, and maintain than a monolithic `index.html`
+
+---
+
 ## [3.1.0] - 2026-05-08 — Pro Tier with PayPal Live Subscriptions
 
 ### Added
