@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — v3.4.0 IP protection + Worker hardening (in progress)
+
+### Added — Legal / IP protection layer
+
+- **`NOTICE.md`** — supplements MIT License with explicit trademark reservations (`∑ Calc™`, `∑ Super Calculator™`, `∑ Calc Pro™`, `MoneyAI168™`), SaaS service scope clarification, visual asset reservation, and operated-domain list.
+- **`TERMS.md`** — comprehensive English Terms of Service covering acceptable use (no reverse engineering, no API abuse, no impersonation, no payment circumvention), Pro subscription terms (pricing, billing, refunds, revocation), forks-must-rename rule, privacy disclosure, liability limitation, and Republic of China (Taiwan) governing law.
+- **README.md / README_EN.md** — License sections expanded with trademark list, MIT-not-covered scope, `legal@moneyai168.com` contact.
+- **`docs/terms.html`** — Section 3 (Intellectual Property) rewritten to list MoneyAI168 trademarks and link to NOTICE.md / TERMS.md.
+- **`index.html` footer** — added trademark notice line (`∑ Calc™, ∑ Super Calculator™, ∑ Calc Pro™ and MoneyAI168™ are trademarks of MoneyAI168. Pro subscription powered by the official MoneyAI168 service only.`).
+
+### Added — Worker v2.1.0 rate limiting
+
+- **`/license/issue` dual-layer rate limiting** via Cloudflare Rate Limiting bindings:
+  - `RATE_LIMIT_ISSUE_IP` — recommended 10 req/60s per `cf-connecting-ip` (anti-DDoS / bot)
+  - `RATE_LIMIT_ISSUE_SUB` — recommended 5 req/3600s per `subscriptionId` (anti license-factory abuse if a subscription ID is leaked)
+- **Graceful degrade**: if bindings are not configured, requests pass through unchanged — no breaking deploy.
+- **Standard 429 response** with `Retry-After` header and `scope` field (`per-ip` or `per-subscription`).
+- **`worker/RATE-LIMIT-SETUP.md`** — step-by-step Cloudflare Dashboard deployment guide for both Live and Sandbox Workers, including verification commands.
+
+### Notes
+
+- Source code remains MIT-licensed; this release does not change the LICENSE file. New protection layers operate alongside MIT, covering what MIT explicitly does not (trademarks, brand identity, operated SaaS service).
+- Worker rate limiting binding values are set in Cloudflare Dashboard, not in code — tune without redeploying.
+- Still pending in this milestone: WAF rule to restrict `/webhook/paypal` to PayPal IP ranges; custom domain migration to `api.moneyai168.com`.
+
+---
+
 ## [3.3.1] - 2026-05-14 — Webhook timing retry fix
 
 ### Fixed

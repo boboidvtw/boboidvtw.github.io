@@ -1,22 +1,26 @@
 /* =====================================================================
    ∑ Calc License Validator — Cloudflare Worker v2
    建立日期：2026-05-14
-   版本：2.0.0
+   版本：2.1.0（2026-05-15：/license/issue 加入 rate limiting）
 
    端點：
      GET  /health              → 健康檢查（含 KV ping）
-     POST /license/issue       → 簽發 JWT（必須 KV 中存在且 active）
+     POST /license/issue       → 簽發 JWT（必須 KV 中存在且 active）+ rate limited
      POST /license/validate    → 驗證 JWT（含 KV 撤銷檢查）
      POST /webhook/paypal      → PayPal Webhook 接收（驗簽後更新 KV）
      GET  /subscription/:id    → 查訂閱狀態（除錯用）
 
-   必要 Bindings（已在 Cloudflare Dashboard 設定）：
+   必要 Bindings（在 Cloudflare Dashboard 設定）：
      LICENSES                  → KV namespace
      SECRET_KEY                → Secret（JWT 簽名用）
      PAYPAL_CLIENT_ID          → Secret（PayPal OAuth）
      PAYPAL_CLIENT_SECRET      → Secret（PayPal OAuth）
      PAYPAL_WEBHOOK_ID         → Plaintext（Webhook 驗簽用）
      PAYPAL_API_BASE           → Plaintext（https://api-m.paypal.com）
+
+   可選 Bindings（v2.1.0 新增，未設則跳過 rate limiting）：
+     RATE_LIMIT_ISSUE_IP       → Rate Limiting binding（建議 10 req / 60s per IP）
+     RATE_LIMIT_ISSUE_SUB      → Rate Limiting binding（建議 5 req / 3600s per subId）
 
    KV 資料結構：
      sub:{subscriptionId}      → { status, planId, activatedAt, ... }
@@ -309,6 +313,40 @@ async function handleHealth(env) {
   });
 }
 
+/* =====================================================================
+   Rate limiting helper（v2.1.0）
+   - 若對應 binding 未設，回 true（跳過限速，graceful degrade）
+   - 若有設定，呼叫 .limit({key}) 並回 true/false
+   ===================================================================== */
+async function checkRateLimit(binding, key) {
+  if (!binding || typeof binding.limit !== 'function') return { ok: true };
+  try {
+    const { success } = await binding.limit({ key });
+    return { ok: !!success };
+  } catch (e) {
+    console.warn('Rate limit binding error (allowing request):', e?.message);
+    return { ok: true, error: e?.message };
+  }
+}
+
+function rateLimitedResponse(scope, retryAfterSeconds) {
+  return new Response(
+    JSON.stringify({
+      error: 'rate limit exceeded',
+      scope,
+      hint: `too many requests; try again in ~${retryAfterSeconds}s`
+    }),
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(retryAfterSeconds),
+        ...CORS_HEADERS
+      }
+    }
+  );
+}
+
 async function handleIssue(request, env) {
   const body = await request.json().catch(() => ({}));
   const subscriptionId = body.subscriptionId;
@@ -316,6 +354,21 @@ async function handleIssue(request, env) {
   if (!subscriptionId) {
     return jsonResponse({ error: 'subscriptionId required' }, 400);
   }
+
+  // ---------- Rate limiting ----------
+  // Layer 1: per IP (建議 10/60s) — 抗 DDoS / 一般機器人
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  const ipCheck = await checkRateLimit(env.RATE_LIMIT_ISSUE_IP, `ip:${ip}`);
+  if (!ipCheck.ok) {
+    return rateLimitedResponse('per-ip', 60);
+  }
+
+  // Layer 2: per subscriptionId (建議 5/3600s) — 抗 license 工廠濫用
+  const subCheck = await checkRateLimit(env.RATE_LIMIT_ISSUE_SUB, `sub:${subscriptionId}`);
+  if (!subCheck.ok) {
+    return rateLimitedResponse('per-subscription', 3600);
+  }
+  // ---------- /Rate limiting ----------
 
   // 查 KV：訂閱必須存在
   const sub = await getSubscription(env, subscriptionId);

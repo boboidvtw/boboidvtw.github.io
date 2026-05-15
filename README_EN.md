@@ -655,9 +655,28 @@ See [CHANGELOG.md](CHANGELOG.md) for the full history.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+The **source code** of this project is licensed under the [MIT License](LICENSE) — you are free to fork, modify, and redistribute the code.
 
-Copyright © 2026
+Copyright © 2026 MoneyAI168. All rights reserved (except where the MIT License explicitly grants rights to the source code).
+
+### 🛡️ What MIT Does Not Cover
+
+The MIT License covers **source code only**. The following are reserved by MoneyAI168 and **not** licensed by MIT:
+
+- 🏷️ **Trademarks & brand names**: `∑ Calc™`, `∑ Super Calculator™`, `∑ Calc Pro™`, `MoneyAI168™` — **forks must rename**
+- 🌐 **Official SaaS service**: live License Worker, KV namespace, PayPal merchant account, subscriber data
+- 🎨 **Visual assets**: logos, icons, marketing materials, documentation screenshots
+- 🔗 **Domains**: `boboidvtw.github.io`, `moneyai168.com` and any official subdomains
+
+See [NOTICE.md](NOTICE.md) for the full breakdown.
+
+### 📜 Terms of Service
+
+Use of the live website or Pro subscription is also governed by the [Terms of Service](TERMS.md), which apply **independently** of the MIT License.
+
+### 📧 Contact
+
+For trademark, commercial inquiries, or legal matters: **legal@moneyai168.com**
 
 ---
 

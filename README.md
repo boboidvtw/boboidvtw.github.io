@@ -656,9 +656,28 @@ const presets = [
 
 ## 授權條款
 
-本專案採用 [MIT License](LICENSE) 授權。
+本專案**程式碼**採用 [MIT License](LICENSE) 授權，您可以自由 fork、修改、再發布。
 
-Copyright © 2026
+Copyright © 2026 MoneyAI168. All rights reserved (except where the MIT License explicitly grants rights to the source code).
+
+### 🛡️ MIT 不涵蓋的部分
+
+MIT 授權**只涵蓋程式碼**，下列內容由 MoneyAI168 獨立保留，**不在 MIT 範圍**：
+
+- 🏷️ **商標與品牌**：`∑ Calc™`、`∑ Super Calculator™`、`∑ Calc Pro™`、`MoneyAI168™` — fork 時**必須改名**
+- 🌐 **官方 SaaS 服務**：Live License Worker、KV namespace、PayPal merchant 帳號、訂閱者資料
+- 🎨 **視覺資產**：Logo、Icon、行銷素材、文件截圖
+- 🔗 **域名**：`boboidvtw.github.io`、`moneyai168.com` 及任何官方子域名
+
+完整細節見 [NOTICE.md](NOTICE.md)。
+
+### 📜 服務條款
+
+使用本網站或 Pro 訂閱服務需遵守 [Terms of Service](TERMS.md)，與 MIT 授權**獨立並行**。
+
+### 📧 聯絡
+
+商標、商業合作、法律事務窗口：**legal@moneyai168.com**
 
 ---
 
