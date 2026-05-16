@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.3.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.4.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -16,6 +16,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [What's New in v3.4 🛡️ (Security Hardening & Brand Protection)](#whats-new-in-v34--security-hardening--brand-protection)
 - [What's New in v3.3 🔐 (Security Architecture)](#whats-new-in-v33--security-architecture)
 - [What's New in v3.1 💎 (Pro Tier)](#whats-new-in-v31--pro-tier)
 - [What's New in v3.0 ⭐](#whats-new-in-v30-)
@@ -45,6 +46,19 @@ Super Calculator is a browser-based calculator and math visualization tool built
 - 🔒 **Security-conscious**: User input is XSS-protected and expressions run in isolated scope
 - 🌏 **Cross-platform**: Works on desktop, tablet, and mobile browsers
 - 🌍 **Multilingual**: Full i18n for Traditional Chinese, English, Simplified Chinese, and Japanese
+
+---
+
+## What's New in v3.4 🛡️ (Security Hardening & Brand Protection)
+
+v3.4 (2026-05-16) layers multiple protections and hardens the Worker — **without changing the MIT license**:
+
+- **IP / brand protection layer**: added `NOTICE.md` and `TERMS.md` explicitly reserving trademarks (`∑ Calc™`, `∑ Super Calculator™`, `∑ Calc Pro™`, `MoneyAI168™`), the official SaaS service scope, and visual assets. Source code stays MIT — free to fork (forks must rename).
+- **Worker KV-based rate limiting** (v2.3.0): dual-layer on `/license/issue` — 10 req/60s per IP, 5 req/3600s per subscriptionId. Cloudflare's Rate Limiting binding was empirically found not to count across requests under Dashboard deployment, so KV fixed-window is used instead (cross-request, arbitrary windows). Graceful degrade on KV failure.
+- **`/webhook/paypal` source-IP observation** (log-only): matches PayPal's published CIDRs; non-matching sources are logged but never blocked (PayPal officially discourages hard IP allowlisting; signature verification remains the primary defense).
+- **Custom domain**: the Live License Worker is now served via `https://api.moneyai168.com` (`*.workers.dev` kept in parallel, zero downtime).
+
+See the [Changelog](CHANGELOG.md) for details.
 
 ---
 

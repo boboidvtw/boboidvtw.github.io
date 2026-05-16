@@ -1,7 +1,7 @@
 /* =====================================================================
    ∑ Calc License Validator — Cloudflare Worker v2
    建立日期：2026-05-14
-   版本：2.1.0（2026-05-15：/license/issue 加入 rate limiting）
+   版本：2.3.0（2026-05-16：/webhook/paypal 加入來源 IP 觀察 log-only）
 
    端點：
      GET  /health              → 健康檢查（含 KV ping）
@@ -18,9 +18,10 @@
      PAYPAL_WEBHOOK_ID         → Plaintext（Webhook 驗簽用）
      PAYPAL_API_BASE           → Plaintext（https://api-m.paypal.com）
 
-   可選 Bindings（v2.1.0 新增，未設則跳過 rate limiting）：
-     RATE_LIMIT_ISSUE_IP       → Rate Limiting binding（建議 10 req / 60s per IP）
-     RATE_LIMIT_ISSUE_SUB      → Rate Limiting binding（建議 5 req / 3600s per subId）
+   Rate limiting（v2.2.0）：純 KV-based，不需任何額外 binding。
+     - Cloudflare Rate Limiting binding 經實測：Dashboard 編輯器部署下
+       計數器不能跨請求，故棄用。改用 KV fixed-window。
+     - 速率值寫死在程式碼常數（RL_ISSUE_*），調整改常數重部署即可。
 
    KV 資料結構：
      sub:{subscriptionId}      → { status, planId, activatedAt, ... }
@@ -32,6 +33,22 @@ const ALGORITHM = 'HS256';
 const JWT_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 天（短期）
 const EVENT_DEDUP_TTL = 30 * 24 * 60 * 60; // 30 天
 const OAUTH_CACHE_TTL = 8 * 60 * 60;       // 8 小時
+
+// KV-based rate limiting（取代 Cloudflare RL binding——該 binding
+// 在 Dashboard 編輯器部署下不能跨請求計數）。調整改這裡重部署即可。
+const RL_ISSUE_IP_LIMIT   = 10;        // 每 IP
+const RL_ISSUE_IP_WINDOW  = 60;        // 60 秒
+const RL_ISSUE_SUB_LIMIT  = 5;         // 每 subscriptionId
+const RL_ISSUE_SUB_WINDOW = 60 * 60;   // 3600 秒（KV 支援任意窗口）
+
+// PayPal webhook 來源 IP 觀察（log-only，v2.3.0）。
+// 官方公布 CIDR（Live+Sandbox 共用）。PayPal 明言不保證穩定且不建議
+// allowlist，故此處僅 console.warn 記錄、絕不封鎖——零誤殺、收集真實
+// 流量數據後再決定是否升級為封鎖。
+const PAYPAL_WEBHOOK_CIDRS = [
+  '64.4.240.0/21', '64.4.248.0/22', '66.211.168.0/22', '91.243.72.0/23',
+  '173.0.80.0/20', '185.177.52.0/22', '192.160.215.0/24', '198.54.216.0/23'
+];
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -111,6 +128,7 @@ async function verifyJWT(token, secret) {
 const KV_KEY_SUB    = (subId)   => `sub:${subId}`;
 const KV_KEY_EVENT  = (eventId) => `evt:${eventId}`;
 const KV_KEY_OAUTH  = () => `oauth:token`;
+const KV_KEY_RL     = (scope, id, bucket) => `rl:${scope}:${id}:${bucket}`;
 
 async function getSubscription(env, subId) {
   const raw = await env.LICENSES.get(KV_KEY_SUB(subId));
@@ -130,6 +148,36 @@ async function isEventProcessed(env, eventId) {
 
 async function markEventProcessed(env, eventId) {
   await env.LICENSES.put(KV_KEY_EVENT(eventId), '1', { expirationTtl: EVENT_DEDUP_TTL });
+}
+
+/* =====================================================================
+   KV-based fixed-window rate limiter
+   - 近似限速：KV 最終一致 + 無原子遞增，並發 burst 可能略超出，
+     但足以擋「持續濫用 / license 工廠」這個真實威脅模型。
+     精準配額需 Durable Objects（未來升級路徑，需 wrangler 部署）。
+   - KV 故障時 graceful degrade（放行，不誤殺合法用戶）
+   - 回 { ok: boolean, retryAfter: number(秒) }
+   ===================================================================== */
+async function kvRateLimit(env, scope, id, limit, windowSeconds) {
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    const bucket = Math.floor(now / windowSeconds);
+    const key = KV_KEY_RL(scope, id, bucket);
+    const raw = await env.LICENSES.get(key);
+    const count = raw ? (parseInt(raw, 10) || 0) : 0;
+    if (count >= limit) {
+      const retryAfter = (bucket + 1) * windowSeconds - now;
+      return { ok: false, retryAfter: Math.max(retryAfter, 1) };
+    }
+    // KV expirationTtl 最低 60s；windowSeconds 皆 >= 60，+60 buffer 防邊界
+    await env.LICENSES.put(key, String(count + 1), {
+      expirationTtl: windowSeconds + 60
+    });
+    return { ok: true, retryAfter: 0 };
+  } catch (e) {
+    console.warn('kvRateLimit error (allowing):', e?.message);
+    return { ok: true, retryAfter: 0 };
+  }
 }
 
 /* =====================================================================
@@ -307,26 +355,12 @@ async function handleHealth(env) {
   }
   return jsonResponse({
     status: 'ok',
-    version: '2.0.0',
+    version: '2.3.0',
     timestamp: new Date().toISOString(),
-    kv: kvOk
+    kv: kvOk,
+    rateLimit: 'kv',
+    webhookIpObserve: 'log-only'
   });
-}
-
-/* =====================================================================
-   Rate limiting helper（v2.1.0）
-   - 若對應 binding 未設，回 true（跳過限速，graceful degrade）
-   - 若有設定，呼叫 .limit({key}) 並回 true/false
-   ===================================================================== */
-async function checkRateLimit(binding, key) {
-  if (!binding || typeof binding.limit !== 'function') return { ok: true };
-  try {
-    const { success } = await binding.limit({ key });
-    return { ok: !!success };
-  } catch (e) {
-    console.warn('Rate limit binding error (allowing request):', e?.message);
-    return { ok: true, error: e?.message };
-  }
 }
 
 function rateLimitedResponse(scope, retryAfterSeconds) {
@@ -355,18 +389,18 @@ async function handleIssue(request, env) {
     return jsonResponse({ error: 'subscriptionId required' }, 400);
   }
 
-  // ---------- Rate limiting ----------
-  // Layer 1: per IP (建議 10/60s) — 抗 DDoS / 一般機器人
+  // ---------- Rate limiting (KV-based) ----------
+  // Layer 1: per IP — 抗 DDoS / 一般機器人
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-  const ipCheck = await checkRateLimit(env.RATE_LIMIT_ISSUE_IP, `ip:${ip}`);
-  if (!ipCheck.ok) {
-    return rateLimitedResponse('per-ip', 60);
+  const ipRl = await kvRateLimit(env, 'ip', ip, RL_ISSUE_IP_LIMIT, RL_ISSUE_IP_WINDOW);
+  if (!ipRl.ok) {
+    return rateLimitedResponse('per-ip', ipRl.retryAfter);
   }
 
-  // Layer 2: per subscriptionId (建議 5/3600s) — 抗 license 工廠濫用
-  const subCheck = await checkRateLimit(env.RATE_LIMIT_ISSUE_SUB, `sub:${subscriptionId}`);
-  if (!subCheck.ok) {
-    return rateLimitedResponse('per-subscription', 3600);
+  // Layer 2: per subscriptionId — 抗 license 工廠濫用（leaked subId）
+  const subRl = await kvRateLimit(env, 'sub', subscriptionId, RL_ISSUE_SUB_LIMIT, RL_ISSUE_SUB_WINDOW);
+  if (!subRl.ok) {
+    return rateLimitedResponse('per-subscription', subRl.retryAfter);
   }
   // ---------- /Rate limiting ----------
 
@@ -438,6 +472,33 @@ async function handleValidate(request, env) {
   });
 }
 
+function ipv4ToInt(ip) {
+  const parts = String(ip).split('.');
+  if (parts.length !== 4) return null;
+  let n = 0;
+  for (const p of parts) {
+    const o = Number(p);
+    if (!Number.isInteger(o) || o < 0 || o > 255) return null;
+    n = (n * 256) + o;
+  }
+  return n >>> 0;
+}
+
+// 僅支援 IPv4（PayPal 公布範圍皆 IPv4）。非 IPv4 / 無法解析 → 視為「不在範圍」
+function ipInPayPalRange(ip) {
+  const ipInt = ipv4ToInt(ip);
+  if (ipInt === null) return false;
+  for (const cidr of PAYPAL_WEBHOOK_CIDRS) {
+    const [base, bitsStr] = cidr.split('/');
+    const baseInt = ipv4ToInt(base);
+    if (baseInt === null) continue;
+    const bits = Number(bitsStr);
+    const mask = bits === 0 ? 0 : (0xFFFFFFFF << (32 - bits)) >>> 0;
+    if ((ipInt & mask) === (baseInt & mask)) return true;
+  }
+  return false;
+}
+
 async function handleWebhook(request, env) {
   const bodyText = await request.text();
   let bodyJson;
@@ -445,6 +506,15 @@ async function handleWebhook(request, env) {
     bodyJson = JSON.parse(bodyText);
   } catch (e) {
     return jsonResponse({ error: 'invalid json' }, 400);
+  }
+
+  // 0. 來源 IP 觀察（log-only，v2.3.0）：記錄非 PayPal IP，不封鎖
+  const srcIp = request.headers.get('cf-connecting-ip') || 'unknown';
+  if (!ipInPayPalRange(srcIp)) {
+    console.warn(
+      `[webhook-ip-observe] non-PayPal source IP: ${srcIp} ` +
+      `event=${bodyJson?.event_type || 'unknown'} id=${bodyJson?.id || 'none'}`
+    );
   }
 
   // 1. 驗簽

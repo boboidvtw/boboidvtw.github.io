@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — v3.4.0 IP protection + Worker hardening (in progress)
+## [3.4.0] - 2026-05-16 — IP protection + Worker hardening
 
 ### Added — Legal / IP protection layer
 
@@ -17,20 +17,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`docs/terms.html`** — Section 3 (Intellectual Property) rewritten to list MoneyAI168 trademarks and link to NOTICE.md / TERMS.md.
 - **`index.html` footer** — added trademark notice line (`∑ Calc™, ∑ Super Calculator™, ∑ Calc Pro™ and MoneyAI168™ are trademarks of MoneyAI168. Pro subscription powered by the official MoneyAI168 service only.`).
 
-### Added — Worker v2.1.0 rate limiting
+### Changed — Custom domain migration
 
-- **`/license/issue` dual-layer rate limiting** via Cloudflare Rate Limiting bindings:
-  - `RATE_LIMIT_ISSUE_IP` — recommended 10 req/60s per `cf-connecting-ip` (anti-DDoS / bot)
-  - `RATE_LIMIT_ISSUE_SUB` — recommended 5 req/3600s per `subscriptionId` (anti license-factory abuse if a subscription ID is leaked)
-- **Graceful degrade**: if bindings are not configured, requests pass through unchanged — no breaking deploy.
-- **Standard 429 response** with `Retry-After` header and `scope` field (`per-ip` or `per-subscription`).
-- **`worker/RATE-LIMIT-SETUP.md`** — step-by-step Cloudflare Dashboard deployment guide for both Live and Sandbox Workers, including verification commands.
+- **Live Worker now served via `https://api.moneyai168.com`** (Cloudflare Workers Custom Domain bound to `supercalc-license-validator`). `js/pro-config.js` `LIVE.WORKER_URL` switched from `supercalc-license-validator.boboidvtw.workers.dev` to the custom domain. The `*.workers.dev` URL stays active in parallel (zero-downtime; no breaking change).
+- Removed a stale conflicting manual `api` CNAME (pointed to a non-existent cross-account `supercalc-license.moneyai168.workers.dev` → Cloudflare error 1014) that had been blocking Custom Domain creation. Sandbox stays on `*.workers.dev`.
+- A custom domain (a real Cloudflare zone) is also the prerequisite for any future WAF rule escalation on `/webhook/paypal`.
+
+### Added — Worker v2.2.0 KV-based rate limiting
+
+- **`/license/issue` dual-layer rate limiting**, fixed-window counters stored in the existing `LICENSES` KV namespace:
+  - per `cf-connecting-ip` — 10 req / 60s (anti-DDoS / bot)
+  - per `subscriptionId` — 5 req / 3600s (anti license-factory abuse if a subscription ID is leaked)
+- **429 response** with dynamic `Retry-After` (computed from window remainder) and `scope` field (`per-ip` / `per-subscription`).
+- **KV failure → graceful degrade**: on any KV error the request is allowed (never blocks a legitimate user).
+- Rate values are code constants (`RL_ISSUE_*`); tune by editing + redeploying.
+
+#### Why KV instead of Cloudflare Rate Limiting bindings
+
+- v2.1.0 first attempted Cloudflare Rate Limiting bindings. Empirically verified (Sandbox, 2026-05-16): when a Worker is deployed via the **Dashboard editor**, the binding's counter **only persists within a single Worker invocation, not across separate requests** — making it useless for real rate limiting (which is inherently cross-request).
+- The binding is also hard-locked to 10s/60s periods, so the desired 3600s per-subscription window was impossible.
+- KV-based counters work cross-request, support arbitrary windows (incl. 3600s), and are fully in-code/testable. Trade-off: approximate under concurrent bursts (KV eventual consistency, no atomic increment) — acceptable for the real threat model (sustained abuse). Precise quota would require Durable Objects (future upgrade path, needs wrangler deploy).
+
+### Added — Worker v2.3.0 webhook source-IP observation (log-only)
+
+- **`/webhook/paypal` source-IP observation**: each webhook's `cf-connecting-ip` is matched against PayPal's 8 published CIDR ranges; non-matching sources emit a `[webhook-ip-observe]` `console.warn` (event type + id) but are **never blocked**.
+- Rationale: PayPal **officially discourages IP allowlisting** (IPs change without notice; a hard block risks silently dropping real webhooks → subscriptions never activate → revenue loss). Signature verification (already implemented via `verify-webhook-signature`) remains the primary, PayPal-recommended defense. This layer is purely observational — collect real traffic data before deciding whether to escalate to a hard block.
+- A Cloudflare WAF custom rule cannot target `*.workers.dev` (not a zone in the account), so the check is implemented **in-Worker** instead — works now, version-controlled, unit-tested (13/13 CIDR boundary cases).
+- PayPal CIDRs are a code constant (`PAYPAL_WEBHOOK_CIDRS`); IPv4-only matching (PayPal's published ranges are all IPv4).
 
 ### Notes
 
 - Source code remains MIT-licensed; this release does not change the LICENSE file. New protection layers operate alongside MIT, covering what MIT explicitly does not (trademarks, brand identity, operated SaaS service).
-- Worker rate limiting binding values are set in Cloudflare Dashboard, not in code — tune without redeploying.
-- Still pending in this milestone: WAF rule to restrict `/webhook/paypal` to PayPal IP ranges; custom domain migration to `api.moneyai168.com`.
+- No extra Cloudflare binding required for rate limiting. Any previously-added `RATE_LIMIT_ISSUE_*` bindings can be deleted (code no longer references them).
+- A future hard-block escalation for `/webhook/paypal` would belong on the custom domain (`api.moneyai168.com`) as a WAF rule, gated on observation data showing all real PayPal traffic stays within the published CIDRs.
+- Still pending in this milestone: custom domain migration to `api.moneyai168.com`.
 
 ---
 
