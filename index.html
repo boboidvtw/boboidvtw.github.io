@@ -1352,6 +1352,7 @@
                 <button class="help-btn" id="helpBtn" title="使用說明">?</button>
                 <button class="theme-btn" id="graphBtn" title="函數繪圖" style="font-size: 18px;">📈</button>
                 <button class="pro-badge-btn is-free" id="proBadgeBtn" title="升級到 Pro 解鎖進階功能">✨ 升級 Pro</button>
+                <button class="theme-btn" id="angleBtn" title="角度 / 弧度切換" style="font-size: 13px; font-weight: 700;">DEG</button>
                 <button class="theme-btn" id="themeBtn">☀️</button>
             </div>
         </div>
@@ -1606,14 +1607,14 @@
                     <!-- 換算器 -->
                     <div class="unit-converter">
                         <div class="unit-row">
-                            <input type="number" inputmode="decimal" class="unit-input" id="unitFromVal" placeholder="輸入數值" step="any">
+                            <input type="text" inputmode="decimal" class="unit-input" id="unitFromVal" placeholder="輸入數值" autocomplete="off">
                             <select class="unit-select" id="unitFromSel"></select>
                         </div>
                         <div class="unit-swap-row">
                             <button class="unit-swap-btn" id="unitSwapBtn" title="交換">⇅</button>
                         </div>
                         <div class="unit-row">
-                            <input type="number" inputmode="decimal" class="unit-input to-input" id="unitToVal" placeholder="換算結果" step="any">
+                            <input type="text" inputmode="decimal" class="unit-input to-input" id="unitToVal" placeholder="換算結果" autocomplete="off">
                             <select class="unit-select" id="unitToSel"></select>
                         </div>
                     </div>
@@ -2318,6 +2319,7 @@
             ? localStorage.getItem('theme') !== 'light'
             : !window.matchMedia('(prefers-color-scheme: light)').matches;
         let currentLanguage = localStorage.getItem('language') || 'zh-TW';
+        let angleMode = localStorage.getItem('angleMode') || 'DEG';
 
         const currencyList = { 'USD':'美元','JPY':'日圓','EUR':'歐元','GBP':'英鎊','AUD':'澳元','CAD':'加拿大元','CNY':'人民幣','SGD':'新加坡元','HKD':'港幣','THB':'泰銖','KRW':'韓圓' };
 
@@ -2463,6 +2465,20 @@
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
         }
         themeBtn.addEventListener('click', () => { isDarkMode = !isDarkMode; updateTheme(); });
+
+        const angleBtn = document.getElementById('angleBtn');
+        function updateAngleBtn() {
+            angleBtn.textContent = angleMode;
+            angleBtn.title = angleMode === 'DEG'
+                ? '目前：角度 (DEG)，點擊切換為弧度'
+                : '目前：弧度 (RAD)，點擊切換為角度';
+        }
+        angleBtn.addEventListener('click', () => {
+            angleMode = angleMode === 'DEG' ? 'RAD' : 'DEG';
+            localStorage.setItem('angleMode', angleMode);
+            updateAngleBtn();
+        });
+        updateAngleBtn();
 
         // ========== Help Modal ==========
         const helpModal = document.getElementById('helpModal');
@@ -4108,26 +4124,33 @@
             }
 
             try {
-                const processed = expr
+                // Percentage semantics (standard calculator behavior):
+                //   a+b% => a+(a*b/100), a-b% => a-(a*b/100), a*b% => a*(b/100),
+                //   a/b% => a/(b/100), standalone n% => (n/100)
+                const pct = expr
+                    .replace(/(\d+\.?\d*)\s*([+\-−])\s*(\d+\.?\d*)%/g, (_, a, op, b) => `${a}${op}(${a}*${b}/100)`)
+                    .replace(/(\d+\.?\d*)\s*([*/×÷])\s*(\d+\.?\d*)%/g, (_, a, op, b) => `${a}${op}(${b}/100)`)
+                    .replace(/(\d+\.?\d*)%/g, '($1/100)');
+                const processed = pct
                     .replace(/π/g, Math.PI)
                     .replace(/(?<![a-zA-Z])e(?![a-zA-Z0-9])/g, Math.E)
-                    .replace(/√/g, 'Math.sqrt')
+                    .replace(/√/g, 'sqrt')
                     .replace(/\^/g, '**')
                     .replace(/÷/g, '/')
                     .replace(/×/g, '*')
                     .replace(/−/g, '-')
-                    // arc functions first (before sin/cos/tan)
-                    .replace(/asin\(/g, 'Math.asin(')
-                    .replace(/acos\(/g, 'Math.acos(')
-                    .replace(/atan\(/g, 'Math.atan(')
-                    // hyperbolic
+                    // arc functions first (before sin/cos/tan) — angle-mode aware
+                    .replace(/asin\(/g, '_asin(')
+                    .replace(/acos\(/g, '_acos(')
+                    .replace(/atan\(/g, '_atan(')
+                    // hyperbolic (always radian-based, unaffected by angle mode)
                     .replace(/sinh\(/g, 'Math.sinh(')
                     .replace(/cosh\(/g, 'Math.cosh(')
                     .replace(/tanh\(/g, 'Math.tanh(')
-                    // trig (after arc & hyp to avoid substring collision)
-                    .replace(/(?<![a-z])sin\(/g, 'Math.sin(')
-                    .replace(/(?<![a-z])cos\(/g, 'Math.cos(')
-                    .replace(/(?<![a-z])tan\(/g, 'Math.tan(')
+                    // trig (after arc & hyp to avoid substring collision) — angle-mode aware
+                    .replace(/(?<![a-z])sin\(/g, '_sin(')
+                    .replace(/(?<![a-z])cos\(/g, '_cos(')
+                    .replace(/(?<![a-z])tan\(/g, '_tan(')
                     // log/exp
                     .replace(/(?<![a-z])log\(/g, 'Math.log10(')
                     .replace(/ln\(/g, 'Math.log(')
@@ -4141,8 +4164,16 @@
                     // factorial: 5! → factorial(5)
                     .replace(/(\d+(?:\.\d+)?)!/g, (_, n) => `factorial(${n})`);
 
-                const calcFn = new Function('factorial', 'nCr', 'nPr', 'Math', 'return (' + processed + ')');
-                const result = calcFn(factorial, nCr, nPr, Math);
+                // Angle-mode-aware trig: DEG converts degrees↔radians, RAD passes through
+                const _ar = angleMode === 'DEG' ? Math.PI / 180 : 1;
+                const _sin = x => Math.sin(x * _ar);
+                const _cos = x => Math.cos(x * _ar);
+                const _tan = x => Math.tan(x * _ar);
+                const _asin = x => Math.asin(x) / _ar;
+                const _acos = x => Math.acos(x) / _ar;
+                const _atan = x => Math.atan(x) / _ar;
+                const calcFn = new Function('factorial', 'nCr', 'nPr', 'Math', '_sin', '_cos', '_tan', '_asin', '_acos', '_atan', 'return (' + processed + ')');
+                const result = calcFn(factorial, nCr, nPr, Math, _sin, _cos, _tan, _asin, _acos, _atan);
                 return typeof result === 'number' && isFinite(result) ? parseFloat(result.toFixed(12)) : 'Error';
             } catch (e) {
                 return 'Error';
@@ -4216,7 +4247,7 @@
                 } else if (text === 'EE') {
                     if (currentDisplay !== '0') currentDisplay += 'e';
                     updateDisplay();
-                } else if (currentDisplay === '0' && text !== '.' && text !== '(' && !text.endsWith('(')) {
+                } else if (currentDisplay === '0' && text !== '.') {
                     currentDisplay = text;
                     updateDisplay();
                 } else {
@@ -4775,7 +4806,7 @@
 
         function syncUnitFrom() {
             if (_syncingUnit) return;
-            const val = parseFloat(document.getElementById('unitFromVal').value);
+            const val = parseFloat(document.getElementById('unitFromVal').value.replace(/,/g, ''));
             const from = document.getElementById('unitFromSel').value;
             const to   = document.getElementById('unitToSel').value;
             if (!isNaN(val)) {
@@ -4788,7 +4819,7 @@
 
         function syncUnitTo() {
             if (_syncingUnit) return;
-            const val = parseFloat(document.getElementById('unitToVal').value);
+            const val = parseFloat(document.getElementById('unitToVal').value.replace(/,/g, ''));
             const from = document.getElementById('unitFromSel').value;
             const to   = document.getElementById('unitToSel').value;
             if (!isNaN(val)) {
@@ -4800,7 +4831,7 @@
         }
 
         function renderUnitRefGrid() {
-            const fromVal = parseFloat(document.getElementById('unitFromVal').value);
+            const fromVal = parseFloat(document.getElementById('unitFromVal').value.replace(/,/g, ''));
             const fromCode = document.getElementById('unitFromSel').value;
             const grid = document.getElementById('unitRefGrid');
             const label = document.getElementById('unitRefLabel');

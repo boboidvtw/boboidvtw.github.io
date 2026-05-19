@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.4.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -16,6 +16,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [What's New in v3.5 🧮 (Calculation Core Fixes + Angle Mode)](#whats-new-in-v35--calculation-core-fixes--angle-mode)
 - [What's New in v3.4 🛡️ (Security Hardening & Brand Protection)](#whats-new-in-v34--security-hardening--brand-protection)
 - [What's New in v3.3 🔐 (Security Architecture)](#whats-new-in-v33--security-architecture)
 - [What's New in v3.1 💎 (Pro Tier)](#whats-new-in-v31--pro-tier)
@@ -46,6 +47,20 @@ Super Calculator is a browser-based calculator and math visualization tool built
 - 🔒 **Security-conscious**: User input is XSS-protected and expressions run in isolated scope
 - 🌏 **Cross-platform**: Works on desktop, tablet, and mobile browsers
 - 🌍 **Multilingual**: Full i18n for Traditional Chinese, English, Simplified Chinese, and Japanese
+
+---
+
+## What's New in v3.5 🧮 (Calculation Core Fixes + Angle Mode)
+
+v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was verified function-by-function in the browser — zero regressions, zero console errors**:
+
+- **Fixed the `%` operator** (CRITICAL): previously any expression containing `%` (`50%`, `100+5%`) returned `Error`. Now uses standard calculator semantics: `50%`→0.5, `100+5%`→105, `200×10%`→20.
+- **Fixed function keys in the initial state** (HIGH): pressing `sin( log( √(` while the display showed `0` produced an instant `Error`. Now they work; also fixed a hidden `√` double-substitution bug exposed by this fix.
+- **Added DEG / RAD angle-mode toggle** (defaults to DEG): new toolbar button, persisted in `localStorage`. `sin(90)`=1 matches what most users expect; radian mode also supported.
+- **Fixed blank unit-conversion result box** (MEDIUM): results ≥ 1000 were cleared due to a thousands-separator vs `type=number` conflict. Two-way conversion, category switching, and special temperature conversion all work now.
+- **`sw.js` cache bump**: the Service Worker is cache-first; `CACHE_NAME` was bumped so existing users receive the fixes immediately.
+
+See the [Changelog](CHANGELOG.md) for details.
 
 ---
 

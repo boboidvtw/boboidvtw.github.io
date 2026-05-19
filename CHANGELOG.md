@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.0] - 2026-05-19 — 計算核心修復 + 角度模式
+
+本次為一輪完整的使用性體驗審查（瀏覽器逐功能實測），修復 4 個影響核心計算的問題並新增角度模式。所有修復皆經瀏覽器驗證、零回歸、零 console error。
+
+### Fixed — 計算引擎
+
+- **`%` 百分比運算符完全失效（CRITICAL）**：主鍵盤 `%` 鍵任何用法（`50%`、`100+5%`）皆回傳 `Error`。`calculate()` 原本未處理 `%`，原樣送入 JS eval（JS `%` 為 modulo 二元運算子，`50%` 為語法錯誤）。新增百分比語意預處理，採標準計算機行為：`50%`→0.5、`100+5%`→105、`200−10%`→180、`200×10%`→20、`80÷50%`→160。
+- **函數鍵在初始狀態無法使用（HIGH）**：顯示為初始 `0` 時按 `sin( cos( tan( log( ln( √(` 會產生無效的 `0sin(…)` → `Error`。任何「以函數開頭」的算式第一步即失敗。修正輸入處理：顯示為 `0` 時，除小數點外的按鍵（含函數鍵、左括號）皆取代前導 0。
+- **`√` 雙重替換隱藏 bug**：上述修復後暴露的既有問題——`√`→`Math.sqrt` 後又被 `sqrt(`→`Math.sqrt(` 二次替換成 `Math.Math.sqrt(`。改為 `√`→`sqrt` 統一走單一替換路徑。`√(16)`=4、`9+√(16)`=13 正常。
+- **單位換算結果框空白（MEDIUM）**：換算結果 ≥ 1000 時，`formatUnitVal` 以 `toLocaleString` 產生含千分位逗號的字串，賦值給 `type="number"` 的 input 會被瀏覽器拒絕並清空。兩個單位 input 改為 `type="text"` + `inputmode="decimal"`，反向換算 parse 時去除逗號。雙向換算、類別切換、溫度特殊轉換皆正常。
+
+### Added — 角度模式
+
+- **DEG / RAD 切換鈕**（頂部工具列），狀態以 `localStorage` 持久化，**預設 DEG**（角度）。三角函數依模式自動換算：DEG 模式 `sin(90)`=1、`tan(45)`=1（符合一般使用者預期）；RAD 模式 `sin(π÷2)`=1。反三角函數結果亦依模式回傳角度或弧度。雙曲函數不受影響（恆為弧度）。
+
+### Changed
+
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.0`**：Service Worker 為 cache-first，若不更新快取名稱，既有使用者會繼續取得舊版 `index.html`，看不到本次修復。bump 後 `activate` 會清除舊快取，修復對所有使用者立即生效。
+
+---
+
 ## [3.4.0] - 2026-05-16 — IP protection + Worker hardening
 
 ### Added — Legal / IP protection layer
