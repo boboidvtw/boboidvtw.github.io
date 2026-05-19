@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.2-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -65,7 +65,10 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 - **Engineering `mod` key broken** (v3.5.0 regression): the percentage pre-processing mis-rewrote the `%` emitted by `mod`; now handled separately — `7 mod 3`=1, percentages unaffected.
 - **Programmer HEX missing `C` key**: the hex `C` digit was absent from the keypad; restored — `C0`→DEC 192.
 - **`nCr(n,r)` / `nPr(n,r)` uninputtable**: no comma key existed anywhere; added `,` to the sidebar common-keys group — `nCr(5,2)`=10 works.
-- Known: `( ) π e ,` hide with the sidebar at ≤768px (mobile); tracked as the next dedicated task.
+
+**v3.5.2 (2026-05-20) mobile responsive Bug C fix**:
+
+- **Mobile `( ) , π e` keys unreachable** (HIGH): at ≤768px the entire sidebar was `display:none`, making every function that needs a closing paren (`sin(`, `cos(`, `log(`, `exp(`, …) unusable on mobile. Fix strategy — zero DOM changes, pure CSS responsive rearrangement: at ≤768px the sidebar becomes a bottom-fixed floating bar (industry-standard mobile keyboard pattern), keeping only the 5 critical keys (π e ( ) ,) in a horizontal 5-column grid with `min-height: 44px` touch targets, translucent backdrop adapting to light/dark themes, and iPhone safe-area support. Desktop 1280 verified with zero regression.
 
 See the [Changelog](CHANGELOG.md) for details.
 

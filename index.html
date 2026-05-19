@@ -714,13 +714,66 @@
             color: rgba(167, 139, 250, 0.7);
             margin-top: 2px; line-height: 1;
         }
-        /* ===== Responsive: hide sidebar on mobile ===== */
+        /* ===== Responsive: mobile bottom-sticky quick-keys bar (v3.5.2 Bug C fix) ===== */
+        /*
+         * Bug C 修復：≤768px 時將 sidebar 從 display:none 改為底部固定浮動列，
+         * 解決手機無法閉合 sin( cos( log( ... 等函式括號的嚴重缺陷。
+         * 策略：DOM 不動、純 CSS 隱藏支援函數說明與即時匯率 panel，
+         *      只保留 5 顆關鍵鍵（π e ( ) ,）橫向佈局，min-height 44px 觸控標準。
+         */
         @media (max-width: 768px) {
             .main-grid {
                 grid-template-columns: 1fr !important;
             }
+            /* 主 sidebar：底部固定浮動列 */
             .main-sidebar {
+                display: block !important;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                z-index: 90;
+                gap: 0 !important;
+                padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px;
+                background: rgba(15, 23, 42, 0.96);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-top: 1px solid var(--border-dark);
+                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+            }
+            body.light .main-sidebar {
+                background: rgba(255, 255, 255, 0.96);
+                box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.12);
+            }
+            /* 內部 panel：去除卡片樣式，讓快捷鍵列更緊湊 */
+            .main-sidebar > .panel {
+                padding: 0;
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            /* 隱藏「常用按鈕」標題 + 支援函數說明區 + 即時匯率整個 panel */
+            .main-sidebar > .panel:first-child > h3,
+            .main-sidebar > .panel:first-child > div:nth-child(3),
+            .main-sidebar > .panel:nth-child(2) {
                 display: none !important;
+            }
+            /* 5 顆快捷鍵橫向 5 欄等寬，min-height 44px 觸控標準 */
+            .main-sidebar > .panel:first-child > div:nth-child(2) {
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 6px !important;
+                margin-bottom: 0 !important;
+            }
+            .main-sidebar > .panel:first-child > div:nth-child(2) > button {
+                padding: 12px 4px !important;
+                font-size: 18px;
+                min-height: 44px;
+                font-weight: 600;
+            }
+            /* 預留 body 底部空間避免浮動列遮蔽 footer / 廣告 / Pro banner */
+            body {
+                padding-bottom: calc(72px + env(safe-area-inset-bottom));
             }
         }
 

@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.2] - 2026-05-20 — 手機響應式 Bug C 修復
+
+修復 v3.5.1 Known/Next 列出的「手機側邊欄被隱藏導致函式無法閉合括號」嚴重缺陷。手機是計算機主場景，此 bug 使所有 `sin( cos( log( exp( asin( ... ` 函式於手機完全不可用。本次以純 CSS 響應式重排修復，DOM 零改動、桌機零回歸。
+
+### Fixed
+
+- **手機 `( ) , π e` 無法輸入（Bug C，HIGH）**：≤768px 時 `.main-sidebar` 原為 `display:none`，整組常用鍵與「支援函數」說明、「即時匯率」panel 一併消失。所有需要閉合括號的函式（`sin(`、`cos(`、`log(`、`exp(`、`asin(`、`acos(`、`atan(`、`sinh(`、`cosh(`、`tanh(`、`sqrt(`、`floor(`、`ceil(`、`abs(`、`nCr(`、`nPr(`）於手機按下後**完全無法閉合**，皆回傳 `Error`。修復策略：DOM 零改動、純 CSS 響應式重排。≤768px 時 `.main-sidebar` 改為 `position: fixed` 底部浮動列（業界標準的 mobile keyboard 模式），只保留 5 顆關鍵鍵（π e ( ) ,）橫向 5 欄等寬佈局，按鈕 `min-height: 44px` 符合 Apple HIG / Material 觸控標準，半透明背景 + `backdrop-filter: blur(12px)` 配合深淺主題自動切換；「常用按鈕」h3 標題、「支援函數」說明區、「即時匯率」整個 panel 於手機隱藏（手機已有「匯率」tab 可看，help modal 已有支援函數列表）；`body` 加上 `padding-bottom: calc(72px + env(safe-area-inset-bottom))` 預留浮動列空間並支援 iPhone Home Indicator safe area。`z-index: 90` 低於所有 modal（≥1000），不影響 help / formula / graph modal 互動。
+
+### Verified
+
+- 端對端流程：手機 viewport 375×812 完整流程 `sin(45)`=0.707106781187（DEG）、`nCr(5,2)`=10 通過。
+- viewport 320 / 375 / 768 / 1280 全部正常；media query 邊界 768px 精準切換。
+- 深 / 淺主題視覺均正確、零 console error。
+- 桌機 1280：sidebar 回到 `position: static`、`display: flex`，h3 / 支援函數 / 匯率 panel 全部正常顯示，`body` padding-bottom 還原為 20px，**零回歸**。
+
+### Changed
+
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.2`**：確保既有使用者立即取得本次修復（Service Worker 為 cache-first，舊版即會永久看不到修復）。
+
+### Known / Next
+
+- 函數繪圖 / 統計 / 3D 繪圖、公式庫實際套用流程、Pro gate 行為尚未深度審查，後續進行。
+
+---
+
 ## [3.5.1] - 2026-05-20 — 進階模式審查修復
 
 延續 v3.5.0 的使用性審查，深入測試先前未覆蓋的進位 / 工程 / 科學模式，修復 3 個影響功能可用性的問題（其中 1 個為 v3.5.0 引入的回歸）。所有修復經瀏覽器完整 UI 流程驗證、零回歸、零 console error。
@@ -23,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Known / Next
 
-- `( ) π e ,` 等鍵目前位於桌機側邊欄，於 ≤768px（手機 / 平板）會隨側邊欄一併隱藏，導致小螢幕無法閉合函式括號。此為既有的響應式佈局問題，需專項處理（將常用鍵於小螢幕重排至計算機區），列為下一個待辦，未在本次變更範圍內。
+- `( ) π e ,` 等鍵於小螢幕被隱藏的響應式問題已於 v3.5.2（2026-05-20）修復。
 - 函數繪圖 / 統計 / 3D 繪圖、公式庫套用與 Pro gate 尚未深度審查，後續進行。
 
 ---
