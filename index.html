@@ -1562,13 +1562,13 @@
                         <div class="button-grid" id="baseButtons">
                             <button class="btn btn-function btn-base" data-digit="A" disabled>A</button>
                             <button class="btn btn-function btn-base" data-digit="B" disabled>B</button>
+                            <button class="btn btn-function btn-base" data-digit="C" disabled>C</button>
                             <button class="btn btn-delete btn-base" data-digit="CLR">CLR</button>
-                            <button class="btn btn-delete btn-base" data-digit="←">←</button>
 
                             <button class="btn btn-function btn-base" data-digit="D" disabled>D</button>
                             <button class="btn btn-function btn-base" data-digit="E" disabled>E</button>
                             <button class="btn btn-function btn-base" data-digit="F" disabled>F</button>
-                            <button class="btn btn-spacer btn-base"></button>
+                            <button class="btn btn-delete btn-base" data-digit="←">←</button>
 
                             <button class="btn btn-base" data-digit="7">7</button>
                             <button class="btn btn-base" data-digit="8">8</button>
@@ -1738,6 +1738,7 @@
                         <button class="btn btn-function" style="padding: 12px;">e</button>
                         <button class="btn btn-operator" style="padding: 12px;">(</button>
                         <button class="btn btn-operator" style="padding: 12px;">)</button>
+                        <button class="btn btn-operator" style="padding: 12px;" title="參數分隔（nCr / nPr）">,</button>
                     </div>
                     <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-dark); border-radius: 12px; padding: 12px;">
                         <h4 style="font-size: 12px; margin-bottom: 8px; color: var(--text-dark-secondary);" data-i18n="sidebar_functions">支援函數</h4>
@@ -4130,7 +4131,10 @@
                 const pct = expr
                     .replace(/(\d+\.?\d*)\s*([+\-−])\s*(\d+\.?\d*)%/g, (_, a, op, b) => `${a}${op}(${a}*${b}/100)`)
                     .replace(/(\d+\.?\d*)\s*([*/×÷])\s*(\d+\.?\d*)%/g, (_, a, op, b) => `${a}${op}(${b}/100)`)
-                    .replace(/(\d+\.?\d*)%/g, '($1/100)');
+                    .replace(/(\d+\.?\d*)%/g, '($1/100)')
+                    // ' mod ' (engineering modulo key) → JS % — applied AFTER percent
+                    // handling so the two never collide
+                    .replace(/\s*mod\s*/gi, '%');
                 const processed = pct
                     .replace(/π/g, Math.PI)
                     .replace(/(?<![a-zA-Z])e(?![a-zA-Z0-9])/g, Math.E)
@@ -4237,7 +4241,7 @@
                     }
                     updateDisplay();
                 } else if (text === 'mod') {
-                    currentDisplay += '%';
+                    currentDisplay += ' mod ';
                     updateDisplay();
                 } else if (text === 'x²') {
                     if (currentDisplay !== '0' && /[\d)]$/.test(currentDisplay)) {

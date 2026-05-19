@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.1-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -59,6 +59,13 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 - **Added DEG / RAD angle-mode toggle** (defaults to DEG): new toolbar button, persisted in `localStorage`. `sin(90)`=1 matches what most users expect; radian mode also supported.
 - **Fixed blank unit-conversion result box** (MEDIUM): results ≥ 1000 were cleared due to a thousands-separator vs `type=number` conflict. Two-way conversion, category switching, and special temperature conversion all work now.
 - **`sw.js` cache bump**: the Service Worker is cache-first; `CACHE_NAME` was bumped so existing users receive the fixes immediately.
+
+**v3.5.1 (2026-05-20) follow-up fixes** — review continued into programmer / engineering / scientific modes:
+
+- **Engineering `mod` key broken** (v3.5.0 regression): the percentage pre-processing mis-rewrote the `%` emitted by `mod`; now handled separately — `7 mod 3`=1, percentages unaffected.
+- **Programmer HEX missing `C` key**: the hex `C` digit was absent from the keypad; restored — `C0`→DEC 192.
+- **`nCr(n,r)` / `nPr(n,r)` uninputtable**: no comma key existed anywhere; added `,` to the sidebar common-keys group — `nCr(5,2)`=10 works.
+- Known: `( ) π e ,` hide with the sidebar at ≤768px (mobile); tracked as the next dedicated task.
 
 See the [Changelog](CHANGELOG.md) for details.
 
