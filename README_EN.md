@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.5-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.6-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -69,6 +69,8 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 **v3.5.2 (2026-05-20) mobile responsive Bug C fix**:
 
 - **Mobile `( ) , π e` keys unreachable** (HIGH): at ≤768px the entire sidebar was `display:none`, making every function that needs a closing paren (`sin(`, `cos(`, `log(`, `exp(`, …) unusable on mobile. Fix strategy — zero DOM changes, pure CSS responsive rearrangement: at ≤768px the sidebar becomes a bottom-fixed floating bar (industry-standard mobile keyboard pattern), keeping only the 5 critical keys (π e ( ) ,) in a horizontal 5-column grid with `min-height: 44px` touch targets, translucent backdrop adapting to light/dark themes, and iPhone safe-area support. Desktop 1280 verified with zero regression.
+
+**v3.5.6 (2026-05-20) calculate engine boundary audit + Health group +5 formulas**: following v3.5.5's two engine bug fixes, this release runs a 12-case numerical boundary audit (large integers, floating-point error, divide-by-zero, log/sqrt edges, factorial, toFixed, constants, scientific notation) — the engine comes out clean. Also expands Health from 4 → **9 formulas** by adding TDEE (M/F), Body Fat % via Deurenberg (M/F), and Daily Water Intake. Formula library 83 → **88 total**. Example: a 30-year-old male, 70kg / 170cm, with activity factor 1.55 → TDEE 2507 kcal/day, body fat 19.77%.
 
 **v3.5.5 (2026-05-20) +20 formulas / new "Health" group / two latent calculate-engine bugs fixed**: the formula library grows from 63 → **83 cards (+32%)** and gains **Health** as the 6th group (BMI, BMR basal metabolic rate, target heart rate). Math gains 7 (Heron's formula, sector area/arc, arithmetic/geometric series sums, 2D vector length/dot product), Physics gains 5 (centripetal acceleration, spring SHM period, spring PE, Planck E=hf, kinetic friction), Finance gains 2 (effective annual rate EAR, break-even point BEP), Engineering gains 2 (LC resonance, RC cutoff frequency). The PR accidentally surfaced two latent calculate-engine bugs that had been there since launch: (1) the Math.E regex misreplaced the `e` inside scientific-notation literals like `6.626e-34` with `2.718`, breaking Planck / gravity / Coulomb formulas; (2) `toFixed(12)` underflowed tiny numbers like `3.313e-19` to 0. Both fixed together → Planck now shows `3.313e-19`, gravity shows `1.982e+20`.
 

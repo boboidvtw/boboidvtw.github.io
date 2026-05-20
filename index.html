@@ -2314,6 +2314,11 @@
             { id: 91, name: 'BMR 基礎代謝(男)', expr: '10*w+6.25*h-5*a+5',     vars: ['w','h','a'],         category: '代謝',  group: '健康' },
             { id: 92, name: 'BMR 基礎代謝(女)', expr: '10*w+6.25*h-5*a-161',   vars: ['w','h','a'],         category: '代謝',  group: '健康' },
             { id: 93, name: '目標心率(Karvonen)', expr: '(220-a)*intensity/100', vars: ['a','intensity'],   category: '心率',  group: '健康' },
+            { id: 94, name: 'TDEE 每日總消耗(男)', expr: '(10*w+6.25*h-5*a+5)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康' },
+            { id: 95, name: 'TDEE 每日總消耗(女)', expr: '(10*w+6.25*h-5*a-161)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康' },
+            { id: 96, name: '體脂率(男, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-16.2', vars: ['w','h','a'], category: '體位', group: '健康' },
+            { id: 97, name: '體脂率(女, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-5.4',  vars: ['w','h','a'], category: '體位', group: '健康' },
+            { id: 98, name: '每日水分需求(ml)',     expr: 'w*30',                              vars: ['w'],                  category: '水分', group: '健康' },
         ];
 
         // ========== 公式變數說明 ==========
@@ -2404,6 +2409,11 @@
             91: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
             92: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
             93: { a: '年齡', intensity: '強度 %（如 70）' },
+            94: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡', activity: '活動係數（久坐 1.2 / 輕活 1.375 / 中活 1.55 / 高活 1.725 / 極高 1.9）' },
+            95: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡', activity: '活動係數（久坐 1.2 / 輕活 1.375 / 中活 1.55 / 高活 1.725 / 極高 1.9）' },
+            96: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
+            97: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
+            98: { w: '體重 (kg)' },
         };
 
         // ========== 公式變數轉換（使用者輸入 → 公式實際值）==========

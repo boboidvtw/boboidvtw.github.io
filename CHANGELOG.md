@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.6] - 2026-05-20 — calculate engine 邊界 audit + 健康分類 +5 公式
+
+承 v3.5.5 修完兩個 calculate engine latent bug 後，主動跑了一輪數值邊界陷阱 audit（12 個 case：大整數溢位、浮點誤差、除以零、log/sqrt 邊界、factorial 邊界、toFixed/toPrecision 邊界、e/π 常數、科學記號）—— **engine 健全、無需修補**。同時拓展健康分類 +5 條公式，公式庫 83 → **88 條**、健康分類 4 → **9 條**。
+
+### Added
+
+- **+5 條健康公式**：
+  - **id 94 / 95：TDEE 每日總消耗（男 / 女）**：`(10*w+6.25*h-5*a±α)*activity`，含活動係數變數（久坐 1.2 / 輕活 1.375 / 中活 1.55 / 高活 1.725 / 極高 1.9）。例：70kg/170cm/30 男活動係數 1.55 → TDEE = 2507.125 大卡/日。
+  - **id 96 / 97：體脂率 Deurenberg（男 / 女）**：`1.20*BMI + 0.23*age - 16.2(男) / -5.4(女)`，公開公式，無須儀器即可估算。例：70kg/170cm/30 男 → 19.77% 落正常上緣；55kg/160cm/25 女 → 26.13% 落正常範圍。
+  - **id 98：每日水分需求**：`w*30`（ml），每公斤體重 30ml 經驗法則。70kg → 2100ml。
+
+### Verified (audit no fixes needed)
+
+calculate engine 邊界陷阱 audit（12 case 全合理）：
+
+| 類別 | Case | 行為 |
+|---|---|---|
+| 大整數 | `170!` = 7.257e+306 ✓、`171!` → Error（Inf）✓ | toPrecision string |
+| 大整數 | `nCr(170,85)` = 9.14e+49 ✓、`nCr(200,100)` → Error（Inf/Inf=NaN，可改用 multiplicative formula 但低使用率，列 Known/Next）| 規範 |
+| 浮點誤差 | `0.1+0.2` = 0.3（toFixed 自動規整）✓ | 正確 |
+| 浮點極限 | `sin(180°)` = 1.22e-16（design intent，浮點 EPSILON 量級）| 不修，列 Known |
+| 邊界 | `1/0`、`log(0)`、`log(-1)`、`sqrt(-1)`、`mod 0` → Error ✓ | 一致 |
+| factorial | 負數、小數 → Error ✓ | 一致 |
+| toFixed/toPrecision | 1e-6 / 9e-7 / 1.1e-6 / 1e15 / 9.9e14 邊界全對 ✓ | v3.5.5 修正成功 |
+| 常數 | e=2.718、π=3.14159、1.5e3=1500 ✓ | 不衝突 |
+
+### Verified (v3.5.6 new + regression)
+
+- **5 條新公式**：TDEE 男 2507.125 ✓、TDEE 女 1959.2 ✓、體脂男 19.77% ✓、體脂女 26.13% ✓、水分 2100ml ✓。
+- **既有公式回歸 7 條**：普朗克 3.313e-19、萬有引力 1.982e+20、BMI 24.22、BMR男 1617.5、圓面積 78.54、勾股 5、複利 16470.09 全綠。
+- console 全程零 error、健康 tab 9 卡完整顯示。
+
+### Changed
+
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.6`**。
+
+### Known / Next
+
+- **`nCr(n, r)` 大值優化**（low priority）：目前走 `factorial(n)/factorial(r)/factorial(n-r)`，n>170 因 factorial Inf 而失效。改用 multiplicative formula（n*(n-1)*…*(n-r+1)/r!，逐項累乘除）可算到 n>1000。實際使用率低、暫不修。
+- **`sin(180°)` 浮點殘渣顯示為 `1.22e-16`**：threshold-snap 為 0 對「真正極小結果」(如 1e-15) 有誤殺風險、暫不修。
+
+---
+
 ## [3.5.5] - 2026-05-20 — +20 公式 / 新增「健康」分類 / 修 calculate engine 兩個 latent bug
 
 公式庫從 63 條擴充到 **83 條（+32%）**，新增**健康**分類為第 6 個 group（原 5 個：數學/工程/科學/物理/金融）。SEO/AdSense 視角增傠 guide section、新增 v3.5.5 公式速覽段落。**意外揪出 calculate engine 兩個長期潛伏的 bug**（Math.E 誤替 + toFixed underflow），趁此版一起修。
