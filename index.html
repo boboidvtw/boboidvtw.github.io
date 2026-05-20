@@ -2047,6 +2047,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- /graphModal -->
 
         <!-- Content Enrichment for AdSense & SEO -->
         <section id="guide" style="max-width: 900px; margin: 40px auto; padding: 20px; background: var(--bg-dark-secondary); border-radius: 12px; color: var(--text-dark-secondary); line-height: 1.6; font-size: 0.95rem;">
@@ -2093,7 +2095,6 @@
                 <a href="mailto:boboidvtw+supercalc@gmail.com" style="color: var(--primary); text-decoration: none; margin: 0 10px;">聯絡我們</a>
             </p>
         </footer>
-    </div>
 
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
@@ -3043,7 +3044,11 @@
             const exprInput = document.getElementById('graphExprInput');
             const addBtn = document.getElementById('graphAddBtn');
             const tryAdd = () => {
-                const expr = exprInput.value.trim();
+                let expr = exprInput.value.trim();
+                if (!expr) return;
+                // v3.5.3：strip 常見 "y = " / "f(x) = " 前綴，避免使用者習慣性輸入
+                // 被誤判為 parameter（會建出虛假 y / x slider 且顯示成 "y = y=..."）
+                expr = expr.replace(/^\s*(?:y|f\s*\(\s*x\s*\))\s*=\s*/i, '');
                 if (!expr) return;
                 const result = addGraphFunction(expr);
                 if (!result.success) {
@@ -4380,16 +4385,40 @@
         formulaSearch.addEventListener('input', () => { renderFormulas(); renderCustomFormulas(); });
 
         // ========== Custom Formulas ==========
+        // v3.5.3 安全強化：自建公式 render 不再用 inline onclick 字串拼接
+        // （f.name / f.expr 為使用者輸入，若拼進 onclick 會造成 XSS — CWE-79）。
+        // 改：屬性層 HTML escape + addEventListener 綁定。
+        function escapeFormulaHtml(s) {
+            return String(s).replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
         function customFormulaItem(f) {
+            const safeName  = escapeFormulaHtml(f.name);
+            const safeExpr  = escapeFormulaHtml(f.expr);
+            const safeGroup = escapeFormulaHtml(f.group || '其他');
             return `
-                <div class="formula-item formula-item-custom">
-                    <div class="formula-item-content" onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
-                        <div class="formula-name">${f.name}</div>
-                        <div class="formula-expr">${f.expr}</div>
-                        <span class="formula-group-badge group-${f.group || '其他'}">${f.group || '其他'}</span>
+                <div class="formula-item formula-item-custom" data-formula-id="${f.id}">
+                    <div class="formula-item-content" data-formula-action="select">
+                        <div class="formula-name">${safeName}</div>
+                        <div class="formula-expr">${safeExpr}</div>
+                        <span class="formula-group-badge group-${safeGroup}">${safeGroup}</span>
                     </div>
-                    <button class="delete-formula-btn" onclick="deleteCustomFormula(${f.id})">✕</button>
+                    <button class="delete-formula-btn" data-formula-action="delete">✕</button>
                 </div>`;
+        }
+
+        function bindCustomFormulaEvents(container) {
+            container.querySelectorAll('.formula-item-custom').forEach(el => {
+                const id = Number(el.dataset.formulaId);
+                const f  = customFormulas.find(x => x.id === id);
+                if (!f) return;
+                const content = el.querySelector('[data-formula-action="select"]');
+                if (content) content.addEventListener('click', () => selectFormula(f.id, f.name, f.expr, f.vars));
+                const del = el.querySelector('[data-formula-action="delete"]');
+                if (del) del.addEventListener('click', (e) => { e.stopPropagation(); deleteCustomFormula(f.id); });
+            });
         }
 
         function renderCustomFormulas() {
@@ -4401,6 +4430,7 @@
                 list.innerHTML = customFormulas.length === 0
                     ? '<div class="empty-state">尚無自建公式</div>'
                     : customFormulas.map(customFormulaItem).join('');
+                bindCustomFormulaEvents(list);
             } else {
                 // 其他 tab：只顯示同分類的自建公式，無符合時顯示空提示
                 const matchSection = document.getElementById('customMatchSection');
@@ -4412,6 +4442,7 @@
                 matchList.innerHTML = matched.length === 0
                     ? '<div class="empty-state">尚無自建公式</div>'
                     : matched.map(customFormulaItem).join('');
+                bindCustomFormulaEvents(matchList);
             }
         }
 

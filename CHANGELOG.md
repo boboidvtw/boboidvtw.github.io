@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.3] - 2026-05-20 — 深審剩餘賣點 + 結構/安全/UX 三修
+
+繼 v3.5.2 完成手機響應式 Bug C 後，對 README 強調但尚未深審的賣點（函數繪圖 / 統計 / 3D / 公式庫 / Pro gate）做了瀏覽器逐功能實測。Pro gate（7 個：tangent / integral / slope / intersect / statistics / 3d / svg）全部正確攔截；free 功能（mark / PNG / special points / formula library / parametric sliders）端對端通過。
+
+過程中揪出三個既存問題並一次性修復：1 個 CRITICAL 結構錯誤（SEO/Footer 長期不渲染）、1 個 CRITICAL 安全漏洞（自建公式 XSS）、1 個 MEDIUM UX 問題（`y=` 前綴）。
+
+### Fixed
+
+- **graphModal 結構吞噬 `<section id="guide">` + `<footer>`（CRITICAL）**：原 HTML 中 `</div>` 閉合位置錯誤，把整個 SEO 教學專欄（AdSense 素材！）與頁尾 trust signals（版權、商標、條款、隱私、聯絡）誤包進 `#graphModal` 內。後果：
+  - modal **關閉**時（使用者 99% 時間）兩者整段 `display:none`，**從 site launch 起從未對使用者渲染**——SEO 內容白寫、AdSense 素材白配、footer trust signals 全失。
+  - modal **開啟**時 flex row 把它們橫向擠成 3 欄，graph modal 自身 content 被壓到 344px（max-width 應為 1100px）。
+  - **修法**：移動 `</div>` 閉合位置，讓 `section#guide` 與 `<footer>` 解放為 `<body>` 直接子孫。線上驗證 `curl https://boboidvtw.github.io/` 確認線上版本同樣中招，本修復同步生效。
+- **自建公式 XSS 注入漏洞（CRITICAL，CWE-79）**：`customFormulaItem()` 用樣板字串把使用者輸入的 `f.name` / `f.expr` 直接拼進 `onclick="selectFormula('${f.name}', ...)"`。PoC：name 填入 `test', '', []); window.__xss_fired__ = true; selectFormula(0, 'h` → 點該公式即執行任意 JS。攻擊面包含竊取 localStorage（含 Pro JWT token、saved/customFormulas、exchangeRates）、覆蓋 `gateProFeature` 繞過 Pro gate。**修法**：捨棄 inline `onclick=` 字串拼接，改用 `data-formula-id` + `data-formula-action="select|delete"` 屬性 + 渲染後 `addEventListener` 綁定（`bindCustomFormulaEvents()`）；name/expr/group 全部走新增的 `escapeFormulaHtml()` 五字元 HTML escape。完整 CRUD 端對端回歸（add → click → calc `(4/3)*π*3³`=113.097 → delete）通過、XSS payload 不再執行（`xssFired: false`）。Built-in 公式 render 採同樣不安全 pattern 但 data dev-controlled、無使用者 injection 面，本次未動。
+- **函數繪圖 `y=` / `f(x)=` 前綴被誤判為參數（MEDIUM）**：使用者很自然輸入 `y=x^2`，原 add 邏輯接受、清單顯示 `y = y=x^2`、額外建出 `y` slider（把 `y` 誤判為自由參數，因為 `y` 不在保留字表中）。**修法**：`tryAdd()` 在送入 `addGraphFunction()` 前先用 `/^\s*(?:y|f\s*\(\s*x\s*\))\s*=\s*/i` strip `y =` 與 `f(x) =` 前綴。回歸測試確認：`y=x^2` / `y = sin(x)` / `f(x) = x^3` 三種輸入皆 strip 為純表達式；合法的 `x^2+y^2`（無 `=`）完整保留並正確建出 `y` slider，未誤殺。
+
+### Changed
+
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.3`**：cache-first SW 必須 bump 才能讓既有使用者立即取得三項修復（特別是安全修復）。
+
+### Verified
+
+- viewport 1280×900 + 375×812 雙 viewport 驗證：modal 開啟時 content 取得完整 1100px、關閉時 `section#guide` + `footer` 在頁面底部正常渲染、手機 v3.5.2 浮動鍵列共存無回歸。
+- Pro gate 7 個 + free 功能 4 個全部行為符合預期，無誤鎖、無誤通。
+- 自建公式 XSS payload 不再執行，正常公式 CRUD + 計算流程完全保留。
+- 繪圖 / 公式 / 計算 console 全程零 error。
+
+### Known / Next
+
+- 統計（Phase 7）與 3D 表面繪圖（Phase 8）內部渲染品質尚未驗證——`ProManager.isProActive` 是 `writable:false` 無法 mock，需真實 Pro token 才能測。列入下一個有 Pro 環境時的待辦。
+
+---
+
 ## [3.5.2] - 2026-05-20 — 手機響應式 Bug C 修復
 
 修復 v3.5.1 Known/Next 列出的「手機側邊欄被隱藏導致函式無法閉合括號」嚴重缺陷。手機是計算機主場景，此 bug 使所有 `sin( cos( log( exp( asin( ... ` 函式於手機完全不可用。本次以純 CSS 響應式重排修復，DOM 零改動、桌機零回歸。

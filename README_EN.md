@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.3-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -69,6 +69,14 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 **v3.5.2 (2026-05-20) mobile responsive Bug C fix**:
 
 - **Mobile `( ) , π e` keys unreachable** (HIGH): at ≤768px the entire sidebar was `display:none`, making every function that needs a closing paren (`sin(`, `cos(`, `log(`, `exp(`, …) unusable on mobile. Fix strategy — zero DOM changes, pure CSS responsive rearrangement: at ≤768px the sidebar becomes a bottom-fixed floating bar (industry-standard mobile keyboard pattern), keeping only the 5 critical keys (π e ( ) ,) in a horizontal 5-column grid with `min-height: 44px` touch targets, translucent backdrop adapting to light/dark themes, and iPhone safe-area support. Desktop 1280 verified with zero regression.
+
+**v3.5.3 (2026-05-20) deep audit + triple fix**: a per-feature browser test of the headline features (function plot / statistics / 3D / formula library / Pro gate) surfaced three pre-existing bugs, fixed in one go:
+
+- **graphModal structure swallows SEO guide + footer** (CRITICAL, broken since site launch): a misplaced closing `</div>` nested `<section id="guide">` and `<footer>` inside the graph modal. While the modal is closed (99% of the time), both vanish under `display:none` — SEO content, AdSense material, copyright and trust signals **never rendered to users**. Fix: relocate the closing tag so they become direct body children.
+- **Custom-formula XSS injection** (CRITICAL, CWE-79): `customFormulaItem()` interpolated user-supplied name/expression directly into an inline `onclick="selectFormula('${name}', ...)"` string, enabling arbitrary JS execution that could exfiltrate localStorage (including the Pro JWT) or bypass the Pro gate. Fix: drop inline `onclick=`, switch to `data-*` attributes + `addEventListener` binding + HTML escaping.
+- **`y=` / `f(x)=` prefix mistaken for a parameter** (MEDIUM): function plot accepted `y=x^2`, displayed `y = y=x^2`, and spawned a bogus `y` slider (treating `y` as a free parameter). Fix: strip the prefix before evaluation; legitimate `x^2+y^2` (no `=`) still correctly treats `y` as a free parameter.
+
+All 7 Pro gates and 4 free features verified — no false lockouts, no accidental unlocks.
 
 See the [Changelog](CHANGELOG.md) for details.
 
