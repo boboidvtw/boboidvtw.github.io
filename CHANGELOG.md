@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.4] - 2026-05-20 — built-in 公式 render 統一 escape pattern（技術債清掃）
+
+延續 v3.5.3 自建公式 XSS 修復——當時為避免擴大改動，built-in 公式 render（`renderFormulas()`）的同款不安全 `onclick=` 字串拼接 pattern 暫時保留為已知技術債（`builtInFormulas` 完全 dev-controlled、無使用者 injection 面）。本版統一兩條 render path 的 pattern，徹底清掃。
+
+### Changed
+
+- **built-in 公式 render 改用 `data-*` + `addEventListener` pattern（技術債清掃 / defense-in-depth）**：原 `renderFormulas()` 使用 `onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ...)"` 內聯字串拼接，雖然 `builtInFormulas` 為 dev-controlled 無使用者 injection 面，但若日後加入含 `'` 的公式名稱會 break，且兩條 render path 不一致是維護負擔。**修法**：新增 `builtInFormulaItem()` + `bindBuiltInFormulaEvents()` 兩個輔助函式，與 v3.5.3 的 `customFormulaItem` / `bindCustomFormulaEvents` 結構完全對齊；name / expr / category / group 全部走 `escapeFormulaHtml()`；click 用 `addEventListener` 從 `data-formula-id` 反查物件後呼叫 `selectFormula`。
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.4`**：cache-first SW 必須 bump 讓既有使用者取得新 render path。
+
+### Verified
+
+- 63 張 built-in 公式卡全部以 `data-formula-source="builtin"` render，inline onclick 殘留 0 個。
+- 端對端：圓的面積 r=5 → 78.539816339745、勾股定理 a=3 b=4 → 5、複利終值 P=10000 r=5 n=12 t=10 → 16470.0949769028。
+- 自建公式 path 完全未動，相關函式（`customFormulaItem` / `bindCustomFormulaEvents`）與行為皆保留。
+- console 零 error。
+
+### Known / Next
+
+- 統計（Phase 7）與 3D 表面繪圖（Phase 8）仍待真實 Pro token 驗證內部渲染品質（自 v3.5.3 起延續）。
+
+---
+
 ## [3.5.3] - 2026-05-20 — 深審剩餘賣點 + 結構/安全/UX 三修
 
 繼 v3.5.2 完成手機響應式 Bug C 後，對 README 強調但尚未深審的賣點（函數繪圖 / 統計 / 3D / 公式庫 / Pro gate）做了瀏覽器逐功能實測。Pro gate（7 個：tangent / integral / slope / intersect / statistics / 3d / svg）全部正確攔截；free 功能（mark / PNG / special points / formula library / parametric sliders）端對端通過。

@@ -4372,14 +4372,8 @@
                 return;
             }
 
-            formulaList.innerHTML = filtered.map(f => `
-                <div class="formula-item" onclick="selectFormula(${f.id}, '${f.name}', '${f.expr}', ${JSON.stringify(f.vars).replace(/"/g, '&quot;')})">
-                    <div class="formula-name">${f.name}</div>
-                    <div class="formula-expr">${f.expr}</div>
-                    <span class="formula-category">${f.category}</span>
-                    <span class="formula-group-badge group-${f.group}">${f.group}</span>
-                </div>
-            `).join('');
+            formulaList.innerHTML = filtered.map(builtInFormulaItem).join('');
+            bindBuiltInFormulaEvents(formulaList);
         }
 
         formulaSearch.addEventListener('input', () => { renderFormulas(); renderCustomFormulas(); });
@@ -4388,10 +4382,34 @@
         // v3.5.3 安全強化：自建公式 render 不再用 inline onclick 字串拼接
         // （f.name / f.expr 為使用者輸入，若拼進 onclick 會造成 XSS — CWE-79）。
         // 改：屬性層 HTML escape + addEventListener 綁定。
+        // v3.5.4：built-in 公式 render 也統一採用此 pattern（技術債清掃 + 預防性）。
         function escapeFormulaHtml(s) {
             return String(s).replace(/[&<>"']/g, ch => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[ch]));
+        }
+
+        function builtInFormulaItem(f) {
+            const safeName     = escapeFormulaHtml(f.name);
+            const safeExpr     = escapeFormulaHtml(f.expr);
+            const safeCategory = escapeFormulaHtml(f.category);
+            const safeGroup    = escapeFormulaHtml(f.group);
+            return `
+                <div class="formula-item" data-formula-id="${f.id}" data-formula-source="builtin">
+                    <div class="formula-name">${safeName}</div>
+                    <div class="formula-expr">${safeExpr}</div>
+                    <span class="formula-category">${safeCategory}</span>
+                    <span class="formula-group-badge group-${safeGroup}">${safeGroup}</span>
+                </div>`;
+        }
+
+        function bindBuiltInFormulaEvents(container) {
+            container.querySelectorAll('[data-formula-source="builtin"]').forEach(el => {
+                const id = Number(el.dataset.formulaId);
+                const f  = builtInFormulas.find(x => x.id === id);
+                if (!f) return;
+                el.addEventListener('click', () => selectFormula(f.id, f.name, f.expr, f.vars));
+            });
         }
 
         function customFormulaItem(f) {
