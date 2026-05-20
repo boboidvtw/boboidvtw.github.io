@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.5] - 2026-05-20 — +20 公式 / 新增「健康」分類 / 修 calculate engine 兩個 latent bug
+
+公式庫從 63 條擴充到 **83 條（+32%）**，新增**健康**分類為第 6 個 group（原 5 個：數學/工程/科學/物理/金融）。SEO/AdSense 視角增傠 guide section、新增 v3.5.5 公式速覽段落。**意外揪出 calculate engine 兩個長期潛伏的 bug**（Math.E 誤替 + toFixed underflow），趁此版一起修。
+
+### Added
+
+- **+20 條新公式**（按 SEO/實用排序）：
+  - **數學 7 條**（id 26-29, 58-60）：海倫公式（已知三邊求三角形面積）、扇形面積、扇形弧長（兩者皆自動度→弧度換算）、等差數列和、等比數列和、二維向量長度、二維向量內積。
+  - **金融 2 條**（id 48-49）：實質年利率 EAR（揭穿名目利率 vs 實際成本）、損益平衡點 BEP（創業必備）。
+  - **工程 2 條**（id 61-62）：LC 諧振頻率、RC 截止頻率（濾波器與震盪電路設計）。
+  - **物理 5 條**（id 82-86）：向心加速度、彈簧簡諧運動週期、彈簧位能、普朗克量子能量 E=hf、動摩擦力。
+  - **健康 4 條**（id 90-93，**新分類**）：BMI 身體質量指數（自動 cm→m）、BMR 基礎代謝率（採 Mifflin-St Jeor 公式，男女各一條）、目標心率 Karvonen 法。
+- **新分類「健康」**：`formula-cats` tab 新增按鈕、CSS `.group-健康` 配橘色 `#fb923c`、與既有 5 group 視覺區分。
+- **`varDescMap` 補 20 條變數說明 + `varTransform` 補 3 條換算**（扇形 theta 度→弧度、EAR r 百分比→小數）。
+- **guide section SEO 內容**：原「47 條公式」更新為「83 條公式」+「六大領域」、新增「v3.5.5 新增公式速覽」章節（4 段：數學進階 / 健康自我量測 / 物理工程 / 金融進階），含 BMI 計算實例（70kg/170cm → BMI 24.22）強化 AdSense indexable 內容。
+
+### Fixed
+
+- **🔴 calculate engine — Math.E 誤替為科學記號**（latent，自始即有）：原 regex `(?<![a-zA-Z])e(?![a-zA-Z0-9])` 對 `6.626e-34` 中的 `e` 誤匹配（lookbehind 沒排除數字），替換成 `Math.E` 後表達式變 `6.626Math.E-34*...`，整個 calculate throw → handler 跳過寫 display → 普朗克公式顯示前次殘留值。修法：lookbehind 加數字排除 → `(?<![a-zA-Z0-9])e(?![a-zA-Z0-9])`。同時修復萬有引力（含 `6.674e-11`）、庫倫力（含 `8.99e9`）等含科學記號常數的公式。
+- **🔴 calculate engine — toFixed(12) 對極小數字 underflow 為 0**（latent，自始即有）：原 `parseFloat(result.toFixed(12))` 對 `3.313e-19` 之類數值，`toFixed(12)="0.000000000000"` → parseFloat → 0。修法：`Math.abs(result)` 在 `[1e-6, 1e15)` 範圍仍走 `toFixed(12)`；超出範圍改用 `toPrecision(10)` 回字串，保留科學記號顯示（如 `"3.313e-19"`、`"1.982e+20"`）。
+- **既有公式回歸**：e^x（id 19）、波耳能量（id 57）、庫倫力（id 78）、萬有引力（id 79）、圓面積（id 1）、勾股（id 11）、複利（id 39）端對端通過。
+
+### Changed
+
+- **`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.5.5`**：cache-first SW 必須 bump 讓既有使用者取得新公式 + bug fix。
+
+### Verified
+
+- 83 公式卡全部 render（v3.5.4 統一 escape pattern 仍在線）。
+- v3.5.5 新增 20 條全部端對端通過：海倫(3,4,5)=6 ✓、扇形面積 r=10 θ=60°=52.36 ✓、等差和(1..10)=55 ✓、等比和(1,2,10)=1023 ✓、EAR(12%,12)=0.1268 ✓、LC(1mH,1μF)=5032.92Hz ✓、簡諧(m=1,k=4)=π ✓、普朗克 f=5e14=3.313e-19 ✓、BMI(70,170)=24.22 ✓、BMR男(70,170,30)=1617.5 ✓、目標心率(30,70)=133 ✓。
+- 既有 7 條回歸通過：e^x(2)=7.389、波耳(n=1)=-13.6、庫倫(1μC,1μC,1m)=0.00899、萬有引力(地球月球)=1.982e+20、圓面積(r=5)=78.54、勾股(3,4)=5、複利(10000,5,12,10)=16470.09。
+- 健康 tab 過濾正確顯示 4 卡、橘色 badge 配色與其他 5 group 區分。
+- console 全程零 error。
+
+### Known / Next
+
+- 萬有引力 / 普朗克等極端數字現用 toPrecision(10) 科學記號 string 輸出，與 toFixed(12) number 輸出在 saved formulas 內 type 不一致（一個 string、一個 number）。對 UI 顯示無影響，但若日後 saved formulas 序列化或重新計算需考慮 type-aware 處理。
+
+---
+
 ## [3.5.4] - 2026-05-20 — built-in 公式 render 統一 escape pattern（技術債清掃）
 
 延續 v3.5.3 自建公式 XSS 修復——當時為避免擴大改動，built-in 公式 render（`renderFormulas()`）的同款不安全 `onclick=` 字串拼接 pattern 暫時保留為已知技術債（`builtInFormulas` 完全 dev-controlled、無使用者 injection 面）。本版統一兩條 render path 的 pattern，徹底清掃。

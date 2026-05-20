@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.4-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5.5-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -69,6 +69,8 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 **v3.5.2 (2026-05-20) mobile responsive Bug C fix**:
 
 - **Mobile `( ) , π e` keys unreachable** (HIGH): at ≤768px the entire sidebar was `display:none`, making every function that needs a closing paren (`sin(`, `cos(`, `log(`, `exp(`, …) unusable on mobile. Fix strategy — zero DOM changes, pure CSS responsive rearrangement: at ≤768px the sidebar becomes a bottom-fixed floating bar (industry-standard mobile keyboard pattern), keeping only the 5 critical keys (π e ( ) ,) in a horizontal 5-column grid with `min-height: 44px` touch targets, translucent backdrop adapting to light/dark themes, and iPhone safe-area support. Desktop 1280 verified with zero regression.
+
+**v3.5.5 (2026-05-20) +20 formulas / new "Health" group / two latent calculate-engine bugs fixed**: the formula library grows from 63 → **83 cards (+32%)** and gains **Health** as the 6th group (BMI, BMR basal metabolic rate, target heart rate). Math gains 7 (Heron's formula, sector area/arc, arithmetic/geometric series sums, 2D vector length/dot product), Physics gains 5 (centripetal acceleration, spring SHM period, spring PE, Planck E=hf, kinetic friction), Finance gains 2 (effective annual rate EAR, break-even point BEP), Engineering gains 2 (LC resonance, RC cutoff frequency). The PR accidentally surfaced two latent calculate-engine bugs that had been there since launch: (1) the Math.E regex misreplaced the `e` inside scientific-notation literals like `6.626e-34` with `2.718`, breaking Planck / gravity / Coulomb formulas; (2) `toFixed(12)` underflowed tiny numbers like `3.313e-19` to 0. Both fixed together → Planck now shows `3.313e-19`, gravity shows `1.982e+20`.
 
 **v3.5.4 (2026-05-20) unified escape pattern for built-in formula render**: after v3.5.3 closed the custom-formula XSS, the built-in formula render (63 cards) still used the same unsafe `onclick=` string interpolation, kept as known tech debt (no user-injection surface, but would break the day any formula name contained `'`). This release aligns both render paths — `data-*` attributes + `addEventListener` + `escapeFormulaHtml()`. Defense-in-depth, zero functional change. End-to-end verified: circle area r=5 → 78.5398, Pythagoras a=3 b=4 → 5, compound interest P=10000 r=5 n=12 t=10 → 16470.0949.
 

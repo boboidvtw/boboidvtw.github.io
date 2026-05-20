@@ -616,6 +616,7 @@
         .group-科學 { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
         .group-物理 { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
         .group-金融 { background: rgba(251, 113, 133, 0.15); color: #fb7185; }
+        .group-健康 { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
 
         .section-title {
             font-size: 14px; font-weight: 700;
@@ -1722,6 +1723,7 @@
                         <button class="fcbtn" data-fcat="科學">科學</button>
                         <button class="fcbtn" data-fcat="物理">物理</button>
                         <button class="fcbtn" data-fcat="金融">金融</button>
+                        <button class="fcbtn" data-fcat="健康">健康</button>
                         <button class="fcbtn fcbtn-custom" data-fcat="custom">✏️ 自建</button>
                     </div>
 
@@ -2064,9 +2066,15 @@
             <p>內建長度、重量、溫度、面積等八大類別。特別支援台灣常見的「坪」（1 坪 ≈ 3.305785 平方公尺）與「台斤」（1 台斤 = 0.6 公斤）。透過串接 ExchangeRate-API，我們提供每小時更新一次的即時匯率資料，您可以一鍵將換算出的金額帶回計算機中繼續運算。</p>
 
             <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">4. 內建公式與自建公式</h3>
-            <p>涵蓋數學、工程、科學、物理、金融五大領域的 47 條公式。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--primary); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。</p>
+            <p>涵蓋數學、工程、科學、物理、金融、健康六大領域共 <strong>83 條公式</strong>。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--primary); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。v3.5.5 新增 20 條熱門公式，覆蓋國高中數學競賽常考、健康族群常用、創業財管必備。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">5. 📝 實用計算教學專欄</h3>
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">5. 🆕 v3.5.5 新增公式速覽</h3>
+            <p><strong>📐 數學進階（7 條）：</strong>海倫公式（已知三邊求三角形面積）、扇形面積與弧長（自動度→弧度換算）、等差與等比數列求和 Sn、二維向量長度與內積。涵蓋國中至高中數學的常考必背公式，學生族群可直接代入快速驗算。</p>
+            <p><strong>⚖️ 健康自我量測（4 條）：</strong>BMI 身體質量指數（自動換算公分→公尺）、BMR 基礎代謝率（採用最新 Mifflin-St Jeor 公式，比傳統 Harris-Benedict 更精準，分男女兩條）、目標心率 Karvonen 法（健身強度計算）。例：體重 70 公斤、身高 170 公分 → BMI ≈ 24.22，落在正常範圍上緣；30 歲男性 BMR ≈ 1648 大卡/日。</p>
+            <p><strong>🔬 物理與工程（7 條）：</strong>向心加速度 v²/r、彈簧簡諧運動週期 2π√(m/k)、彈簧位能 ½kx²、普朗克量子能量 E=hf、動摩擦力 μmg。電子工程 LC 諧振頻率與 RC 截止頻率，用於濾波器與震盪電路設計。</p>
+            <p><strong>💼 金融進階（2 條）：</strong>實質年利率 EAR — 揭穿「名目利率 12% 月複利」實際是 12.68% 的真相；損益平衡點 BEP — 創業者必算的「賣多少才回本」公式。</p>
+
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">6. 📝 實用計算教學專欄</h3>
             <ul style="list-style: none; padding: 0; margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
                 <li><a href="docs/mortgage.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">🏠 房貸本息攤還公式與計算原理</a></li>
                 <li><a href="docs/trig-functions.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">📐 三角函數 (Sin,Cos,Tan) 速查表教學</a></li>
@@ -2236,6 +2244,10 @@
             { id: 23, name: '二次函數',    expr: 'a*x^2+b*x+c',          vars: ['x','a','b','c'],       category: '函數',   group: '數學' },
             { id: 24, name: '判別式',      expr: 'b^2-4*a*c',            vars: ['a','b','c'],           category: '函數',   group: '數學' },
             { id: 25, name: '兩點距離',    expr: 'sqrt((x2-x1)^2+(y2-y1)^2)', vars: ['x1','y1','x2','y2'], category: '座標', group: '數學' },
+            { id: 26, name: '海倫公式',    expr: 'sqrt(((a+b+c)/2)*((a+b+c)/2-a)*((a+b+c)/2-b)*((a+b+c)/2-c))', vars: ['a','b','c'], category: '三角形', group: '數學' },
+            { id: 27, name: '扇形面積',    expr: '0.5*r^2*theta',        vars: ['r','theta'],           category: '面積',   group: '數學' },
+            { id: 28, name: '扇形弧長',    expr: 'r*theta',              vars: ['r','theta'],           category: '周長',   group: '數學' },
+            { id: 29, name: '等差數列和',  expr: 'n/2*(2*a+(n-1)*d)',    vars: ['n','a','d'],           category: '數列',   group: '數學' },
 
             // 工程
             { id: 30, name: '歐姆定律',      expr: 'I*R',                    vars: ['I','R'],             category: '電學',  group: '工程' },
@@ -2256,6 +2268,8 @@
             { id: 45, name: '投資報酬率 ROI', expr: '(V2-V1)/V1*100',           vars: ['V2','V1'],         category: '財務',  group: '金融' },
             { id: 46, name: '72法則',         expr: '72/r',                      vars: ['r'],               category: '財務',  group: '金融' },
             { id: 47, name: '本益比 P/E',     expr: 'P/E',                       vars: ['P','E'],           category: '財務',  group: '金融' },
+            { id: 48, name: '實質年利率 EAR', expr: '(1+r/n)^n-1',               vars: ['r','n'],           category: '財務',  group: '金融' },
+            { id: 49, name: '損益平衡點',     expr: 'FC/(P-VC)',                 vars: ['FC','P','VC'],     category: '財務',  group: '金融' },
 
             // 科學
             { id: 50, name: '理想氣體(壓力)', expr: 'n*8.314*T/V',            vars: ['n','T','V'],         category: '化學',  group: '科學' },
@@ -2266,6 +2280,15 @@
             { id: 55, name: '密度',            expr: 'm/V',                    vars: ['m','V'],             category: '化學',  group: '科學' },
             { id: 56, name: '化學產率',        expr: '(actual/theoretical)*100', vars: ['actual','theoretical'], category: '化學', group: '科學' },
             { id: 57, name: '波耳模型能量',    expr: '-13.6/n^2',              vars: ['n'],                 category: '量子',  group: '科學' },
+
+            // 數學（補：數列 + 向量）
+            { id: 58, name: '等比數列和',    expr: 'a*(1-q^n)/(1-q)',        vars: ['a','q','n'],         category: '數列',   group: '數學' },
+            { id: 59, name: '向量長度 (2D)', expr: 'sqrt(x^2+y^2)',          vars: ['x','y'],             category: '座標',   group: '數學' },
+            { id: 60, name: '向量內積 (2D)', expr: 'x1*x2+y1*y2',            vars: ['x1','y1','x2','y2'], category: '座標',   group: '數學' },
+
+            // 工程（補：信號濾波）
+            { id: 61, name: 'LC 諧振頻率',   expr: '1/(2*π*sqrt(L*C))',      vars: ['L','C'],             category: '信號',  group: '工程' },
+            { id: 62, name: 'RC 截止頻率',   expr: '1/(2*π*R*C)',            vars: ['R','C'],             category: '信號',  group: '工程' },
 
             // 物理
             { id: 70, name: '牛頓第二定律',   expr: 'm*a',                    vars: ['m','a'],             category: '力學',  group: '物理' },
@@ -2280,6 +2303,17 @@
             { id: 79, name: '萬有引力',        expr: '6.674e-11*m1*m2/r^2',    vars: ['m1','m2','r'],       category: '引力',  group: '物理' },
             { id: 80, name: '電場強度',        expr: 'F/q',                    vars: ['F','q'],             category: '電磁',  group: '物理' },
             { id: 81, name: '歐姆定律(電壓)',  expr: 'I*R',                    vars: ['I','R'],             category: '電磁',  group: '物理' },
+            { id: 82, name: '向心加速度',       expr: 'v^2/r',                  vars: ['v','r'],             category: '力學',  group: '物理' },
+            { id: 83, name: '簡諧週期(彈簧)',   expr: '2*π*sqrt(m/k)',          vars: ['m','k'],             category: '振動',  group: '物理' },
+            { id: 84, name: '彈簧位能',         expr: '0.5*k*x^2',              vars: ['k','x'],             category: '振動',  group: '物理' },
+            { id: 85, name: '普朗克能量 E=hf',  expr: '6.626e-34*f',            vars: ['f'],                 category: '量子',  group: '物理' },
+            { id: 86, name: '動摩擦力',         expr: 'mu*m*9.80665',           vars: ['mu','m'],            category: '力學',  group: '物理' },
+
+            // 健康（新分類 — BMI / BMR / 目標心率）
+            { id: 90, name: 'BMI 身體質量指數', expr: 'w/((h/100)^2)',         vars: ['w','h'],             category: '體位',  group: '健康' },
+            { id: 91, name: 'BMR 基礎代謝(男)', expr: '10*w+6.25*h-5*a+5',     vars: ['w','h','a'],         category: '代謝',  group: '健康' },
+            { id: 92, name: 'BMR 基礎代謝(女)', expr: '10*w+6.25*h-5*a-161',   vars: ['w','h','a'],         category: '代謝',  group: '健康' },
+            { id: 93, name: '目標心率(Karvonen)', expr: '(220-a)*intensity/100', vars: ['a','intensity'],   category: '心率',  group: '健康' },
         ];
 
         // ========== 公式變數說明 ==========
@@ -2307,6 +2341,13 @@
             23: { x: 'x 值', a: 'x² 係數', b: 'x 係數', c: '常數項' },
             24: { a: 'x² 係數', b: 'x 係數', c: '常數項' },
             25: { x1: '點1 x', y1: '點1 y', x2: '點2 x', y2: '點2 y' },
+            26: { a: '邊 a', b: '邊 b', c: '邊 c' },
+            27: { r: '半徑', theta: '夾角（度）' },
+            28: { r: '半徑', theta: '夾角（度）' },
+            29: { n: '項數', a: '首項', d: '公差' },
+            58: { a: '首項', q: '公比 (q≠1)', n: '項數' },
+            59: { x: 'x 分量', y: 'y 分量' },
+            60: { x1: '向量1 x', y1: '向量1 y', x2: '向量2 x', y2: '向量2 y' },
             // 工程
             30: { I: '電流 (A)', R: '電阻 (Ω)' },
             31: { V: '電壓 (V)', I: '電流 (A)' },
@@ -2317,6 +2358,8 @@
             36: { V: '量測電壓', V0: '參考電壓' },
             37: { F: '力 (N)', d: '位移 (m)' },
             38: { Pout: '輸出功率', Pin: '輸入功率' },
+            61: { L: '電感 (H)', C: '電容 (F)' },
+            62: { R: '電阻 (Ω)', C: '電容 (F)' },
             // 金融
             39: { P: '本金', r: '年利率 %（如 5）', n: '每年複利次數', t: '年數' },
             40: { P: '貸款金額', r: '年利率 %（如 3）→ 自動換算月利率', n: '總期數（月）' },
@@ -2327,6 +2370,8 @@
             45: { V2: '現值（賣出價）', V1: '成本（買入價）' },
             46: { r: '年化報酬率 %（如 6）' },
             47: { P: '股價', E: '每股盈餘 EPS' },
+            48: { r: '名目年利率 %（如 5）', n: '每年複利次數' },
+            49: { FC: '固定成本', P: '單位售價', VC: '單位變動成本' },
             // 科學
             50: { n: '莫耳數 (mol)', T: '溫度 (K)', V: '體積 (L)' },
             51: { m: '質量 (g)', M: '莫耳質量 (g/mol)' },
@@ -2349,16 +2394,29 @@
             79: { m1: '質量1 (kg)', m2: '質量2 (kg)', r: '距離 (m)' },
             80: { F: '受力 (N)', q: '電荷量 (C)' },
             81: { I: '電流 (A)', R: '電阻 (Ω)' },
+            82: { v: '速度 (m/s)', r: '半徑 (m)' },
+            83: { m: '質量 (kg)', k: '彈性係數 (N/m)' },
+            84: { k: '彈性係數 (N/m)', x: '形變 (m)' },
+            85: { f: '頻率 (Hz)' },
+            86: { mu: '摩擦係數', m: '質量 (kg)' },
+            // 健康
+            90: { w: '體重 (kg)', h: '身高 (cm)' },
+            91: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
+            92: { w: '體重 (kg)', h: '身高 (cm)', a: '年齡' },
+            93: { a: '年齡', intensity: '強度 %（如 70）' },
         };
 
         // ========== 公式變數轉換（使用者輸入 → 公式實際值）==========
         const varTransform = {
+            27: { theta: v => v * Math.PI / 180 }, // 扇形面積：度 → 弧度
+            28: { theta: v => v * Math.PI / 180 }, // 扇形弧長：度 → 弧度
             39: { r: v => v / 100 },           // 年利率% → 小數
             40: { r: v => v / 100 / 12 },      // 年利率% → 月利率小數
             41: { r: v => v / 100 },
             42: { r: v => v / 100 },
             43: { r: v => v / 100 },
             44: { r: v => v / 100 },
+            48: { r: v => v / 100 },           // 實質年利率：名目% → 小數
         };
 
         // ========== 應用狀態 ==========
@@ -4195,7 +4253,8 @@
                     .replace(/\s*mod\s*/gi, '%');
                 const processed = pct
                     .replace(/π/g, Math.PI)
-                    .replace(/(?<![a-zA-Z])e(?![a-zA-Z0-9])/g, Math.E)
+                    // v3.5.5: lookbehind 加數字排除，避免把科學記號 `6.626e-34` 中的 `e` 誤替為 Math.E
+                    .replace(/(?<![a-zA-Z0-9])e(?![a-zA-Z0-9])/g, Math.E)
                     .replace(/√/g, 'sqrt')
                     .replace(/\^/g, '**')
                     .replace(/÷/g, '/')
@@ -4236,7 +4295,16 @@
                 const _atan = x => Math.atan(x) / _ar;
                 const calcFn = new Function('factorial', 'nCr', 'nPr', 'Math', '_sin', '_cos', '_tan', '_asin', '_acos', '_atan', 'return (' + processed + ')');
                 const result = calcFn(factorial, nCr, nPr, Math, _sin, _cos, _tan, _asin, _acos, _atan);
-                return typeof result === 'number' && isFinite(result) ? parseFloat(result.toFixed(12)) : 'Error';
+                if (typeof result !== 'number' || !isFinite(result)) return 'Error';
+                // v3.5.5: 極小（< 1e-6）或極大（>= 1e15）數字改用 toPrecision 保留科學記號，
+                // 避免 toFixed(12) 對 6.626e-34 之類數值 underflow 為 0；其餘維持 toFixed(12) 行為。
+                const abs = Math.abs(result);
+                if (result !== 0 && (abs < 1e-6 || abs >= 1e15)) {
+                    // 回 string 保留科學記號顯示（如 "3.313e-19" / "1.982e+20"）
+                    // 而非 Number() 又轉回普通數值（toString 對 1e20 會展開為 20 位完整數字）
+                    return result.toPrecision(10);
+                }
+                return parseFloat(result.toFixed(12));
             } catch (e) {
                 return 'Error';
             }
