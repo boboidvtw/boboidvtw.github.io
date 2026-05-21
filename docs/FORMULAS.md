@@ -1,100 +1,182 @@
-# Formula Library — Complete Reference
+# 公式庫完整清單 — Formula Library Complete Reference
 
-## Geometry（幾何）
+> ∑ Calc 內建公式庫，共 **88 條**，分 6 大領域。
+> 本清單與 `index.html` 的 `builtInFormulas` 同步（v3.5.7 / 2026-05-21）。
+> 變數的中文說明請見 app 內點擊公式卡片後的輸入框 placeholder。
 
-### 2D Shapes
-
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Circle area | A = πr² | r = radius |
-| Circle circumference | C = 2πr | r = radius |
-| Rectangle area | A = l × w | l = length, w = width |
-| Triangle area | A = ½ × b × h | b = base, h = height |
-| Trapezoid area | A = ½(a+b)h | a,b = parallel sides, h = height |
-| Ellipse area | A = πab | a,b = semi-axes |
-| Regular polygon area | A = ½ × P × a | P = perimeter, a = apothem |
-
-### 3D Shapes
-
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Sphere volume | V = (4/3)πr³ | r = radius |
-| Sphere surface area | A = 4πr² | r = radius |
-| Cylinder volume | V = πr²h | r = radius, h = height |
-| Cylinder surface area | A = 2πr(r+h) | r = radius, h = height |
-| Cone volume | V = (1/3)πr²h | r = radius, h = height |
-| Cube volume | V = a³ | a = side length |
-| Rectangular prism volume | V = l × w × h | l,w,h = dimensions |
+| 領域 | 條數 |
+|------|------|
+| 數學 Math | 32 |
+| 物理 Physics | 17 |
+| 金融 Finance | 11 |
+| 工程 Engineering | 11 |
+| 健康 Health | 9 |
+| 科學 Science | 8 |
+| **合計 Total** | **88** |
 
 ---
 
-## Physics（物理）
+## 數學 Math（32 條）
 
-### Mechanics
+### 面積 / 周長 / 體積
 
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Newton's 2nd law | F = ma | m = mass, a = acceleration |
-| Kinetic energy | Ek = ½mv² | m = mass, v = velocity |
-| Gravitational PE | Ep = mgh | m = mass, g = 9.8, h = height |
-| Work | W = F × d × cos(θ) | F = force, d = distance, θ = angle |
-| Power | P = W/t | W = work, t = time |
-| Momentum | p = mv | m = mass, v = velocity |
-| Velocity (uniform) | v = d/t | d = distance, t = time |
-| Free fall | h = ½gt² | g = 9.8, t = time |
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 1 | 圓的面積 | `π*r^2` | r |
+| 2 | 矩形面積 | `l*w` | l, w |
+| 3 | 三角形面積 | `0.5*b*h` | b, h |
+| 4 | 梯形面積 | `0.5*(a+b)*h` | a, b, h |
+| 5 | 圓的周長 | `2*π*r` | r |
+| 6 | 矩形周長 | `2*(l+w)` | l, w |
+| 7 | 球的體積 | `(4/3)*π*r^3` | r |
+| 8 | 圓柱體積 | `π*r^2*h` | r, h |
+| 9 | 直方體體積 | `l*w*h` | l, w, h |
+| 10 | 圓錐體積 | `(1/3)*π*r^2*h` | r, h |
+| 27 | 扇形面積 | `0.5*r^2*theta` | r, theta |
+| 28 | 扇形弧長 | `r*theta` | r, theta |
 
-### Waves & Optics
+### 三角形 / 座標
 
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Wave speed | v = fλ | f = frequency, λ = wavelength |
-| Snell's law | n₁sin(θ₁) = n₂sin(θ₂) | n = refractive index |
-| Lens equation | 1/f = 1/v + 1/u | f = focal length |
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 11 | 勾股定理 | `sqrt(a^2+b^2)` | a, b |
+| 12 | 三角形周長 | `a+b+c` | a, b, c |
+| 26 | 海倫公式 | `sqrt(((a+b+c)/2)*((a+b+c)/2-a)*((a+b+c)/2-b)*((a+b+c)/2-c))` | a, b, c |
+| 25 | 兩點距離 | `sqrt((x2-x1)^2+(y2-y1)^2)` | x1, y1, x2, y2 |
+| 59 | 向量長度 (2D) | `sqrt(x^2+y^2)` | x, y |
+| 60 | 向量內積 (2D) | `x1*x2+y1*y2` | x1, y1, x2, y2 |
 
-### Thermodynamics
+### 代數 / 函數 / 數列
 
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Heat transfer | Q = mcΔT | m = mass, c = specific heat, ΔT = temp change |
-| Thermal expansion | ΔL = αL₀ΔT | α = coefficient, L₀ = original length |
-
-### Electromagnetism
-
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Ohm's law | V = IR | I = current, R = resistance |
-| Power (electrical) | P = IV = I²R = V²/R | I = current, V = voltage, R = resistance |
-| Capacitance | C = Q/V | Q = charge, V = voltage |
-| Series resistance | R = R₁ + R₂ + ... | R = resistance |
-| Parallel resistance | 1/R = 1/R₁ + 1/R₂ + ... | R = resistance |
-
----
-
-## Chemistry（化學）
-
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Ideal gas law | PV = nRT | P = pressure, V = volume, n = moles, R = 8.314, T = temperature (K) |
-| Moles | n = m/M | m = mass (g), M = molar mass (g/mol) |
-| Molarity | C = n/V | n = moles, V = volume (L) |
-| pH | pH = -log[H⁺] | [H⁺] = hydrogen ion concentration |
-| pOH | pOH = -log[OH⁻] | [OH⁻] = hydroxide ion concentration |
-| pH + pOH | pH + pOH = 14 | at 25°C |
-| Dilution | C₁V₁ = C₂V₂ | C = concentration, V = volume |
-| Density | ρ = m/V | m = mass, V = volume |
-| Percent yield | yield% = (actual/theoretical) × 100 | |
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 13 | 平均值 | `(x1+x2)/2` | x1, x2 |
+| 14 | 百分比 | `(part/whole)*100` | part, whole |
+| 15 | 平方 | `x^2` | x |
+| 16 | 立方 | `x^3` | x |
+| 17 | 平方根 | `sqrt(x)` | x |
+| 18 | 立方根 | `x^(1/3)` | x |
+| 19 | 指數 | `e^x` | x |
+| 20 | 自然對數 | `ln(x)` | x |
+| 21 | 常用對數 | `log(x)` | x |
+| 22 | 一次函數 | `a*x+b` | x, a, b |
+| 23 | 二次函數 | `a*x^2+b*x+c` | x, a, b, c |
+| 24 | 判別式 | `b^2-4*a*c` | a, b, c |
+| 29 | 等差數列和 | `n/2*(2*a+(n-1)*d)` | n, a, d |
+| 58 | 等比數列和 | `a*(1-q^n)/(1-q)` | a, q, n |
 
 ---
 
-## Finance（財務）
+## 物理 Physics（17 條）
 
-| Formula | Expression | Variables |
-|---------|-----------|-----------|
-| Simple interest | I = PRT | P = principal, R = rate, T = time |
-| Compound interest | A = P(1 + r/n)^(nt) | P = principal, r = rate, n = compounds/year, t = years |
-| Present value | PV = FV / (1+r)^n | FV = future value, r = rate, n = periods |
-| Future value | FV = PV × (1+r)^n | PV = present value, r = rate, n = periods |
-| Monthly payment (loan) | M = P[r(1+r)^n] / [(1+r)^n - 1] | P = loan, r = monthly rate, n = months |
-| ROI | ROI = (gain - cost) / cost × 100% | |
-| NPV | NPV = Σ [Cₜ / (1+r)^t] - C₀ | Cₜ = cash flow, r = rate, C₀ = initial cost |
-| CAGR | CAGR = (EV/BV)^(1/n) - 1 | EV = end value, BV = beginning value, n = years |
+### 力學 / 運動
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 70 | 牛頓第二定律 | `m*a` | m, a |
+| 71 | 動能 | `0.5*m*v^2` | m, v |
+| 72 | 重力位能 | `m*9.80665*h` | m, h |
+| 73 | 動量 | `m*v` | m, v |
+| 74 | 均速 | `d/t` | d, t |
+| 75 | 自由落體高度 | `0.5*9.80665*t^2` | t |
+| 82 | 向心加速度 | `v^2/r` | v, r |
+| 86 | 動摩擦力 | `mu*m*9.80665` | mu, m |
+
+### 振動 / 波動 / 熱學
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 76 | 波速 | `f*lambda` | f, lambda |
+| 77 | 熱量 | `m*c*dT` | m, c, dT |
+| 83 | 簡諧週期 (彈簧) | `2*π*sqrt(m/k)` | m, k |
+| 84 | 彈簧位能 | `0.5*k*x^2` | k, x |
+
+### 電磁 / 引力 / 量子
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 78 | 庫倫力 | `8.99e9*q1*q2/r^2` | q1, q2, r |
+| 79 | 萬有引力 | `6.674e-11*m1*m2/r^2` | m1, m2, r |
+| 80 | 電場強度 | `F/q` | F, q |
+| 81 | 歐姆定律 (電壓) | `I*R` | I, R |
+| 85 | 普朗克能量 E=hf | `6.626e-34*f` | f |
+
+---
+
+## 金融 Finance（11 條）
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 39 | 複利終值 | `P*(1+r/n)^(n*t)` | P, r, n, t |
+| 40 | 月繳貸款 | `P*r*(1+r)^n/((1+r)^n-1)` | P, r, n |
+| 41 | 單利終值 | `P*(1+r*t)` | P, r, t |
+| 42 | 現值 (PV) | `F/(1+r/n)^(n*t)` | F, r, n, t |
+| 43 | 年金終值 | `PMT*((1+r)^n-1)/r` | PMT, r, n |
+| 44 | 年金現值 | `PMT*(1-(1+r)^(-n))/r` | PMT, r, n |
+| 45 | 投資報酬率 ROI | `(V2-V1)/V1*100` | V2, V1 |
+| 46 | 72 法則 | `72/r` | r |
+| 47 | 本益比 P/E | `P/E` | P, E |
+| 48 | 實質年利率 EAR | `(1+r/n)^n-1` | r, n |
+| 49 | 損益平衡點 | `FC/(P-VC)` | FC, P, VC |
+
+> 金融公式的利率欄位輸入**年利率 %**（如 `3`），程式自動換算為小數。
+
+---
+
+## 工程 Engineering（11 條）
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 30 | 歐姆定律 | `I*R` | I, R |
+| 31 | 電功率 | `V*I` | V, I |
+| 32 | 電阻串聯 | `R1+R2+R3` | R1, R2, R3 |
+| 33 | 電阻並聯 (2) | `(R1*R2)/(R1+R2)` | R1, R2 |
+| 34 | RC 時間常數 | `R*C` | R, C |
+| 35 | 電容能量 | `0.5*C*V^2` | C, V |
+| 36 | 分貝 (電壓) | `20*log(V/V0)` | V, V0 |
+| 37 | 機械功 | `F*d` | F, d |
+| 38 | 機械效率 | `(Pout/Pin)*100` | Pout, Pin |
+| 61 | LC 諧振頻率 | `1/(2*π*sqrt(L*C))` | L, C |
+| 62 | RC 截止頻率 | `1/(2*π*R*C)` | R, C |
+
+---
+
+## 健康 Health（9 條）
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 90 | BMI 身體質量指數 | `w/((h/100)^2)` | w, h |
+| 91 | BMR 基礎代謝 (男) | `10*w+6.25*h-5*a+5` | w, h, a |
+| 92 | BMR 基礎代謝 (女) | `10*w+6.25*h-5*a-161` | w, h, a |
+| 93 | 目標心率 (%最大心率) | `(220-a)*intensity/100` | a, intensity |
+| 94 | TDEE 每日總消耗 (男) | `(10*w+6.25*h-5*a+5)*activity` | w, h, a, activity |
+| 95 | TDEE 每日總消耗 (女) | `(10*w+6.25*h-5*a-161)*activity` | w, h, a, activity |
+| 96 | 體脂率 (男, Deurenberg) | `1.20*(w/((h/100)^2))+0.23*a-16.2` | w, h, a |
+| 97 | 體脂率 (女, Deurenberg) | `1.20*(w/((h/100)^2))+0.23*a-5.4` | w, h, a |
+| 98 | 每日水分需求 (ml) | `w*30` | w |
+
+> **方法依據**：BMR / TDEE 採 Mifflin-St Jeor 方程式；體脂率採 Deurenberg (1991) 迴歸式；
+> 目標心率採「最大心率百分比法」（%MaxHR，以 `220-年齡` 估算最大心率）；
+> 水分需求採 30 ml/kg 簡化估算。以上為一般健康參考，非醫療診斷依據。
+
+---
+
+## 科學 Science（8 條）
+
+| # | 公式 | 表達式 | 變數 |
+|---|------|--------|------|
+| 50 | 理想氣體 (壓力) | `n*8.314*T/V` | n, T, V |
+| 51 | 莫耳數 | `m/M` | m, M |
+| 52 | 莫耳濃度 | `n/V` | n, V |
+| 53 | pH 值 | `-log(H)` | H |
+| 54 | 稀釋方程 | `C1*V1/V2` | C1, V1, V2 |
+| 55 | 密度 | `m/V` | m, V |
+| 56 | 化學產率 | `(actual/theoretical)*100` | actual, theoretical |
+| 57 | 波耳模型能量 | `-13.6/n^2` | n |
+
+---
+
+## 自建公式
+
+除內建 88 條外，可在「✏️ 自建」分頁輸入專屬公式。
+資料儲存於瀏覽器 Local Storage（`customFormulas`），不上傳任何伺服器。

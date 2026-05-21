@@ -70,6 +70,8 @@ v3.5 (2026-05-19) is the outcome of a full usability review. **Every fix was ver
 
 - **Mobile `( ) , π e` keys unreachable** (HIGH): at ≤768px the entire sidebar was `display:none`, making every function that needs a closing paren (`sin(`, `cos(`, `log(`, `exp(`, …) unusable on mobile. Fix strategy — zero DOM changes, pure CSS responsive rearrangement: at ≤768px the sidebar becomes a bottom-fixed floating bar (industry-standard mobile keyboard pattern), keeping only the 5 critical keys (π e ( ) ,) in a horizontal 5-column grid with `min-height: 44px` touch targets, translucent backdrop adapting to light/dark themes, and iPhone safe-area support. Desktop 1280 verified with zero regression.
 
+**v3.5.7 (2026-05-21) formula data consistency audit: naming fix + stale-docs cleanup**: a consistency audit across the formula library and public docs. Fixed a mislabeled formula — id 93 `(220-a)*intensity/100` was named "Karvonen" but is actually the **Percentage of Max HR** method (%MaxHR); the true Karvonen formula needs a resting-heart-rate variable. The formula itself is a valid, widely-used estimator — only the name was wrong, now renamed `Target HR (%MaxHR)`. Also cleared multiple stale claims: index.html guide text "83 formulas / 47 formulas / five categories" all corrected to "88 / six categories"; the README category-overview table (EN & ZH) listed "Geometry / Physics / Chemistry / Finance" which never matched the live app, now rebuilt to the real 6 categories; `docs/FORMULAS.md`, untouched since v1.0.0, rebuilt as a complete 88-formula reference. **No calculate-engine logic changes.**
+
 **v3.5.6 (2026-05-20) calculate engine boundary audit + Health group +5 formulas**: following v3.5.5's two engine bug fixes, this release runs a 12-case numerical boundary audit (large integers, floating-point error, divide-by-zero, log/sqrt edges, factorial, toFixed, constants, scientific notation) — the engine comes out clean. Also expands Health from 4 → **9 formulas** by adding TDEE (M/F), Body Fat % via Deurenberg (M/F), and Daily Water Intake. Formula library 83 → **88 total**. Example: a 30-year-old male, 70kg / 170cm, with activity factor 1.55 → TDEE 2507 kcal/day, body fat 19.77%.
 
 **v3.5.5 (2026-05-20) +20 formulas / new "Health" group / two latent calculate-engine bugs fixed**: the formula library grows from 63 → **83 cards (+32%)** and gains **Health** as the 6th group (BMI, BMR basal metabolic rate, target heart rate). Math gains 7 (Heron's formula, sector area/arc, arithmetic/geometric series sums, 2D vector length/dot product), Physics gains 5 (centripetal acceleration, spring SHM period, spring PE, Planck E=hf, kinetic friction), Finance gains 2 (effective annual rate EAR, break-even point BEP), Engineering gains 2 (LC resonance, RC cutoff frequency). The PR accidentally surfaced two latent calculate-engine bugs that had been there since launch: (1) the Math.E regex misreplaced the `e` inside scientific-notation literals like `6.626e-34` with `2.718`, breaking Planck / gravity / Coulomb formulas; (2) `toFixed(12)` underflowed tiny numbers like `3.313e-19` to 0. Both fixed together → Planck now shows `3.313e-19`, gravity shows `1.982e+20`.
@@ -577,14 +579,16 @@ Full technical details in [docs/PHASE5-8_COMPLETION.md](docs/PHASE5-8_COMPLETION
 
 See [docs/FORMULAS.md](docs/FORMULAS.md) for the complete formula list.
 
-### Category Overview
+### Category Overview (88 formulas)
 
 | Category | Count | Examples |
 |----------|-------|----------|
-| Geometry | 20+ | Circle area `A=πr²`, sphere volume `V=⁴⁄₃πr³`, Pythagoras |
-| Physics | 30+ | Newton's 2nd law `F=ma`, Ohm's law `V=IR`, kinetic energy `E=½mv²` |
-| Chemistry | 15+ | Ideal gas law `PV=nRT`, pH = -log[H⁺] |
-| Finance | 10+ | Compound interest `A=P(1+r)ⁿ`, NPV, IRR, monthly loan payment |
+| Math | 32 | Circle area `A=πr²`, Heron's formula, Pythagoras, quadratic function, vector dot product |
+| Physics | 17 | Newton's 2nd law `F=ma`, kinetic energy `E=½mv²`, gravitation, Planck energy `E=hf` |
+| Finance | 11 | Compound interest, effective annual rate (EAR), break-even point, rule of 72, annuity PV |
+| Engineering | 11 | Ohm's law `V=IR`, electric power, LC resonance frequency, RC cutoff frequency |
+| Health | 9 | BMI, BMR (Mifflin-St Jeor), TDEE, body fat % (Deurenberg), target heart rate |
+| Science | 8 | Ideal gas law `PV=nRT`, pH value, molar concentration, Bohr model energy |
 
 ---
 

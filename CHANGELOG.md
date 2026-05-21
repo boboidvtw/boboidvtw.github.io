@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.7] - 2026-05-21 — 公式資料一致性審查：命名修正 + 文件去過時
+
+對公式庫與對外文件做了一輪一致性深審，揪出一個公式命名錯誤與多處過時敘述，一次性修齊。**無 calculate engine 邏輯變更**。
+
+### Fixed
+
+- **目標心率公式掛錯名「Karvonen」**：id 93 公式 `(220-a)*intensity/100` 實為「最大心率百分比法」（%MaxHR），並非 Karvonen 法——真正的 Karvonen 公式需靜息心率變數 `(MaxHR−RHR)×強度+RHR`。公式本身為廣為使用的合法估算法，錯的僅是名稱。改名 `目標心率(%最大心率)`，README guide 同步修正。
+- **index.html 說明區過時數字**：公式庫說明「共 83 條」→「88 條」；說明 Modal「47 條公式、五大分類」→「88 條、六大分類」（原本漏列「健康」分類）。
+
+### Changed
+
+- **README 公式分類總覽表重建**（中／英文版）：原表分類為「幾何 / 物理 / 化學 / 財務」，與實機 6 個分類 tab 完全不符——實機為 `數學 32 / 物理 17 / 金融 11 / 工程 11 / 健康 9 / 科學 8`（共 88）。改為對齊實機分類，並補上實際範例公式。
+- **docs/FORMULAS.md 重建**：該檔自 v1.0.0（2026-04-21）起從未更新，缺 v1 後新增的數十條公式與整個健康分類，而 README 卻指向它稱「完整公式清單」。重建為按 6 分類組織的完整 88 條清單（id / name / expr / vars），並補上健康公式的方法依據說明（Mifflin-St Jeor / Deurenberg 1991 / %MaxHR / 30 ml·kg⁻¹）。
+
 ## [3.5.6] - 2026-05-20 — calculate engine 邊界 audit + 健康分類 +5 公式
 
 承 v3.5.5 修完兩個 calculate engine latent bug 後，主動跑了一輪數值邊界陷阱 audit（12 個 case：大整數溢位、浮點誤差、除以零、log/sqrt 邊界、factorial 邊界、toFixed/toPrecision 邊界、e/π 常數、科學記號）—— **engine 健全、無需修補**。同時拓展健康分類 +5 條公式，公式庫 83 → **88 條**、健康分類 4 → **9 條**。
