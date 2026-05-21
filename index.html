@@ -1552,18 +1552,18 @@
 
                     <!-- 物理 -->
                     <div id="physGrid" class="cat-panel button-grid hidden">
-                        <button class="btn btn-constant" data-value="2.998e8" title="光速 c = 2.998×10⁸ m/s">c<span class="const-label">光速</span></button>
+                        <button class="btn btn-constant" data-value="299792458" title="光速 c = 299792458 m/s">c<span class="const-label">光速</span></button>
                         <button class="btn btn-constant" data-value="9.80665" title="重力加速度 g = 9.80665 m/s²">g<span class="const-label">重力</span></button>
-                        <button class="btn btn-constant" data-value="6.626e-34" title="普朗克常數 h = 6.626×10⁻³⁴ J·s">h<span class="const-label">普朗克</span></button>
+                        <button class="btn btn-constant" data-value="6.62607015e-34" title="普朗克常數 h = 6.62607015×10⁻³⁴ J·s">h<span class="const-label">普朗克</span></button>
                         <button class="btn btn-delete">C</button>
 
-                        <button class="btn btn-constant" data-value="1.381e-23" title="波茲曼常數 kB = 1.381×10⁻²³ J/K">kB<span class="const-label">波茲曼</span></button>
-                        <button class="btn btn-constant" data-value="6.674e-11" title="萬有引力常數 G = 6.674×10⁻¹¹ N·m²/kg²">G<span class="const-label">引力</span></button>
-                        <button class="btn btn-constant" data-value="6.022e23" title="阿伏加德羅常數 NA = 6.022×10²³ /mol">NA<span class="const-label">亞佛加厥</span></button>
+                        <button class="btn btn-constant" data-value="1.380649e-23" title="波茲曼常數 kB = 1.380649×10⁻²³ J/K">kB<span class="const-label">波茲曼</span></button>
+                        <button class="btn btn-constant" data-value="6.6743e-11" title="萬有引力常數 G = 6.6743×10⁻¹¹ N·m²/kg²">G<span class="const-label">引力</span></button>
+                        <button class="btn btn-constant" data-value="6.02214076e23" title="阿伏加德羅常數 NA = 6.02214076×10²³ /mol">NA<span class="const-label">亞佛加厥</span></button>
                         <button class="btn btn-delete">←</button>
 
-                        <button class="btn btn-constant" data-value="8.314" title="氣體常數 R = 8.314 J/(mol·K)">R<span class="const-label">氣體</span></button>
-                        <button class="btn btn-constant" data-value="1.602e-19" title="電子電荷 e = 1.602×10⁻¹⁹ C">ec<span class="const-label">電子電荷</span></button>
+                        <button class="btn btn-constant" data-value="8.314462618" title="氣體常數 R = 8.314462618 J/(mol·K)">R<span class="const-label">氣體</span></button>
+                        <button class="btn btn-constant" data-value="1.602176634e-19" title="電子電荷 e = 1.602176634×10⁻¹⁹ C">ec<span class="const-label">電子電荷</span></button>
                         <button class="btn btn-operator">^</button>
                         <button class="btn btn-operator">÷</button>
 
@@ -2299,14 +2299,14 @@
             { id: 75, name: '自由落體高度',    expr: '0.5*9.80665*t^2',        vars: ['t'],                 category: '力學',  group: '物理' },
             { id: 76, name: '波速',            expr: 'f*lambda',               vars: ['f','lambda'],        category: '波動',  group: '物理' },
             { id: 77, name: '熱量',            expr: 'm*c*dT',                 vars: ['m','c','dT'],        category: '熱學',  group: '物理' },
-            { id: 78, name: '庫倫力',          expr: '8.99e9*q1*q2/r^2',       vars: ['q1','q2','r'],       category: '電磁',  group: '物理' },
-            { id: 79, name: '萬有引力',        expr: '6.674e-11*m1*m2/r^2',    vars: ['m1','m2','r'],       category: '引力',  group: '物理' },
+            { id: 78, name: '庫倫力',          expr: '8.9875518e9*q1*q2/r^2',       vars: ['q1','q2','r'],       category: '電磁',  group: '物理' },
+            { id: 79, name: '萬有引力',        expr: '6.6743e-11*m1*m2/r^2',    vars: ['m1','m2','r'],       category: '引力',  group: '物理' },
             { id: 80, name: '電場強度',        expr: 'F/q',                    vars: ['F','q'],             category: '電磁',  group: '物理' },
             { id: 81, name: '歐姆定律(電壓)',  expr: 'I*R',                    vars: ['I','R'],             category: '電磁',  group: '物理' },
             { id: 82, name: '向心加速度',       expr: 'v^2/r',                  vars: ['v','r'],             category: '力學',  group: '物理' },
             { id: 83, name: '簡諧週期(彈簧)',   expr: '2*π*sqrt(m/k)',          vars: ['m','k'],             category: '振動',  group: '物理' },
             { id: 84, name: '彈簧位能',         expr: '0.5*k*x^2',              vars: ['k','x'],             category: '振動',  group: '物理' },
-            { id: 85, name: '普朗克能量 E=hf',  expr: '6.626e-34*f',            vars: ['f'],                 category: '量子',  group: '物理' },
+            { id: 85, name: '普朗克能量 E=hf',  expr: '6.62607015e-34*f',            vars: ['f'],                 category: '量子',  group: '物理' },
             { id: 86, name: '動摩擦力',         expr: 'mu*m*9.80665',           vars: ['mu','m'],            category: '力學',  group: '物理' },
 
             // 健康（新分類 — BMI / BMR / 目標心率）
@@ -4291,7 +4291,8 @@
                     .replace(/floor\(/g, 'Math.floor(')
                     .replace(/ceil\(/g, 'Math.ceil(')
                     .replace(/abs\(/g, 'Math.abs(')
-                    .replace(/\|/g, 'Math.abs(')
+                    // 絕對值列 |x| 成對轉換：第一個 | → Math.abs(，第二個 | → )
+                    .replace(/\|([^|]*)\|/g, 'Math.abs($1)')
                     // factorial: 5! → factorial(5)
                     .replace(/(\d+(?:\.\d+)?)!/g, (_, n) => `factorial(${n})`);
 
@@ -4312,7 +4313,11 @@
                 if (result !== 0 && (abs < 1e-6 || abs >= 1e15)) {
                     // 回 string 保留科學記號顯示（如 "3.313e-19" / "1.982e+20"）
                     // 而非 Number() 又轉回普通數值（toString 對 1e20 會展開為 20 位完整數字）
-                    return result.toPrecision(10);
+                    // mantissa 經 parseFloat 去除 toPrecision 產生的尾隨零（6.626000000e-34 → 6.626e-34）
+                    const p = result.toPrecision(10);
+                    const eIdx = p.indexOf('e');
+                    if (eIdx === -1) return p;
+                    return parseFloat(p.slice(0, eIdx)) + 'e' + p.slice(eIdx + 1);
                 }
                 return parseFloat(result.toFixed(12));
             } catch (e) {
@@ -4793,8 +4798,8 @@
             csvContent += "時間,公式/計算,結果\n";
             savedFormulas.forEach(row => {
                 let d = new Date(row.id).toLocaleString();
-                let f = `"${row.formula.replace(/"/g, '""')}"`;
-                let r = `"${row.result.replace(/"/g, '""')}"`;
+                let f = `"${String(row.formula).replace(/"/g, '""')}"`;
+                let r = `"${String(row.result).replace(/"/g, '""')}"`;
                 csvContent += `${d},${f},${r}\n`;
             });
             const encodedUri = encodeURI(csvContent);

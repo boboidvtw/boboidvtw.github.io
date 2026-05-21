@@ -1,5 +1,5 @@
 // ∑ Calc Service Worker — Cache-first for offline support
-const CACHE_NAME = 'sigma-calc-v3.5.7';
+const CACHE_NAME = 'sigma-calc-v3.5.8';
 const ASSETS = [
   '/',
   '/index.html',
