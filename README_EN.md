@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.5.9-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.6.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 
@@ -16,6 +16,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [What's New in v3.6 ♿ (Accessibility Hardening)](#whats-new-in-v36--accessibility-hardening)
 - [What's New in v3.5 🧮 (Calculation Core Fixes + Angle Mode)](#whats-new-in-v35--calculation-core-fixes--angle-mode)
 - [What's New in v3.4 🛡️ (Security Hardening & Brand Protection)](#whats-new-in-v34--security-hardening--brand-protection)
 - [What's New in v3.3 🔐 (Security Architecture)](#whats-new-in-v33--security-architecture)
@@ -47,6 +48,22 @@ Super Calculator is a browser-based calculator and math visualization tool built
 - 🔒 **Security-conscious**: User input is XSS-protected and expressions run in isolated scope
 - 🌏 **Cross-platform**: Works on desktop, tablet, and mobile browsers
 - 🌍 **Multilingual**: Full i18n for Traditional Chinese, English, Simplified Chinese, and Japanese
+
+---
+
+## What's New in v3.6 ♿ (Accessibility Hardening)
+
+v3.6.0 (2026-05-22) is the outcome of a WCAG 2.1 AA accessibility deep-audit, closing keyboard-operability and screen-reader gaps present since the project launched. **Every fix was verified item-by-item in a local browser — zero regressions, zero console errors**:
+
+- **Keyboard focus indicator** (WCAG 2.4.7): added a global `:focus-visible` style so every button, tab, and input shows a clear cyan outline under keyboard navigation. Previously there was no focus indication anywhere — keyboard users could not tell where they were.
+- **Help accordion now keyboard-operable** (WCAG 2.1.1, Level A): the 6 help-section headers were mouse-only `<div>`s with a `click`-only handler — keyboard users could not expand them. They now carry `role=button`, `tabindex`, `aria-expanded`, and respond to Enter / Space.
+- **Modal dialog semantics + focus management**: the 3 modals (Help / Formula / Function Graph) gained `role=dialog`, `aria-modal`, and `aria-labelledby`; added focus-move-in, a focus trap (Tab cycles inside), Escape-to-close, and focus restoration to the trigger button on close.
+- **Heading hierarchy fix** (WCAG 1.3.1): the page title is now an `<h1>` and the sidebar headings were reorganized to `h2`/`h3` so the document outline no longer skips levels.
+- **Screen-reader announcements**: the result display and toast notifications gained `aria-live`, so computed results and messages are announced.
+- **Accessible names**: icon-only buttons such as the theme toggle gained `aria-label`; all 7 `<select>` elements and several placeholder-only inputs were labeled.
+- **Mobile touch targets**: function-graph toolbar buttons were raised to the 44px touch standard on mobile; an undefined CSS variable was also fixed.
+
+See the [Changelog](CHANGELOG.md) for details.
 
 ---
 

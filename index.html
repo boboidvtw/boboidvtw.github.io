@@ -754,7 +754,7 @@
                 -webkit-backdrop-filter: none;
             }
             /* 隱藏「常用按鈕」標題 + 支援函數說明區 + 即時匯率整個 panel */
-            .main-sidebar > .panel:first-child > h3,
+            .main-sidebar > .panel:first-child > h2,
             .main-sidebar > .panel:first-child > div:nth-child(3),
             .main-sidebar > .panel:nth-child(2) {
                 display: none !important;
@@ -976,6 +976,8 @@
         @media (max-width: 768px) {
             .graph-side-panels { grid-template-columns: 1fr; }
             #graphCanvas { width: 100%; height: auto; }
+            /* a11y：行動裝置觸控目標 ≥ 44px */
+            .graph-tool, .graph-btn, .graph-mode-tab { min-height: 44px; }
         }
 
         /* ===== Phase 5-8: 進階繪圖 UI ===== */
@@ -989,8 +991,8 @@
         .graph-mode-tab {
             padding: 8px 16px;
             background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
             border-radius: 8px 8px 0 0;
             cursor: pointer;
             font-size: 13px;
@@ -1390,14 +1392,26 @@
             font-size: 11px; color: var(--text-dark-secondary);
             opacity: 0.6;
         }
+
+        /* ===== a11y：鍵盤焦點指示器（WCAG 2.4.7）===== */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        [tabindex]:focus-visible {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">∑ Calc</div>
+            <h1 class="title">∑ Calc</h1>
             <div class="controls">
-                <select class="lang-selector" id="langSelector">
+                <select class="lang-selector" id="langSelector" aria-label="選擇介面語言">
                     <option value="zh-TW">繁體中文</option>
                     <option value="en">English</option>
                     <option value="zh-CN">简体中文</option>
@@ -1407,7 +1421,7 @@
                 <button class="theme-btn" id="graphBtn" title="函數繪圖" style="font-size: 18px;">📈</button>
                 <button class="pro-badge-btn is-free" id="proBadgeBtn" title="升級到 Pro 解鎖進階功能">✨ 升級 Pro</button>
                 <button class="theme-btn" id="angleBtn" title="角度 / 弧度切換" style="font-size: 13px; font-weight: 700;">DEG</button>
-                <button class="theme-btn" id="themeBtn">☀️</button>
+                <button class="theme-btn" id="themeBtn" aria-label="切換深色 / 淺色主題">☀️</button>
             </div>
         </div>
 
@@ -1415,7 +1429,7 @@
             <!-- 主計算機 -->
             <div class="panel">
                 <div class="display">
-                    <div class="display-text" id="display">0</div>
+                    <div class="display-text" id="display" role="status" aria-live="polite" aria-atomic="true">0</div>
                     <div class="display-formula" id="displayFormula"></div>
                 </div>
 
@@ -1661,15 +1675,15 @@
                     <!-- 換算器 -->
                     <div class="unit-converter">
                         <div class="unit-row">
-                            <input type="text" inputmode="decimal" class="unit-input" id="unitFromVal" placeholder="輸入數值" autocomplete="off">
-                            <select class="unit-select" id="unitFromSel"></select>
+                            <input type="text" inputmode="decimal" class="unit-input" id="unitFromVal" placeholder="輸入數值" autocomplete="off" aria-label="輸入要換算的數值">
+                            <select class="unit-select" id="unitFromSel" aria-label="來源單位"></select>
                         </div>
                         <div class="unit-swap-row">
                             <button class="unit-swap-btn" id="unitSwapBtn" title="交換">⇅</button>
                         </div>
                         <div class="unit-row">
-                            <input type="text" inputmode="decimal" class="unit-input to-input" id="unitToVal" placeholder="換算結果" autocomplete="off">
-                            <select class="unit-select" id="unitToSel"></select>
+                            <input type="text" inputmode="decimal" class="unit-input to-input" id="unitToVal" placeholder="換算結果" autocomplete="off" aria-label="換算結果（可反向輸入）">
+                            <select class="unit-select" id="unitToSel" aria-label="目標單位"></select>
                         </div>
                     </div>
                     <!-- 快速參考清單 -->
@@ -1687,7 +1701,7 @@
                             <div class="currency-base-name">新台幣 TWD</div>
                         </div>
                         <div class="currency-amount-wrap">
-                            <input type="number" inputmode="decimal" class="currency-amount-input" id="currencyInput" value="1" min="0" step="any">
+                            <input type="number" inputmode="decimal" class="currency-amount-input" id="currencyInput" value="1" min="0" step="any" aria-label="台幣金額">
                             <span class="currency-amount-unit">TWD</span>
                         </div>
                         <button class="refresh-btn" id="refreshBtn" title="刷新匯率">🔄</button>
@@ -1696,8 +1710,8 @@
                     <div class="currency-foreign">
                         <div class="currency-foreign-label">🛒 當前貨幣 Foreign Currency（輸入外幣金額換算台幣）</div>
                         <div class="currency-foreign-row">
-                            <select id="foreignSelect" class="foreign-select"></select>
-                            <input type="number" inputmode="decimal" id="foreignInput" class="currency-amount-input foreign-input" placeholder="金額" min="0" step="any">
+                            <select id="foreignSelect" class="foreign-select" aria-label="外幣幣別"></select>
+                            <input type="number" inputmode="decimal" id="foreignInput" class="currency-amount-input foreign-input" placeholder="金額" min="0" step="any" aria-label="外幣金額">
                             <span class="currency-amount-unit" id="foreignUnit">USD</span>
                             <button class="foreign-result-btn" onclick="sendForeignToCalc()" title="帶入計算機">⇒</button>
                         </div>
@@ -1729,7 +1743,7 @@
 
                     <!-- 搜尋列（自建 tab 隱藏）-->
                     <div class="formula-search" id="formulaSearchWrap">
-                        <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder">
+                        <input type="text" id="formulaSearch" placeholder="搜索公式..." data-i18n-placeholder="search_formula_placeholder" aria-label="搜尋公式">
                     </div>
 
                     <!-- 內建公式（自建 tab 時隱藏）-->
@@ -1748,16 +1762,16 @@
                     <div id="customAddSection" style="display:none;">
                         <div class="add-formula-form">
                             <div class="form-group">
-                                <label>公式名稱</label>
+                                <label for="customFormulaName">公式名稱</label>
                                 <input type="text" id="customFormulaName" placeholder="例：自訂利率公式">
                             </div>
                             <div class="form-group">
-                                <label>公式表達式</label>
+                                <label for="customFormulaExpr">公式表達式</label>
                                 <input type="text" id="customFormulaExpr" placeholder="例：P*(1+r)^n">
                             </div>
                             <div class="form-group">
-                                <label>分組</label>
-                                <select id="customFormulaGroup" class="custom-formula-group-select">
+                                <label for="customFormulaGroup">分組</label>
+                                <select id="customFormulaGroup" class="custom-formula-group-select" aria-label="公式分組">
                                     <option value="數學">數學</option>
                                     <option value="工程">工程</option>
                                     <option value="科學">科學</option>
@@ -1787,7 +1801,7 @@
             <!-- 側邊欄 -->
             <div class="main-sidebar" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="panel">
-                    <h3 style="margin-bottom: 16px; font-size: 18px;" data-i18n="sidebar_common">常用按鈕</h3>
+                    <h2 style="margin-bottom: 16px; font-size: 18px;" data-i18n="sidebar_common">常用按鈕</h2>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px;">
                         <button class="btn btn-function" style="padding: 12px;">π</button>
                         <button class="btn btn-function" style="padding: 12px;">e</button>
@@ -1796,7 +1810,7 @@
                         <button class="btn btn-operator" style="padding: 12px;" title="參數分隔（nCr / nPr）">,</button>
                     </div>
                     <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-dark); border-radius: 12px; padding: 12px;">
-                        <h4 style="font-size: 12px; margin-bottom: 8px; color: var(--text-dark-secondary);" data-i18n="sidebar_functions">支援函數</h4>
+                        <h3 style="font-size: 12px; margin-bottom: 8px; color: var(--text-dark-secondary);" data-i18n="sidebar_functions">支援函數</h3>
                         <div style="font-size: 11px; color: var(--text-dark-secondary); line-height: 1.8;">
                             • sin, cos, tan / asin, acos, atan<br>
                             • sinh, cosh, tanh<br>
@@ -1809,7 +1823,7 @@
                 </div>
 
                 <div class="panel">
-                    <h3 style="margin-bottom: 4px; font-size: 16px;">🇹🇼 即時匯率</h3>
+                    <h2 style="margin-bottom: 4px; font-size: 16px;">🇹🇼 即時匯率</h2>
                     <div style="font-size: 11px; color: var(--text-dark-secondary); margin-bottom: 12px;">1 TWD =</div>
                     <div class="quick-rate-list" id="quickRate">
                         <div style="font-size: 12px; color: var(--text-dark-secondary);">載入中...</div>
@@ -1821,15 +1835,15 @@
     </div>
 
     <!-- 使用說明 Modal -->
-    <div class="help-modal" id="helpModal">
+    <div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
         <div class="help-modal-content">
             <div class="help-modal-header">
-                <div class="help-modal-title">📖 使用說明</div>
-                <button class="help-close-btn" id="helpCloseBtn">✕</button>
+                <div class="help-modal-title" id="helpModalTitle">📖 使用說明</div>
+                <button class="help-close-btn" id="helpCloseBtn" aria-label="關閉使用說明">✕</button>
             </div>
 
             <div class="help-section open">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">🧮</span> <span class="help-section-title">計算機操作</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1848,7 +1862,7 @@
             </div>
 
             <div class="help-section">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">📐</span> <span class="help-section-title">單位換算</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1866,7 +1880,7 @@
             </div>
 
             <div class="help-section">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">💱</span> <span class="help-section-title">即時匯率</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1884,7 +1898,7 @@
             </div>
 
             <div class="help-section">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">📚</span> <span class="help-section-title">公式庫</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1900,7 +1914,7 @@
             </div>
 
             <div class="help-section">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">✏️</span> <span class="help-section-title">自建公式</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1917,7 +1931,7 @@
             </div>
 
             <div class="help-section">
-                <div class="help-section-header">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
                     <span><span class="help-section-icon">💡</span> <span class="help-section-title">其他功能</span></span>
                     <span class="help-chevron">▼</span>
                 </div>
@@ -1934,7 +1948,7 @@
     </div>
 
     <!-- 公式計算 Modal -->
-    <div class="modal" id="formulaModal">
+    <div class="modal" id="formulaModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
             <div class="modal-title" id="modalTitle">計算公式</div>
             <div class="modal-formula" id="modalFormula"></div>
@@ -1947,11 +1961,11 @@
     </div>
 
     <!-- 函數繪圖 Modal -->
-    <div class="graph-modal" id="graphModal">
+    <div class="graph-modal" id="graphModal" role="dialog" aria-modal="true" aria-labelledby="graphModalTitle">
         <div class="graph-modal-content">
             <div class="graph-modal-header">
-                <div class="graph-modal-title">📈 <span data-i18n="graph_title">函數繪圖</span></div>
-                <button class="help-close-btn" id="graphCloseBtn">✕</button>
+                <div class="graph-modal-title" id="graphModalTitle">📈 <span data-i18n="graph_title">函數繪圖</span></div>
+                <button class="help-close-btn" id="graphCloseBtn" aria-label="關閉函數繪圖視窗">✕</button>
             </div>
 
             <!-- 模式切換 (函數 / 統計 / 3D) -->
@@ -1964,7 +1978,7 @@
             <!-- 函數模式控制 -->
             <div class="graph-mode-panel" data-panel="function">
                 <div class="graph-controls">
-                    <input type="text" id="graphExprInput" placeholder="例如: x^2, sin(x), a*sin(b*x)" class="graph-expr-input">
+                    <input type="text" id="graphExprInput" placeholder="例如: x^2, sin(x), a*sin(b*x)" class="graph-expr-input" aria-label="函數運算式">
                     <button class="graph-btn graph-btn-add" id="graphAddBtn">＋ <span data-i18n="graph_add">新增</span></button>
                     <button class="graph-btn graph-btn-special" id="graphFindSpecialBtn">🔍 <span data-i18n="graph_special">特殊點</span></button>
                     <button class="graph-btn graph-btn-special" id="graphFindIntersectBtn">⊕ <span data-i18n="graph_intersect">交點</span></button>
@@ -1993,7 +2007,7 @@
             <!-- 統計模式控制 -->
             <div class="graph-mode-panel" data-panel="statistics" style="display:none;">
                 <div class="graph-controls">
-                    <select id="graphStatType" class="graph-stat-select">
+                    <select id="graphStatType" class="graph-stat-select" aria-label="統計圖類型">
                         <option value="histogram" data-i18n="graph_stat_histogram">直方圖</option>
                         <option value="scatter" data-i18n="graph_stat_scatter">散佈圖+迴歸</option>
                         <option value="boxplot" data-i18n="graph_stat_boxplot">盒狀圖</option>
@@ -2002,7 +2016,7 @@
                     <button class="graph-btn graph-btn-clear" id="graphStatClearBtn">🗑 <span data-i18n="graph_clear">清除</span></button>
                 </div>
                 <div class="graph-stat-input">
-                    <textarea id="graphStatData" rows="3" placeholder="輸入資料：x1,y1; x2,y2; ... 或單列 x1,x2,x3,..."></textarea>
+                    <textarea id="graphStatData" rows="3" placeholder="輸入資料：x1,y1; x2,y2; ... 或單列 x1,x2,x3,..." aria-label="統計資料輸入"></textarea>
                     <span class="graph-stat-hint" id="graphStatHint" data-i18n="graph_stat_hint">直方圖/盒狀圖：單列數值；散佈圖：每對 x,y 一組</span>
                 </div>
             </div>
@@ -2010,9 +2024,9 @@
             <!-- 3D 模式控制 -->
             <div class="graph-mode-panel" data-panel="3d" style="display:none;">
                 <div class="graph-controls">
-                    <input type="text" id="graph3DExpr" placeholder="例如: sin(x)*cos(y), x^2-y^2" class="graph-expr-input" value="sin(x)*cos(y)">
+                    <input type="text" id="graph3DExpr" placeholder="例如: sin(x)*cos(y), x^2-y^2" class="graph-expr-input" value="sin(x)*cos(y)" aria-label="3D 函數運算式">
                     <button class="graph-btn graph-btn-add" id="graph3DDrawBtn">🎨 <span data-i18n="graph_3d_render">渲染</span></button>
-                    <select id="graph3DStyle" class="graph-stat-select">
+                    <select id="graph3DStyle" class="graph-stat-select" aria-label="3D 繪圖樣式">
                         <option value="wireframe" data-i18n="graph_3d_wire">線框</option>
                         <option value="surface" selected data-i18n="graph_3d_surface">表面</option>
                         <option value="contour" data-i18n="graph_3d_contour">等高</option>
@@ -2106,7 +2120,7 @@
         </footer>
 
     <!-- Toast notification -->
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
         // ========== 多語系翻譯 ==========
@@ -2631,14 +2645,59 @@
         });
         updateAngleBtn();
 
+        // ========== Modal 無障礙：焦點管理 + 焦點陷阱 + Escape ==========
+        let _modalLastFocus = null;
+        function _modalFocusables(modal) {
+            return [...modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+                .filter(el => el.offsetParent !== null);
+        }
+        function _modalKeydown(e) {
+            const modal = e.currentTarget;
+            if (e.key === 'Escape') { closeModal(modal); return; }
+            if (e.key !== 'Tab') return;
+            const f = _modalFocusables(modal);
+            if (!f.length) return;
+            const first = f[0], last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault(); last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault(); first.focus();
+            }
+        }
+        function openModal(modal) {
+            _modalLastFocus = document.activeElement;
+            modal.classList.add('active');
+            modal.addEventListener('keydown', _modalKeydown);
+            const f = _modalFocusables(modal);
+            if (f.length) f[0].focus();
+        }
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            modal.removeEventListener('keydown', _modalKeydown);
+            if (_modalLastFocus && typeof _modalLastFocus.focus === 'function') {
+                _modalLastFocus.focus();
+            }
+            _modalLastFocus = null;
+        }
+
         // ========== Help Modal ==========
         const helpModal = document.getElementById('helpModal');
-        document.getElementById('helpBtn').addEventListener('click', () => helpModal.classList.add('active'));
-        document.getElementById('helpCloseBtn').addEventListener('click', () => helpModal.classList.remove('active'));
-        helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('active'); });
+        document.getElementById('helpBtn').addEventListener('click', () => openModal(helpModal));
+        document.getElementById('helpCloseBtn').addEventListener('click', () => closeModal(helpModal));
+        helpModal.addEventListener('click', e => { if (e.target === helpModal) closeModal(helpModal); });
         document.querySelectorAll('.help-section-header').forEach(header => {
-            header.addEventListener('click', () => {
-                header.closest('.help-section').classList.toggle('open');
+            const section = header.closest('.help-section');
+            header.setAttribute('aria-expanded', section.classList.contains('open'));
+            const toggleSection = () => {
+                const open = section.classList.toggle('open');
+                header.setAttribute('aria-expanded', open);
+            };
+            header.addEventListener('click', toggleSection);
+            header.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleSection();
+                }
             });
         });
 
@@ -3125,15 +3184,15 @@
             if (!modal || !openBtn) return;
 
             openBtn.addEventListener('click', () => {
-                modal.classList.add('active');
+                openModal(modal);
                 if (graphState.functions.length === 0) {
                     addGraphFunction('x^2');
                 }
                 refreshGraphAllUI();
             });
-            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            closeBtn.addEventListener('click', () => closeModal(modal));
             modal.addEventListener('click', e => {
-                if (e.target === modal) modal.classList.remove('active');
+                if (e.target === modal) closeModal(modal);
             });
 
             // 新增函數
@@ -4639,10 +4698,10 @@
             window.currentFormulaVars = vars;
             window.currentFormulaName = name;
             window.currentFormulaId = id;
-            formulaModal.classList.add('active');
+            openModal(formulaModal);
         };
 
-        closeModalBtn.addEventListener('click', () => formulaModal.classList.remove('active'));
+        closeModalBtn.addEventListener('click', () => closeModal(formulaModal));
 
         calculateFormulaBtn.addEventListener('click', () => {
             let expr = window.currentFormulaExpr;
@@ -4663,7 +4722,7 @@
                 localStorage.setItem('savedFormulas', JSON.stringify(savedFormulas));
                 renderSaved();
             }
-            formulaModal.classList.remove('active');
+            closeModal(formulaModal);
         });
 
         // ========== Exchange Rates ==========

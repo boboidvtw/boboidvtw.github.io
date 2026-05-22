@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.6.0] - 2026-05-22 — 無障礙強化（WCAG 2.1 AA 深審）
+
+一輪 WCAG 2.1 AA 無障礙深度審查後的修復，補齊自專案建立以來缺漏的鍵盤操作與螢幕閱讀器支援。全部經本地瀏覽器逐項實測、零回歸、零 console error。`sw.js` `CACHE_NAME` 同步 bump 至 `sigma-calc-v3.6.0`。
+
+### Added
+
+- **鍵盤焦點指示器**（WCAG 2.4.7）：新增全域 `:focus-visible` 樣式，所有按鈕、tab、輸入框於鍵盤操作時顯示 3px 青色外框。先前全站無任何焦點指示。
+- **Modal 對話框語義 + 焦點管理**：3 個 modal（使用說明 / 公式計算 / 函數繪圖）加 `role=dialog`、`aria-modal`、`aria-labelledby`；新增 `openModal` / `closeModal` 共用 helper——焦點移入、焦點陷阱（Tab 循環不外漏）、Escape 關閉、關閉後焦點還原至觸發按鈕。
+- **螢幕閱讀器朗讀**：計算結果顯示區（`#display`）與 toast 通知加 `aria-live`，運算結果與提示訊息可被即時朗讀。
+- **無障礙名稱**：主題切換等圖示按鈕加 `aria-label`；7 個 `<select>` 與多個 placeholder-only 輸入框補齊 `aria-label`；自建公式表單 `<label>` 加 `for` 關聯。
+
+### Fixed
+
+- **說明手風琴鍵盤無法操作**（WCAG 2.1.1，Level A）：6 個說明區塊標題原為純滑鼠 `<div>`、僅綁 `click`，鍵盤使用者完全無法展開。現加 `role=button`、`tabindex`、`aria-expanded`，並支援 Enter / Space 鍵切換。
+- **標題層級跳階**（WCAG 1.3.1）：頁面原無 `<h1>`、文件大綱破損。主標題改為 `<h1>`、側邊欄標題重整為 `h2`/`h3`（同步調整對應 CSS 選擇器，手機側欄隱藏行為零回歸）。
+- **未定義 CSS 變數**：`.graph-mode-tab` 誤用 `var(--text)` / `var(--border)`（正確為 `--text-dark` / `--border-dark`），導致邊框未渲染。
+
+### Changed
+
+- **行動裝置觸控目標**：函數繪圖工具列按鈕（`.graph-tool` / `.graph-btn` / `.graph-mode-tab`）於 ≤768px 提升至 `min-height: 44px` 觸控標準。
+
+---
+
 ## [3.5.9] - 2026-05-22 — 公式庫突破 100 條 + 修組合數溢位與三角函數浮點殘渣
 
 修復兩個自計算引擎建立以來即存在的瑕疵，並將公式庫從 88 條擴充至 100 條里程碑。
