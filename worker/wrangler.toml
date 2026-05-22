@@ -1,63 +1,88 @@
 #=======================================================================
 # ∑ Calc License Validator — Cloudflare Worker  wrangler 設定
 #
-# ⚠️  此檔為「導入準備」範本（v3.5.9 / 2026-05-22 建立）。
-#     標記 TODO_ 的三個欄位必須先從 Cloudflare Dashboard 取得真實值，
-#     且務必先以 SANDBOX 完整測試後，才可部署 LIVE。
-#     完整步驟、secrets 設定與風險清單見同目錄 WRANGLER-SETUP.md。
+# 建立 v3.5.9（2026-05-22）；同日依 Cloudflare Dashboard 實際綁定校正。
 #
 # 安全設計：top-level 環境刻意設為 SANDBOX。
 #     wrangler deploy                    → 部署 SANDBOX（無害，可放心測）
 #     wrangler deploy --env production   → 部署 LIVE（api.moneyai168.com，金流生產服務）
+#
+# ⚠️ 此設定刻意「不宣告」Dashboard 上殘留的兩個 Rate Limiter binding
+#    （RATE_LIMIT_ISSUE_IP / RATE_LIMIT_ISSUE_SUB）——它們是 v2.1.0 遺留，
+#    現行 v2.3.0 程式碼改用 KV 限速、完全不引用（見 RATE-LIMIT-SETUP.md）。
+#    首次 wrangler deploy 會一併清除這兩個 dead binding，屬預期且安全的清理。
 #=======================================================================
 
 #--- 預設環境 = SANDBOX ---------------------------------------------------
 name = "supercalc-license-validator-sandbox"
 main = "license-validator.js"
 
-# ⚠️ 必須與 Dashboard 現有 Worker 的 compatibility_date 一致，否則執行期行為可能改變。
-#    部署前先在 Dashboard → Worker → Settings → Runtime 確認實際值。
+# ⚠️ 須與 Dashboard 現有 Worker 的 compatibility_date 一致（待確認）。
 compatibility_date = "2026-05-14"
 
-# 取得方式：wrangler whoami（login 後）或 Dashboard 右側欄 Account ID。
-account_id = "TODO_ACCOUNT_ID"
+# Cloudflare Account ID（識別碼，非機密）
+account_id = "6cfa4082dea2346cc9d480a16c2838d7"
 
-# 非機密環境變數（可安全進 git）
+# 註：preview_urls 不在此宣告 —— wrangler 4.93 於 named-environment 模式下
+# 不套用頂層此鍵，Preview URLs 會維持啟用。對本 worker 無害（僅多出版本化的
+# workers.dev 預覽網址，不影響 health / 授權驗證 / custom domain），故不強制。
+
+# 非機密環境變數。⚠️ SANDBOX 用 PayPal 的 sandbox API base。
 [vars]
-PAYPAL_API_BASE = "https://api-m.paypal.com"
+PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com"
 
-# KV namespace 綁定 — 程式碼以 env.LICENSES 存取，binding 名固定為 LICENSES。
-# id 取得方式：wrangler kv namespace list（login 後）。
+# KV namespace — 程式碼以 env.LICENSES 存取。此為 sandbox 用（title: LICENSES_SANDBOX）。
 [[kv_namespaces]]
 binding = "LICENSES"
-id = "TODO_SANDBOX_KV_NAMESPACE_ID"
+id = "1378f7ee501c4cc3921f1b8f80d1650d"
+
+# Observability — 保持與 Dashboard 現狀一致（啟用）。webhook IP 觀察 log、監控都靠它。
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
 
 #--- LIVE 正式環境（需明確 --env production 才會部署）-----------------------
 [env.production]
 name = "supercalc-license-validator"
 compatibility_date = "2026-05-14"
 
+# 維持 Dashboard 現狀：保留 *.workers.dev 路由（與 custom domain 並存）。
+workers_dev = true
+
 # custom domain：api.moneyai168.com（已在 Dashboard 綁定）。
-# 第一次 wrangler deploy --env production 會接管此路由設定。
 routes = [
   { pattern = "api.moneyai168.com", custom_domain = true }
 ]
 
+# LIVE 用 PayPal 正式 API base。
 [env.production.vars]
 PAYPAL_API_BASE = "https://api-m.paypal.com"
 
+# LIVE 用 KV namespace（title: LICENSES）
 [[env.production.kv_namespaces]]
 binding = "LICENSES"
-id = "TODO_LIVE_KV_NAMESPACE_ID"
+id = "cc17277ee6b747679e42a45050fab054"
+
+# Observability — LIVE 需啟用（webhook IP 觀察 log、監控都靠它）。
+[env.production.observability]
+enabled = true
+
+[env.production.observability.logs]
+enabled = true
 
 #=======================================================================
-# Secrets（不寫在此檔，避免進 git）— 用指令逐一設定，sandbox 與 production 各一套：
-#   wrangler secret put SECRET_KEY                      # sandbox
-#   wrangler secret put PAYPAL_CLIENT_ID
-#   wrangler secret put PAYPAL_CLIENT_SECRET
-#   wrangler secret put PAYPAL_WEBHOOK_ID
-#   wrangler secret put SECRET_KEY --env production     # live（值通常與 sandbox 不同）
-#   wrangler secret put PAYPAL_CLIENT_ID --env production
-#   wrangler secret put PAYPAL_CLIENT_SECRET --env production
-#   wrangler secret put PAYPAL_WEBHOOK_ID --env production
+# Secrets 說明：
+#
+# Worker 上 3 個機密 —— SECRET_KEY / PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET
+#   —— 已由 Dashboard 設定。wrangler deploy 不會動到 secrets，自動保留，
+#   無需重設（值也無從在 Dashboard 讀出，本就不該重設）。
+#
+# PAYPAL_WEBHOOK_ID 在 Dashboard 原為「純文字 var」（sandbox / live 不同值）。
+#   此處刻意不放入上方 [vars]——避免 webhook id 進入公開 repo——改以 secret 管理。
+#   需在 deploy 前手動設定（值見 Dashboard → Worker → 設定 → 變數和祕密）：
+#     wrangler secret put PAYPAL_WEBHOOK_ID                   # sandbox 值
+#     wrangler secret put PAYPAL_WEBHOOK_ID --env production  # live 值
+#   worker 讀 env.PAYPAL_WEBHOOK_ID，不論 var 或 secret 讀法相同。
 #=======================================================================
