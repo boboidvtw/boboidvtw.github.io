@@ -2809,6 +2809,22 @@
         }
         _checkSupportHash();
         window.addEventListener('hashchange', _checkSupportHash);
+
+        // ========== Deep link: ?formula=N（外部嵌入 / SEO 文章連結）==========
+        // 用途：Bobo Labs /formulas/*.html 文章內嵌 iframe 指向 ?formula=N
+        // 行為：頁面載入時自動切到「公式」tab 並開啟指定公式的計算 modal。
+        (() => {
+            const formulaId = parseInt(new URLSearchParams(location.search).get('formula'), 10);
+            if (!Number.isFinite(formulaId)) return;
+            const formulaTab = document.querySelector('[data-tab="formula"]');
+            if (!formulaTab) return;
+            formulaTab.click();
+            // renderFormulas() 用 innerHTML 重建 DOM，等 microtask 後 trigger 卡片
+            setTimeout(() => {
+                const card = document.querySelector(`.formula-item[data-formula-id="${formulaId}"]`);
+                if (card) card.click();
+            }, 80);
+        })();
         document.querySelectorAll('.help-section-header').forEach(header => {
             const section = header.closest('.help-section');
             header.setAttribute('aria-expanded', section.classList.contains('open'));

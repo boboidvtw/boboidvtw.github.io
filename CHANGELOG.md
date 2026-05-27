@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.1] - 2026-05-27 — Deep link `?formula=N`（變現計畫 Phase 3.2）
+
+支援外部 SEO 文章透過 query param 直連特定公式，並自動開啟計算 modal。
+配合 Bobo Labs `/formulas/` 子站 10 篇示範文章中嵌入的 iframe 使用。`sw.js` `CACHE_NAME` bump 至 `sigma-calc-v3.7.1`。
+
+### Added
+
+- **`?formula=N` query param**：頁面載入時若帶此參數，自動切到「公式」tab、開啟 id=N 的計算 modal。
+- 設計重用既有 `[data-formula-id]` data 屬性與 `formulaModal` 模式，零新 dependency。
+- 適用範例：`https://boboidvtw.github.io/?formula=11` → 自動開「勾股定理」計算視窗。
+
+### Verified
+
+- `?formula=11` → 自動開「勾股定理」modal ✓
+- `?formula=71` → 自動開「動能」modal ✓
+- console 零 error；無 formula param 時行為與舊版完全一致
+
+---
+
 ## [3.7.0] - 2026-05-27 — Sponsor 按鈕（變現計畫 Phase 1）
 
 啟動「Sponsor + Freemium + Content Engine」三層變現策略的第一層 — 為重度使用者提供零摩擦贊助入口，cover Cloudflare Worker / KV 月費並維持站點 **免費、無廣告、無追蹤**。本次純前端功能，未改動 Worker 與計算引擎。`sw.js` `CACHE_NAME` 同步 bump 至 `sigma-calc-v3.7.0`。
