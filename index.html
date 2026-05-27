@@ -187,6 +187,77 @@
         .help-body ul { padding-left: 16px; margin: 4px 0; }
         .help-body li { margin-bottom: 2px; }
 
+        /* ===== Support Button & Modal ===== */
+        .support-btn {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1.5px solid #f43f5e;
+            color: #f43f5e;
+            border-radius: 50%; width: 36px; height: 36px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .support-btn:hover { background: #f43f5e; color: #fff; transform: scale(1.05); }
+        .support-intro {
+            color: var(--text-dark-secondary);
+            line-height: 1.7; font-size: 14.5px;
+            margin-bottom: 18px;
+        }
+        body.light .support-intro { color: var(--text-dark-secondary); }
+        .support-intro strong { color: var(--text-dark); }
+        .support-buttons {
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .support-cta {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+            border: 1.5px solid transparent;
+            min-height: 44px;
+        }
+        .support-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
+        .support-cta-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+        .support-cta-text { display: flex; flex-direction: column; gap: 2px; }
+        .support-cta-name { font-weight: 700; font-size: 15px; }
+        .support-cta-desc { font-size: 12.5px; opacity: 0.85; }
+        .support-github {
+            background: rgba(234, 74, 170, 0.12);
+            border-color: #ea4aaa;
+            color: #ea4aaa;
+        }
+        .support-github:hover { background: rgba(234, 74, 170, 0.2); }
+        .support-kofi {
+            background: rgba(41, 171, 226, 0.12);
+            border-color: #29abe0;
+            color: #29abe0;
+        }
+        .support-kofi:hover { background: rgba(41, 171, 226, 0.2); }
+        .support-uses {
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+        body.light .support-uses { background: rgba(6, 182, 212, 0.08); }
+        .support-uses-title {
+            font-weight: 700; color: var(--primary);
+            margin-bottom: 8px; font-size: 14px;
+        }
+        .support-uses ul {
+            margin: 0; padding-left: 20px;
+            color: var(--text-dark-secondary); font-size: 13.5px;
+            line-height: 1.8;
+        }
+        .support-uses ul strong { color: var(--text-dark); }
+        .support-thanks {
+            margin-top: 16px;
+            font-size: 13px; color: var(--text-dark-secondary);
+            text-align: center; font-style: italic;
+        }
+
         .panel {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--border-dark);
@@ -1418,6 +1489,7 @@
                     <option value="ja">日本語</option>
                 </select>
                 <button class="help-btn" id="helpBtn" title="使用說明">?</button>
+                <button class="support-btn" id="supportBtn" title="贊助 ∑ Calc" aria-label="贊助 ∑ Calc">❤</button>
                 <button class="theme-btn" id="graphBtn" title="函數繪圖" style="font-size: 18px;">📈</button>
                 <button class="pro-badge-btn is-free" id="proBadgeBtn" title="升級到 Pro 解鎖進階功能">✨ 升級 Pro</button>
                 <button class="theme-btn" id="angleBtn" title="角度 / 弧度切換" style="font-size: 13px; font-weight: 700;">DEG</button>
@@ -1944,6 +2016,45 @@
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Support Modal（贊助）-->
+    <div class="help-modal" id="supportModal" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <div class="help-modal-title" id="supportModalTitle">💖 支持 ∑ Calc</div>
+                <button class="help-close-btn" id="supportCloseBtn" aria-label="關閉贊助視窗">✕</button>
+            </div>
+            <p class="support-intro">
+                ∑ Calc 是 <strong>免費、無廣告、無追蹤</strong> 的線上計算機，由個人開發者維護。你的贊助會直接 cover Cloudflare Worker / KV 月費，並讓我有更多時間補新公式與功能 🙏
+            </p>
+            <div class="support-buttons">
+                <a class="support-cta support-github" href="https://github.com/sponsors/boboidvtw" target="_blank" rel="noopener noreferrer">
+                    <span class="support-cta-icon" aria-hidden="true">❤️</span>
+                    <span class="support-cta-text">
+                        <span class="support-cta-name">GitHub Sponsors</span>
+                        <span class="support-cta-desc">月贊助 $1 / $5 / $10 — 推薦給開發者</span>
+                    </span>
+                </a>
+                <a class="support-cta support-kofi" href="https://ko-fi.com/boboidvtw" target="_blank" rel="noopener noreferrer">
+                    <span class="support-cta-icon" aria-hidden="true">☕</span>
+                    <span class="support-cta-text">
+                        <span class="support-cta-name">Ko-fi</span>
+                        <span class="support-cta-desc">請我喝杯咖啡（一次性，PayPal 即可）</span>
+                    </span>
+                </a>
+            </div>
+            <div class="support-uses">
+                <div class="support-uses-title">贊助用途</div>
+                <ul>
+                    <li>Cloudflare Worker + KV 月費 — 保持服務 <strong>免費可用</strong></li>
+                    <li>持續擴充公式庫（目前 100 條，目標 200+）</li>
+                    <li>新功能開發（步驟解析、自訂變數庫…）</li>
+                    <li>承諾保持 <strong>零廣告、零追蹤</strong></li>
+                </ul>
+            </div>
+            <p class="support-thanks">每一份支持都讓 ∑ Calc 走得更遠 ✨</p>
         </div>
     </div>
 
@@ -2685,6 +2796,19 @@
         document.getElementById('helpBtn').addEventListener('click', () => openModal(helpModal));
         document.getElementById('helpCloseBtn').addEventListener('click', () => closeModal(helpModal));
         helpModal.addEventListener('click', e => { if (e.target === helpModal) closeModal(helpModal); });
+
+        // ========== Support Modal（贊助）==========
+        const supportModal = document.getElementById('supportModal');
+        document.getElementById('supportBtn').addEventListener('click', () => openModal(supportModal));
+        document.getElementById('supportCloseBtn').addEventListener('click', () => closeModal(supportModal));
+        supportModal.addEventListener('click', e => { if (e.target === supportModal) closeModal(supportModal); });
+        // /support deep link：支援 #/support 與 #support 兩種寫法
+        function _checkSupportHash() {
+            const h = location.hash;
+            if (h === '#/support' || h === '#support') openModal(supportModal);
+        }
+        _checkSupportHash();
+        window.addEventListener('hashchange', _checkSupportHash);
         document.querySelectorAll('.help-section-header').forEach(header => {
             const section = header.closest('.help-section');
             header.setAttribute('aria-expanded', section.classList.contains('open'));

@@ -5,11 +5,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.6.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.7.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#v33-安全架構升級-)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#v33-安全架構升級-)
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-☕_Buy_me_a_coffee-29abe0?logo=kofi&logoColor=white)](https://ko-fi.com/boboidvtw)
 
 🌐 **線上版本**：https://boboidvtw.github.io/
+
+💖 **支持本專案**：∑ Calc 保持 **免費、無廣告、無追蹤**。若覺得有用，歡迎透過 [GitHub Sponsors](https://github.com/sponsors/boboidvtw) 或 [Ko-fi](https://ko-fi.com/boboidvtw) 贊助 — 你的支持會直接 cover Cloudflare Worker / KV 月費，並讓開發者有更多時間補新公式。
 
 ---
 

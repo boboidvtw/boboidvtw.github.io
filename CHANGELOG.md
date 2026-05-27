@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.0] - 2026-05-27 — Sponsor 按鈕（變現計畫 Phase 1）
+
+啟動「Sponsor + Freemium + Content Engine」三層變現策略的第一層 — 為重度使用者提供零摩擦贊助入口，cover Cloudflare Worker / KV 月費並維持站點 **免費、無廣告、無追蹤**。本次純前端功能，未改動 Worker 與計算引擎。`sw.js` `CACHE_NAME` 同步 bump 至 `sigma-calc-v3.7.0`。
+
+### Added
+
+- **Header ❤ Support 按鈕**：在 header `controls` 區（lang/help 之後、graph 之前）新增紅色心形 `.support-btn`，與 `.help-btn` 同尺寸（36×36 圓形）與互動風格。位置選 header 而非 floating button — 避免擋計算 UI（CLAUDE.md 開發禁忌）。
+- **Support Modal（`#supportModal`）**：沿用 `.help-modal` overlay layout pattern，內含贊助說明 + 兩個 CTA + 用途列表 + 感謝結語。完整 a11y：`role=dialog`、`aria-modal`、`aria-labelledby`、與既有 `openModal`/`closeModal` helper 整合（焦點移入、焦點陷阱、Escape 關閉、關閉後焦點還原至 `supportBtn`）。
+- **兩個贊助 CTA**：
+  - **GitHub Sponsors**（`https://github.com/sponsors/boboidvtw`，粉紅色 `#ea4aaa`）— 月贊助 $1 / $5 / $10
+  - **Ko-fi**（`https://ko-fi.com/boboidvtw`，藍色 `#29abe0`）— 一次性贊助（PayPal 即可）
+  - 兩者皆 `target="_blank" rel="noopener noreferrer"`、`min-height: 44px` 觸控標準。
+- **Deep link 支援**：`#/support` 或 `#support` 任一 hash 載入後自動開啟 Support modal，方便外部分享連結（README badge / 社群貼文）。
+- **README 雙語 Sponsor 區塊**：`README.md` + `README_EN.md` 加 GitHub Sponsors / Ko-fi badge 與一段中英雙語贊助說明，Version badge 同步 bump 至 3.7.0。
+
+### Verification
+
+- 桌機（深色 + 淺色主題）modal 開關、CTA 視覺、用途框排版 — 全綠
+- 行動裝置（478px viewport）modal 完整置於 viewport 內（modal_x=16、modal_width=446）— 無溢出
+- 鍵盤 a11y：點 ❤ 按鈕 → 焦點進入 close button、Escape 關閉 → 焦點還原至 ❤ 按鈕
+- Hash route：`location.hash = '#/support'` 後 modal 自動開啟
+- 回歸：7+8=15、`sw.js = sigma-calc-v3.7.0`、console 零 error
+
+---
+
 ## [3.6.0] - 2026-05-22 — 無障礙強化（WCAG 2.1 AA 深審）
 
 一輪 WCAG 2.1 AA 無障礙深度審查後的修復，補齊自專案建立以來缺漏的鍵盤操作與螢幕閱讀器支援。全部經本地瀏覽器逐項實測、零回歸、零 console error。`sw.js` `CACHE_NAME` 同步 bump 至 `sigma-calc-v3.6.0`。

@@ -5,11 +5,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.6.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.7.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-PayPal_Live-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-☕_Buy_me_a_coffee-29abe0?logo=kofi&logoColor=white)](https://ko-fi.com/boboidvtw)
 
 🌐 **Live demo**: https://boboidvtw.github.io/
+
+💖 **Support this project**: ∑ Calc stays **free, ad-free, tracker-free**. If you find it useful, consider sponsoring via [GitHub Sponsors](https://github.com/sponsors/boboidvtw) or [Ko-fi](https://ko-fi.com/boboidvtw) — your support directly covers Cloudflare Worker / KV monthly costs and gives me more time to add new formulas.
 
 ---
 
