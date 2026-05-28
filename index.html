@@ -2193,12 +2193,14 @@
             <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">4. 內建公式與自建公式</h3>
             <p>涵蓋數學、工程、科學、物理、金融、健康六大領域共 <strong>100 條公式</strong>。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--primary); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。v3.5.5 新增 20 條熱門公式，v3.5.6 再增 5 條健康公式（TDEE、體脂率、水分需求），v3.5.9 再擴充 12 條使公式庫正式突破 100 條，覆蓋國高中數學競賽常考、健康族群常用、創業財管必備。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">5. 🆕 v3.5.5 新增公式速覽</h3>
+            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">5. 🆕 v3.5.5 → v3.7.1 更新速覽</h3>
             <p><strong>📐 數學進階（7 條）：</strong>海倫公式（已知三邊求三角形面積）、扇形面積與弧長（自動度→弧度換算）、等差與等比數列求和 Sn、二維向量長度與內積。涵蓋國中至高中數學的常考必背公式，學生族群可直接代入快速驗算。</p>
             <p><strong>⚖️ 健康自我量測（4 條）：</strong>BMI 身體質量指數（自動換算公分→公尺）、BMR 基礎代謝率（採用最新 Mifflin-St Jeor 公式，比傳統 Harris-Benedict 更精準，分男女兩條）、目標心率（%最大心率法，健身強度計算）。例：體重 70 公斤、身高 170 公分 → BMI ≈ 24.22，落在正常範圍上緣；30 歲男性 BMR ≈ 1648 大卡/日。</p>
             <p><strong>🔬 物理與工程（7 條）：</strong>向心加速度 v²/r、彈簧簡諧運動週期 2π√(m/k)、彈簧位能 ½kx²、普朗克量子能量 E=hf、動摩擦力 μmg。電子工程 LC 諧振頻率與 RC 截止頻率，用於濾波器與震盪電路設計。</p>
             <p><strong>💼 金融進階（2 條）：</strong>實質年利率 EAR — 揭穿「名目利率 12% 月複利」實際是 12.68% 的真相；損益平衡點 BEP — 創業者必算的「賣多少才回本」公式。</p>
             <p><strong>🎯 v3.5.9 公式庫突破 100 條（新增 12 條）：</strong>科學 3 條（放射性半衰期剩餘量、由頻率求光波長、理想氣體體積）、物理 4 條（壓力 P=F/A、功率 P=W/t、阿基米德浮力、質能等價 E=mc²）、數學 2 條（球的表面積、指數成長/衰減模型）、工程與金融 3 條（分壓定則、毛利率、股息殖利率）。同版本並修復 nCr/nPr 大數組合數溢位與三角函數特殊角浮點殘渣。</p>
+            <p><strong>♿ v3.6.0 無障礙深審（WCAG 2.1 AA）：</strong>補齊自專案建立以來缺漏的鍵盤焦點指示器、說明手風琴鍵盤操作、三大 modal 焦點管理（焦點移入、焦點陷阱、Escape 關閉、焦點還原）、標題大綱 <code>h1</code>/<code>h2</code>/<code>h3</code> 階層、<code>aria-live</code> 即時計算結果播報、<code>aria-label</code> 補齊所有按鈕與下拉選單。為視覺障礙、動作不便、依賴鍵盤操作的使用者把計算機重做一遍。</p>
+            <p><strong>💖 v3.7.0 + v3.7.1 — 變現計畫 Phase 1 & 3.2：</strong>v3.7.0 加 Header ❤ 贊助入口（GitHub Sponsors / Ko-fi），讓重度使用者可一鍵 cover 站台維運費用，<strong>保持免費、保護使用者資料</strong>。v3.7.1 加 <code>?formula=N</code> 深連結，讓 Bobo Labs 的<a href="https://labs.moneyai168.com/formulas/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">公式深度文章庫</a>能直接 iframe 嵌入指定公式（如 <code>?formula=11</code> 直開「勾股定理」計算視窗）。兩項皆零 console error、零回歸驗證通過。</p>
 
             <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">6. 📝 實用計算教學專欄</h3>
             <ul style="list-style: none; padding: 0; margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
