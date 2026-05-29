@@ -261,7 +261,19 @@
         setupActivateButton();
 
         const proBtn = document.getElementById('proBadgeBtn');
-        if (proBtn) proBtn.addEventListener('click', () => showProModal());
+        if (proBtn) proBtn.addEventListener('click', () => {
+            // v3.8.0 Phase 2.3 Freemium：依 tier 分流
+            // - 已有 license（pro 訂閱者）→ 開既有 Pro modal 看訂閱資訊 / 復原
+            // - 未訂閱（free / 試用中）→ 開新 Pricing modal 走 Freemium 升級路徑
+            if (ProManager.hasValidLicense()) {
+                showProModal();
+            } else if (typeof window.openPricingModal === 'function') {
+                window.openPricingModal({ source: 'header-pro-btn' });
+            } else {
+                // Pricing modal 尚未就緒：回退到既有 modal
+                showProModal();
+            }
+        });
 
         PayPalIntegration.loadAndRender('monthly');
 

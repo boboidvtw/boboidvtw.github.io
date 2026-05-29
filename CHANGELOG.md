@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.0] - 2026-05-29 — Freemium 公式分層上線（變現計畫 Phase 2.3）
+
+### 🎯 Phase 2.3 Freemium 全套上線
+
+#### 公式分層（100 條 → Free 59 + Pro 41）
+- 數學 8、金融 7、工程 7、科學 6、物理 9、健康 4 共 41 條 Pro 公式
+- 涵蓋判別式、海倫公式、現值 PV、年金、實質年利率 EAR、RC 時間常數、
+  量子（波耳能量、普朗克 E=hf）、相對論 E=mc²、簡諧週期 / 彈簧位能、
+  TDEE 每日總消耗、體脂率 Deurenberg 等專業領域工具
+- 詳細名單見 `docs/MONETIZATION-PHASE-2-TIER-SPLIT.md`
+
+#### Pro 公式 UI
+- Pro 公式卡片金色漸層 + 🔒 鎖頭 + `PRO` 徽章視覺
+- 未訂閱使用者點擊 → 開升級對話框（Pricing modal）
+- 訂閱者 / 7 天試用者 → 自動移除鎖頭、正常開公式 modal
+
+#### Pricing Modal（新建）
+- Free vs Pro 對比表（5 項 × 2 欄）+ 月費 $2.99 / 年費 $19.99 toggle
+- 年費省 44% 徽章
+- 內嵌 PayPal Subscribe Buttons（既有 PayPal Subscriptions 整合）
+- 「復原授權」連結回退到既有 #pro-modal
+- `/pricing` deep link（hash 路由：`#/pricing` 或 `#pricing`）
+- 完整 WCAG 2.1 AA：role=dialog / aria-modal / focus trap / Escape 關閉
+- 響應式：≤ 600px 自動切單欄
+
+#### Worker v2.4.0
+- JWT payload 新增 `tier` 欄位（目前 active 訂閱者皆 `'pro'`，留擴充點）
+- `/license/validate` 回傳 `tier` 給前端使用
+- 舊 token（v2.3.0 以前簽發）無 tier 欄位自動 fallback 為 `'pro'`（向下相容）
+- `/health` 加 `freemium: 'tier-in-jwt'` 訊號
+- `deriveTier(sub)` helper：優先採用 KV `sub:{id}.tier` 顯式欄位，
+  未來可擴充 enterprise / lifetime / team 等多層級
+
+#### 前端 ProManager
+- 新增 `getTier()` 三態：`'free' | 'trial' | 'pro'`
+- `getLicenseInfo()` 加 tier 欄位（讀 JWT payload）
+- `isProActive()` 語意不變：trial + license 皆視為 active（保留前端 trial 顯示）
+
+#### P0 修復
+- **修 `pro-config.js` PayPal Live Client ID 錯字**（第 30 行 `eIlo` → `eIIo`）
+  — 自 2026-05-14 至今 production PayPal SDK 載入受影響，本次修復後正常生效
+
+### 📚 文件
+- README.md / README_EN.md：標示 Pro 41 條公式 + 月費 / 年費定價
+- 沿用 `docs/MONETIZATION-PHASE-2-TIER-SPLIT.md` 分層草案，已落地實作
+
+---
+
 ## [3.7.1] - 2026-05-27 — Deep link `?formula=N`（變現計畫 Phase 3.2）
 
 支援外部 SEO 文章透過 query param 直連特定公式，並自動開啟計算 modal。

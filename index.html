@@ -258,6 +258,130 @@
             text-align: center; font-style: italic;
         }
 
+        /* ===== Pricing Modal（v3.8.0 Phase 2.3 Freemium）===== */
+        .pricing-modal-content { max-width: 720px; }
+        .pricing-intro {
+            margin: 0 0 16px;
+            font-size: 14px; line-height: 1.6;
+            color: var(--text-dark-secondary);
+        }
+        .pricing-intro strong { color: var(--primary); }
+        .pricing-cycle-toggle {
+            display: flex; gap: 8px; margin-bottom: 20px;
+            padding: 6px;
+            background: var(--bg-dark-tertiary);
+            border-radius: 12px;
+        }
+        .pricing-cycle-btn {
+            flex: 1; padding: 12px 14px;
+            background: transparent; color: var(--text-dark-secondary);
+            border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .pricing-cycle-btn:hover { color: var(--text-dark); }
+        .pricing-cycle-btn.active {
+            background: var(--primary); color: #fff;
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+        }
+        body.light .pricing-cycle-btn.active { color: #fff; }
+        .pricing-save {
+            display: inline-block;
+            font-size: 10.5px; font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            padding: 2px 7px; border-radius: 4px;
+            letter-spacing: 0.3px;
+        }
+        .pricing-compare {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 600px) {
+            .pricing-compare { grid-template-columns: 1fr; }
+        }
+        .pricing-col {
+            position: relative;
+            padding: 18px 16px;
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            background: rgba(6, 182, 212, 0.04);
+        }
+        .pricing-col-pro {
+            border-color: rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.04));
+        }
+        .pricing-col-badge {
+            position: absolute; top: -10px; right: 14px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            padding: 3px 10px; border-radius: 6px;
+        }
+        .pricing-col-title {
+            font-size: 18px; font-weight: 700;
+            color: var(--text-dark); margin-bottom: 4px;
+        }
+        .pricing-col-price {
+            font-size: 28px; font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .pricing-col-pro .pricing-col-price { color: #fbbf24; }
+        .pricing-col-cycle {
+            font-size: 14px; font-weight: 500;
+            color: var(--text-dark-secondary);
+        }
+        .pricing-features {
+            list-style: none; padding: 0; margin: 0;
+            font-size: 13.5px; line-height: 1.65;
+            color: var(--text-dark-secondary);
+        }
+        .pricing-features li {
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.15);
+        }
+        .pricing-features li:last-child { border-bottom: none; }
+        #paypal-button-container {
+            min-height: 50px; margin-top: 12px;
+        }
+        .pricing-note {
+            margin: 14px 0 0;
+            font-size: 12.5px; color: var(--text-dark-secondary);
+            text-align: center;
+        }
+        .pricing-note a {
+            color: var(--primary); text-decoration: none;
+            border-bottom: 1px dashed currentColor;
+        }
+        .pricing-note a:hover { color: var(--primary-dark); }
+        .paypal-error {
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            color: #fca5a5;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Header 升級 Pro 按鈕（free 用戶顯示）*/
+        .upgrade-btn {
+            display: none;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            border: none; border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .upgrade-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        }
+        .upgrade-btn.is-visible { display: inline-flex; align-items: center; gap: 6px; }
+
         .panel {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--border-dark);
@@ -688,6 +812,31 @@
         .group-物理 { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
         .group-金融 { background: rgba(251, 113, 133, 0.15); color: #fb7185; }
         .group-健康 { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+
+        /* ===== Pro 公式鎖頭（v3.8.0 Phase 2.3 Freemium）===== */
+        .formula-item-pro {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.04));
+            border-color: rgba(251, 191, 36, 0.4);
+            position: relative;
+        }
+        .formula-item-pro:hover {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(245, 158, 11, 0.08));
+        }
+        .formula-pro-lock {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 14px; opacity: 0.9;
+            pointer-events: none;
+        }
+        .formula-pro-badge {
+            display: inline-block; font-size: 10px; font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            padding: 2px 7px; border-radius: 4px;
+            margin-top: 4px; margin-left: 4px;
+            letter-spacing: 0.5px;
+        }
+        /* 已解鎖（trial / pro 訂閱）：隱藏鎖頭，保留 Pro 徽章 */
+        .formula-item-pro.is-unlocked .formula-pro-lock { display: none; }
 
         .section-title {
             font-size: 14px; font-weight: 700;
@@ -2058,6 +2207,68 @@
         </div>
     </div>
 
+    <!-- Pricing Modal（v3.8.0 Phase 2.3 Freemium）-->
+    <div class="help-modal" id="pricingModal" role="dialog" aria-modal="true" aria-labelledby="pricingModalTitle">
+        <div class="help-modal-content pricing-modal-content">
+            <div class="help-modal-header">
+                <div class="help-modal-title" id="pricingModalTitle">✨ 升級到 ∑ Calc Pro</div>
+                <button class="help-close-btn" id="pricingCloseBtn" aria-label="關閉升級視窗">✕</button>
+            </div>
+            <p class="pricing-intro">
+                解鎖 <strong>41 條進階公式</strong>（量子 / 相對論 / 金融工程 / TDEE / 訊號處理…）
+                ＋ <strong>7 個 Pro 繪圖工具</strong>（切線 / 積分 / 斜率場 / 交點 / 統計 / 3D / SVG 匯出）。
+                PayPal 自動續訂，<strong>7 天免費試用</strong>，隨時取消。
+            </p>
+
+            <div class="pricing-cycle-toggle" role="tablist" aria-label="計費週期">
+                <button class="pricing-cycle-btn active" id="pricingCycleMonthly" data-cycle="monthly"
+                        role="tab" aria-selected="true" aria-controls="paypal-button-container">
+                    月費 $2.99
+                </button>
+                <button class="pricing-cycle-btn" id="pricingCycleAnnual" data-cycle="annual"
+                        role="tab" aria-selected="false" aria-controls="paypal-button-container">
+                    年費 $19.99 <span class="pricing-save">省 44%</span>
+                </button>
+            </div>
+
+            <div class="pricing-compare">
+                <div class="pricing-col pricing-col-free">
+                    <div class="pricing-col-title">Free</div>
+                    <div class="pricing-col-price">$0 <span class="pricing-col-cycle">永久</span></div>
+                    <ul class="pricing-features">
+                        <li>✅ 59 條基礎公式（國中／高中／大一通識）</li>
+                        <li>✅ 完整科學計算機 + 進位 / 工程 / 統計</li>
+                        <li>✅ 函數繪圖基礎（單變數 + zoom + 多函數）</li>
+                        <li>✅ 單位 / 匯率 / 自建公式 / 計算記錄</li>
+                        <li>✅ 零廣告、零追蹤</li>
+                    </ul>
+                </div>
+                <div class="pricing-col pricing-col-pro">
+                    <div class="pricing-col-badge">PRO</div>
+                    <div class="pricing-col-title">Pro</div>
+                    <div class="pricing-col-price">
+                        <span id="pricingDisplayPrice">$2.99</span>
+                        <span class="pricing-col-cycle" id="pricingDisplayCycle">/月</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✨ 包含全部 Free + <strong>41 條 Pro 公式</strong>（量子 / E=mc² / 金融工程）</li>
+                        <li>✨ 切線 / 積分 / 斜率場 / 交點求解</li>
+                        <li>✨ 統計圖表 / 3D 曲面 / SVG 匯出</li>
+                        <li>✨ PayPal <strong>7 天免費試用</strong>，隨時取消</li>
+                        <li>✨ 直接支持獨立開發者</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="paypal-button-container"></div>
+
+            <p class="pricing-note">
+                由 PayPal 安全處理結帳。
+                已訂閱？<a href="#" id="pricingRestoreLink">復原授權</a>
+            </p>
+        </div>
+    </div>
+
     <!-- 公式計算 Modal -->
     <div class="modal" id="formulaModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
@@ -2370,11 +2581,11 @@
             { id: 21, name: '常用對數',    expr: 'log(x)',               vars: ['x'],                   category: '對數',   group: '數學' },
             { id: 22, name: '一次函數',    expr: 'a*x+b',                vars: ['x','a','b'],           category: '函數',   group: '數學' },
             { id: 23, name: '二次函數',    expr: 'a*x^2+b*x+c',          vars: ['x','a','b','c'],       category: '函數',   group: '數學' },
-            { id: 24, name: '判別式',      expr: 'b^2-4*a*c',            vars: ['a','b','c'],           category: '函數',   group: '數學' },
+            { id: 24, name: '判別式',      expr: 'b^2-4*a*c',            vars: ['a','b','c'],           category: '函數',   group: '數學', tier: 'pro' },
             { id: 25, name: '兩點距離',    expr: 'sqrt((x2-x1)^2+(y2-y1)^2)', vars: ['x1','y1','x2','y2'], category: '座標', group: '數學' },
-            { id: 26, name: '海倫公式',    expr: 'sqrt(((a+b+c)/2)*((a+b+c)/2-a)*((a+b+c)/2-b)*((a+b+c)/2-c))', vars: ['a','b','c'], category: '三角形', group: '數學' },
-            { id: 27, name: '扇形面積',    expr: '0.5*r^2*theta',        vars: ['r','theta'],           category: '面積',   group: '數學' },
-            { id: 28, name: '扇形弧長',    expr: 'r*theta',              vars: ['r','theta'],           category: '周長',   group: '數學' },
+            { id: 26, name: '海倫公式',    expr: 'sqrt(((a+b+c)/2)*((a+b+c)/2-a)*((a+b+c)/2-b)*((a+b+c)/2-c))', vars: ['a','b','c'], category: '三角形', group: '數學', tier: 'pro' },
+            { id: 27, name: '扇形面積',    expr: '0.5*r^2*theta',        vars: ['r','theta'],           category: '面積',   group: '數學', tier: 'pro' },
+            { id: 28, name: '扇形弧長',    expr: 'r*theta',              vars: ['r','theta'],           category: '周長',   group: '數學', tier: 'pro' },
             { id: 29, name: '等差數列和',  expr: 'n/2*(2*a+(n-1)*d)',    vars: ['n','a','d'],           category: '數列',   group: '數學' },
 
             // 工程
@@ -2382,41 +2593,41 @@
             { id: 31, name: '電功率',         expr: 'V*I',                    vars: ['V','I'],             category: '電學',  group: '工程' },
             { id: 32, name: '電阻串聯',       expr: 'R1+R2+R3',               vars: ['R1','R2','R3'],      category: '電學',  group: '工程' },
             { id: 33, name: '電阻並聯(2)',    expr: '(R1*R2)/(R1+R2)',        vars: ['R1','R2'],           category: '電學',  group: '工程' },
-            { id: 34, name: 'RC時間常數',    expr: 'R*C',                    vars: ['R','C'],             category: '電學',  group: '工程' },
-            { id: 35, name: '電容能量',       expr: '0.5*C*V^2',              vars: ['C','V'],             category: '電學',  group: '工程' },
-            { id: 36, name: '分貝(電壓)',     expr: '20*log(V/V0)',           vars: ['V','V0'],            category: '信號',  group: '工程' },
+            { id: 34, name: 'RC時間常數',    expr: 'R*C',                    vars: ['R','C'],             category: '電學',  group: '工程', tier: 'pro' },
+            { id: 35, name: '電容能量',       expr: '0.5*C*V^2',              vars: ['C','V'],             category: '電學',  group: '工程', tier: 'pro' },
+            { id: 36, name: '分貝(電壓)',     expr: '20*log(V/V0)',           vars: ['V','V0'],            category: '信號',  group: '工程', tier: 'pro' },
             { id: 37, name: '機械功',         expr: 'F*d',                    vars: ['F','d'],             category: '力學',  group: '工程' },
-            { id: 38, name: '機械效率',       expr: '(Pout/Pin)*100',         vars: ['Pout','Pin'],        category: '力學',  group: '工程' },
+            { id: 38, name: '機械效率',       expr: '(Pout/Pin)*100',         vars: ['Pout','Pin'],        category: '力學',  group: '工程', tier: 'pro' },
             { id: 39, name: '複利終值',       expr: 'P*(1+r/n)^(n*t)',          vars: ['P','r','n','t'],   category: '財務',  group: '金融' },
             { id: 40, name: '月繳貸款',       expr: 'P*r*(1+r)^n/((1+r)^n-1)', vars: ['P','r','n'],       category: '財務',  group: '金融' },
             { id: 41, name: '單利終值',       expr: 'P*(1+r*t)',                vars: ['P','r','t'],       category: '財務',  group: '金融' },
-            { id: 42, name: '現值 (PV)',      expr: 'F/(1+r/n)^(n*t)',          vars: ['F','r','n','t'],   category: '財務',  group: '金融' },
-            { id: 43, name: '年金終值',       expr: 'PMT*((1+r)^n-1)/r',        vars: ['PMT','r','n'],     category: '財務',  group: '金融' },
-            { id: 44, name: '年金現值',       expr: 'PMT*(1-(1+r)^(-n))/r',     vars: ['PMT','r','n'],     category: '財務',  group: '金融' },
+            { id: 42, name: '現值 (PV)',      expr: 'F/(1+r/n)^(n*t)',          vars: ['F','r','n','t'],   category: '財務',  group: '金融', tier: 'pro' },
+            { id: 43, name: '年金終值',       expr: 'PMT*((1+r)^n-1)/r',        vars: ['PMT','r','n'],     category: '財務',  group: '金融', tier: 'pro' },
+            { id: 44, name: '年金現值',       expr: 'PMT*(1-(1+r)^(-n))/r',     vars: ['PMT','r','n'],     category: '財務',  group: '金融', tier: 'pro' },
             { id: 45, name: '投資報酬率 ROI', expr: '(V2-V1)/V1*100',           vars: ['V2','V1'],         category: '財務',  group: '金融' },
             { id: 46, name: '72法則',         expr: '72/r',                      vars: ['r'],               category: '財務',  group: '金融' },
             { id: 47, name: '本益比 P/E',     expr: 'P/E',                       vars: ['P','E'],           category: '財務',  group: '金融' },
-            { id: 48, name: '實質年利率 EAR', expr: '(1+r/n)^n-1',               vars: ['r','n'],           category: '財務',  group: '金融' },
-            { id: 49, name: '損益平衡點',     expr: 'FC/(P-VC)',                 vars: ['FC','P','VC'],     category: '財務',  group: '金融' },
+            { id: 48, name: '實質年利率 EAR', expr: '(1+r/n)^n-1',               vars: ['r','n'],           category: '財務',  group: '金融', tier: 'pro' },
+            { id: 49, name: '損益平衡點',     expr: 'FC/(P-VC)',                 vars: ['FC','P','VC'],     category: '財務',  group: '金融', tier: 'pro' },
 
             // 科學
-            { id: 50, name: '理想氣體(壓力)', expr: 'n*8.314462618*T/V',      vars: ['n','T','V'],         category: '化學',  group: '科學' },
+            { id: 50, name: '理想氣體(壓力)', expr: 'n*8.314462618*T/V',      vars: ['n','T','V'],         category: '化學',  group: '科學', tier: 'pro' },
             { id: 51, name: '莫耳數',          expr: 'm/M',                    vars: ['m','M'],             category: '化學',  group: '科學' },
             { id: 52, name: '莫耳濃度',        expr: 'n/V',                    vars: ['n','V'],             category: '化學',  group: '科學' },
             { id: 53, name: 'pH值',            expr: '-log(H)',                vars: ['H'],                 category: '化學',  group: '科學' },
             { id: 54, name: '稀釋方程',        expr: 'C1*V1/V2',               vars: ['C1','V1','V2'],      category: '化學',  group: '科學' },
             { id: 55, name: '密度',            expr: 'm/V',                    vars: ['m','V'],             category: '化學',  group: '科學' },
-            { id: 56, name: '化學產率',        expr: '(actual/theoretical)*100', vars: ['actual','theoretical'], category: '化學', group: '科學' },
-            { id: 57, name: '波耳模型能量',    expr: '-13.6/n^2',              vars: ['n'],                 category: '量子',  group: '科學' },
+            { id: 56, name: '化學產率',        expr: '(actual/theoretical)*100', vars: ['actual','theoretical'], category: '化學', group: '科學', tier: 'pro' },
+            { id: 57, name: '波耳模型能量',    expr: '-13.6/n^2',              vars: ['n'],                 category: '量子',  group: '科學', tier: 'pro' },
 
             // 數學（補：數列 + 向量）
-            { id: 58, name: '等比數列和',    expr: 'a*(1-q^n)/(1-q)',        vars: ['a','q','n'],         category: '數列',   group: '數學' },
-            { id: 59, name: '向量長度 (2D)', expr: 'sqrt(x^2+y^2)',          vars: ['x','y'],             category: '座標',   group: '數學' },
-            { id: 60, name: '向量內積 (2D)', expr: 'x1*x2+y1*y2',            vars: ['x1','y1','x2','y2'], category: '座標',   group: '數學' },
+            { id: 58, name: '等比數列和',    expr: 'a*(1-q^n)/(1-q)',        vars: ['a','q','n'],         category: '數列',   group: '數學', tier: 'pro' },
+            { id: 59, name: '向量長度 (2D)', expr: 'sqrt(x^2+y^2)',          vars: ['x','y'],             category: '座標',   group: '數學', tier: 'pro' },
+            { id: 60, name: '向量內積 (2D)', expr: 'x1*x2+y1*y2',            vars: ['x1','y1','x2','y2'], category: '座標',   group: '數學', tier: 'pro' },
 
             // 工程（補：信號濾波）
-            { id: 61, name: 'LC 諧振頻率',   expr: '1/(2*π*sqrt(L*C))',      vars: ['L','C'],             category: '信號',  group: '工程' },
-            { id: 62, name: 'RC 截止頻率',   expr: '1/(2*π*R*C)',            vars: ['R','C'],             category: '信號',  group: '工程' },
+            { id: 61, name: 'LC 諧振頻率',   expr: '1/(2*π*sqrt(L*C))',      vars: ['L','C'],             category: '信號',  group: '工程', tier: 'pro' },
+            { id: 62, name: 'RC 截止頻率',   expr: '1/(2*π*R*C)',            vars: ['R','C'],             category: '信號',  group: '工程', tier: 'pro' },
 
             // 物理
             { id: 70, name: '牛頓第二定律',   expr: 'm*a',                    vars: ['m','a'],             category: '力學',  group: '物理' },
@@ -2427,40 +2638,40 @@
             { id: 75, name: '自由落體高度',    expr: '0.5*9.80665*t^2',        vars: ['t'],                 category: '力學',  group: '物理' },
             { id: 76, name: '波速',            expr: 'f*lambda',               vars: ['f','lambda'],        category: '波動',  group: '物理' },
             { id: 77, name: '熱量',            expr: 'm*c*dT',                 vars: ['m','c','dT'],        category: '熱學',  group: '物理' },
-            { id: 78, name: '庫倫力',          expr: '8.9875518e9*q1*q2/r^2',       vars: ['q1','q2','r'],       category: '電磁',  group: '物理' },
-            { id: 79, name: '萬有引力',        expr: '6.6743e-11*m1*m2/r^2',    vars: ['m1','m2','r'],       category: '引力',  group: '物理' },
-            { id: 80, name: '電場強度',        expr: 'F/q',                    vars: ['F','q'],             category: '電磁',  group: '物理' },
+            { id: 78, name: '庫倫力',          expr: '8.9875518e9*q1*q2/r^2',       vars: ['q1','q2','r'],       category: '電磁',  group: '物理', tier: 'pro' },
+            { id: 79, name: '萬有引力',        expr: '6.6743e-11*m1*m2/r^2',    vars: ['m1','m2','r'],       category: '引力',  group: '物理', tier: 'pro' },
+            { id: 80, name: '電場強度',        expr: 'F/q',                    vars: ['F','q'],             category: '電磁',  group: '物理', tier: 'pro' },
             { id: 81, name: '歐姆定律(電壓)',  expr: 'I*R',                    vars: ['I','R'],             category: '電磁',  group: '物理' },
             { id: 82, name: '向心加速度',       expr: 'v^2/r',                  vars: ['v','r'],             category: '力學',  group: '物理' },
-            { id: 83, name: '簡諧週期(彈簧)',   expr: '2*π*sqrt(m/k)',          vars: ['m','k'],             category: '振動',  group: '物理' },
-            { id: 84, name: '彈簧位能',         expr: '0.5*k*x^2',              vars: ['k','x'],             category: '振動',  group: '物理' },
-            { id: 85, name: '普朗克能量 E=hf',  expr: '6.62607015e-34*f',            vars: ['f'],                 category: '量子',  group: '物理' },
-            { id: 86, name: '動摩擦力',         expr: 'mu*m*9.80665',           vars: ['mu','m'],            category: '力學',  group: '物理' },
+            { id: 83, name: '簡諧週期(彈簧)',   expr: '2*π*sqrt(m/k)',          vars: ['m','k'],             category: '振動',  group: '物理', tier: 'pro' },
+            { id: 84, name: '彈簧位能',         expr: '0.5*k*x^2',              vars: ['k','x'],             category: '振動',  group: '物理', tier: 'pro' },
+            { id: 85, name: '普朗克能量 E=hf',  expr: '6.62607015e-34*f',            vars: ['f'],                 category: '量子',  group: '物理', tier: 'pro' },
+            { id: 86, name: '動摩擦力',         expr: 'mu*m*9.80665',           vars: ['mu','m'],            category: '力學',  group: '物理', tier: 'pro' },
 
             // 健康（新分類 — BMI / BMR / 目標心率）
             { id: 90, name: 'BMI 身體質量指數', expr: 'w/((h/100)^2)',         vars: ['w','h'],             category: '體位',  group: '健康' },
             { id: 91, name: 'BMR 基礎代謝(男)', expr: '10*w+6.25*h-5*a+5',     vars: ['w','h','a'],         category: '代謝',  group: '健康' },
             { id: 92, name: 'BMR 基礎代謝(女)', expr: '10*w+6.25*h-5*a-161',   vars: ['w','h','a'],         category: '代謝',  group: '健康' },
             { id: 93, name: '目標心率(%最大心率)', expr: '(220-a)*intensity/100', vars: ['a','intensity'],   category: '心率',  group: '健康' },
-            { id: 94, name: 'TDEE 每日總消耗(男)', expr: '(10*w+6.25*h-5*a+5)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康' },
-            { id: 95, name: 'TDEE 每日總消耗(女)', expr: '(10*w+6.25*h-5*a-161)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康' },
-            { id: 96, name: '體脂率(男, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-16.2', vars: ['w','h','a'], category: '體位', group: '健康' },
-            { id: 97, name: '體脂率(女, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-5.4',  vars: ['w','h','a'], category: '體位', group: '健康' },
+            { id: 94, name: 'TDEE 每日總消耗(男)', expr: '(10*w+6.25*h-5*a+5)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康', tier: 'pro' },
+            { id: 95, name: 'TDEE 每日總消耗(女)', expr: '(10*w+6.25*h-5*a-161)*activity', vars: ['w','h','a','activity'], category: '代謝', group: '健康', tier: 'pro' },
+            { id: 96, name: '體脂率(男, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-16.2', vars: ['w','h','a'], category: '體位', group: '健康', tier: 'pro' },
+            { id: 97, name: '體脂率(女, Deurenberg)', expr: '1.20*(w/((h/100)^2))+0.23*a-5.4',  vars: ['w','h','a'], category: '體位', group: '健康', tier: 'pro' },
             { id: 98, name: '每日水分需求(ml)',     expr: 'w*30',                              vars: ['w'],                  category: '水分', group: '健康' },
 
             // v3.5.9 擴充 — 公式庫達 100 條里程碑（科學 +3 / 物理 +4 / 數學 +2 / 工程 +1 / 金融 +2）
             { id: 99,  name: '球的表面積',      expr: '4*π*r^2',                    vars: ['r'],                category: '面積',   group: '數學' },
-            { id: 100, name: '指數成長/衰減',   expr: 'A*e^(k*t)',                  vars: ['A','k','t'],        category: '函數',   group: '數學' },
+            { id: 100, name: '指數成長/衰減',   expr: 'A*e^(k*t)',                  vars: ['A','k','t'],        category: '函數',   group: '數學', tier: 'pro' },
             { id: 101, name: '壓力 P=F/A',      expr: 'F/A',                        vars: ['F','A'],            category: '力學',   group: '物理' },
             { id: 102, name: '功率 P=W/t',      expr: 'W/t',                        vars: ['W','t'],            category: '力學',   group: '物理' },
-            { id: 103, name: '浮力（阿基米德）', expr: 'rho*9.80665*V',              vars: ['rho','V'],          category: '流體',   group: '物理' },
-            { id: 104, name: '質能等價 E=mc²',  expr: 'm*299792458^2',              vars: ['m'],                category: '相對論', group: '物理' },
-            { id: 105, name: '分壓定則',        expr: 'Vin*R2/(R1+R2)',             vars: ['Vin','R1','R2'],    category: '電學',   group: '工程' },
-            { id: 106, name: '半衰期剩餘量',    expr: 'N0*0.5^(t/T)',               vars: ['N0','t','T'],       category: '核物理', group: '科學' },
-            { id: 107, name: '光波長(由頻率)',  expr: '299792458/f',                vars: ['f'],                category: '波動',   group: '科學' },
-            { id: 108, name: '理想氣體(體積)',  expr: 'n*8.314462618*T/P',          vars: ['n','T','P'],        category: '化學',   group: '科學' },
-            { id: 109, name: '毛利率',          expr: '(revenue-cost)/revenue*100', vars: ['revenue','cost'],   category: '財務',   group: '金融' },
-            { id: 110, name: '股息殖利率',      expr: 'dividend/price*100',         vars: ['dividend','price'], category: '財務',   group: '金融' },
+            { id: 103, name: '浮力（阿基米德）', expr: 'rho*9.80665*V',              vars: ['rho','V'],          category: '流體',   group: '物理', tier: 'pro' },
+            { id: 104, name: '質能等價 E=mc²',  expr: 'm*299792458^2',              vars: ['m'],                category: '相對論', group: '物理', tier: 'pro' },
+            { id: 105, name: '分壓定則',        expr: 'Vin*R2/(R1+R2)',             vars: ['Vin','R1','R2'],    category: '電學',   group: '工程', tier: 'pro' },
+            { id: 106, name: '半衰期剩餘量',    expr: 'N0*0.5^(t/T)',               vars: ['N0','t','T'],       category: '核物理', group: '科學', tier: 'pro' },
+            { id: 107, name: '光波長(由頻率)',  expr: '299792458/f',                vars: ['f'],                category: '波動',   group: '科學', tier: 'pro' },
+            { id: 108, name: '理想氣體(體積)',  expr: 'n*8.314462618*T/P',          vars: ['n','T','P'],        category: '化學',   group: '科學', tier: 'pro' },
+            { id: 109, name: '毛利率',          expr: '(revenue-cost)/revenue*100', vars: ['revenue','cost'],   category: '財務',   group: '金融', tier: 'pro' },
+            { id: 110, name: '股息殖利率',      expr: 'dividend/price*100',         vars: ['dividend','price'], category: '財務',   group: '金融', tier: 'pro' },
         ];
 
         // ========== 公式變數說明 ==========
@@ -2811,6 +3022,85 @@
         }
         _checkSupportHash();
         window.addEventListener('hashchange', _checkSupportHash);
+
+        // ========== Pricing Modal（v3.8.0 Phase 2.3 Freemium）==========
+        const pricingModal = document.getElementById('pricingModal');
+        const pricingCycleBtns = pricingModal.querySelectorAll('.pricing-cycle-btn');
+        const pricingDisplayPrice = document.getElementById('pricingDisplayPrice');
+        const pricingDisplayCycle = document.getElementById('pricingDisplayCycle');
+        let _pricingCurrentCycle = 'monthly';
+
+        function _renderPricingPayPalButton(cycle) {
+            // 等 PayPalIntegration 就緒（pro-ui.js 與本檔載入有順序差，做 graceful retry）
+            if (window.PayPalIntegration && typeof window.PayPalIntegration.loadAndRender === 'function') {
+                window.PayPalIntegration.loadAndRender(cycle);
+            } else {
+                const c = document.getElementById('paypal-button-container');
+                if (c) c.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8">⏳ 載入結帳模組…</div>';
+                setTimeout(() => _renderPricingPayPalButton(cycle), 500);
+            }
+        }
+
+        function _setPricingCycle(cycle) {
+            _pricingCurrentCycle = cycle;
+            pricingCycleBtns.forEach(btn => {
+                const isActive = btn.dataset.cycle === cycle;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+            if (cycle === 'annual') {
+                pricingDisplayPrice.textContent = '$19.99';
+                pricingDisplayCycle.textContent = '/年';
+            } else {
+                pricingDisplayPrice.textContent = '$2.99';
+                pricingDisplayCycle.textContent = '/月';
+            }
+            _renderPricingPayPalButton(cycle);
+        }
+
+        /**
+         * 開啟 Pricing Modal（全域暴露，給 builtInFormulaItem 攔截使用）
+         * @param {{source?: string, cycle?: 'monthly'|'annual'}} opts
+         */
+        window.openPricingModal = function (opts = {}) {
+            if (window.ProManager && window.ProManager.isProActive && window.ProManager.isProActive()) {
+                // 已是 Pro，不需再升級 — 給個輕量提示即可
+                if (typeof window.showToast === 'function') {
+                    window.showToast('你已是 ∑ Calc Pro，無需再升級 ✨');
+                }
+                return;
+            }
+            _setPricingCycle(opts.cycle || _pricingCurrentCycle || 'monthly');
+            openModal(pricingModal);
+            // log 來源便於日後分析（不打 API、僅 console）
+            if (opts.source) console.info('[pricing] opened from:', opts.source);
+        };
+        window.closePricingModal = function () { closeModal(pricingModal); };
+
+        pricingCycleBtns.forEach(btn => {
+            btn.addEventListener('click', () => _setPricingCycle(btn.dataset.cycle));
+        });
+        document.getElementById('pricingCloseBtn').addEventListener('click', () => closeModal(pricingModal));
+        pricingModal.addEventListener('click', e => { if (e.target === pricingModal) closeModal(pricingModal); });
+
+        // 復原授權連結 — 開既有 #pro-modal（內含 license 輸入框 + 試用啟動）
+        document.getElementById('pricingRestoreLink').addEventListener('click', e => {
+            e.preventDefault();
+            closeModal(pricingModal);
+            if (window.ProUI && typeof window.ProUI.showProModal === 'function') {
+                window.ProUI.showProModal();
+            } else {
+                openModal(supportModal);  // 最終 fallback
+            }
+        });
+
+        // /pricing deep link
+        function _checkPricingHash() {
+            const h = location.hash;
+            if (h === '#/pricing' || h === '#pricing') window.openPricingModal({ source: 'hash' });
+        }
+        _checkPricingHash();
+        window.addEventListener('hashchange', _checkPricingHash);
 
         // ========== Deep link: ?formula=N（外部嵌入 / SEO 文章連結）==========
         // 用途：Bobo Labs /formulas/*.html 文章內嵌 iframe 指向 ?formula=N
@@ -4730,21 +5020,48 @@
             const safeExpr     = escapeFormulaHtml(f.expr);
             const safeCategory = escapeFormulaHtml(f.category);
             const safeGroup    = escapeFormulaHtml(f.group);
+            // v3.8.0 Phase 2.3：Pro 公式視覺
+            const isPro = f.tier === 'pro';
+            const itemClass = isPro ? 'formula-item formula-item-pro' : 'formula-item';
+            const tierAttr = isPro ? ' data-formula-tier="pro"' : '';
+            const lockIcon = isPro ? '<span class="formula-pro-lock" aria-hidden="true">🔒</span>' : '';
+            const proBadge = isPro ? '<span class="formula-pro-badge">PRO</span>' : '';
             return `
-                <div class="formula-item" data-formula-id="${f.id}" data-formula-source="builtin">
+                <div class="${itemClass}" data-formula-id="${f.id}" data-formula-source="builtin"${tierAttr}>
+                    ${lockIcon}
                     <div class="formula-name">${safeName}</div>
                     <div class="formula-expr">${safeExpr}</div>
                     <span class="formula-category">${safeCategory}</span>
                     <span class="formula-group-badge group-${safeGroup}">${safeGroup}</span>
+                    ${proBadge}
                 </div>`;
         }
 
         function bindBuiltInFormulaEvents(container) {
+            // v3.8.0 Phase 2.3：先一次性查 Pro 狀態，render 階段套用 is-unlocked
+            // class 控制鎖頭顯隱（trial / pro 訂閱者看不到鎖頭）
+            const isProUser = (window.ProManager && window.ProManager.isProActive()) === true;
+
             container.querySelectorAll('[data-formula-source="builtin"]').forEach(el => {
                 const id = Number(el.dataset.formulaId);
                 const f  = builtInFormulas.find(x => x.id === id);
                 if (!f) return;
-                el.addEventListener('click', () => selectFormula(f.id, f.name, f.expr, f.vars));
+
+                const isPro = el.dataset.formulaTier === 'pro';
+                if (isPro && isProUser) {
+                    el.classList.add('is-unlocked');
+                }
+
+                el.addEventListener('click', () => {
+                    // Pro 公式 + 未解鎖 → 開 Pricing modal，不開 formulaModal
+                    if (isPro && !isProUser) {
+                        if (typeof openPricingModal === 'function') {
+                            openPricingModal({ source: `pro-formula-${id}` });
+                        }
+                        return;
+                    }
+                    selectFormula(f.id, f.name, f.expr, f.vars);
+                });
             });
         }
 

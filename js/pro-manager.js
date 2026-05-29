@@ -89,7 +89,7 @@
 
     /**
      * 取得 JWT payload 資訊（用於 UI 顯示）
-     * @returns {{ subscriptionId, expiresAt } | null}
+     * @returns {{ subscriptionId, expiresAt, tier } | null}
      */
     function getLicenseInfo() {
         const token = getToken();
@@ -99,7 +99,32 @@
         return {
             subscriptionId: payload.sub,
             expiresAt: payload.exp ? new Date(payload.exp * 1000) : null,
+            // v3.8.0+：Worker v2.4.0 簽發的 token 含 tier 欄位；
+            // 舊 token（v2.3.0 以前）無 tier，視為 'pro'（向下相容）
+            tier: payload.tier || 'pro',
         };
+    }
+
+    /**
+     * 取得使用者目前的層級狀態（用於 UI 鎖頭判斷）
+     * 三態：
+     *   - 'pro'   有 valid JWT（已訂閱）
+     *   - 'trial' 無 JWT 但前端 7 天試用期內
+     *   - 'free'  皆無
+     *
+     * 設計決策：trial 與 pro 都可解鎖 Pro 公式（isProActive() 同此語意），
+     * 但 UI 上需要區分以顯示「試用倒數 X 天」vs「Pro 訂閱中」。
+     *
+     * @returns {'free' | 'trial' | 'pro'}
+     */
+    function getTier() {
+        if (hasValidLocalToken()) {
+            // 從 JWT 讀 tier，無 tier 欄位（舊 token）視為 'pro'
+            const info = getLicenseInfo();
+            return (info && info.tier) || 'pro';
+        }
+        if (isTrialActive()) return 'trial';
+        return 'free';
     }
 
     /* ---------- 訂閱成功流程 ---------- */
@@ -220,6 +245,7 @@
         isTrialActive,
         getTrialDaysLeft,
         getLicenseInfo,
+        getTier,  // v3.8.0+ Phase 2.3 Freemium
 
         // 操作
         activateSubscription,

@@ -1,7 +1,8 @@
 /* =====================================================================
    ∑ Calc License Validator — Cloudflare Worker v2
    建立日期：2026-05-14
-   版本：2.3.0（2026-05-16：/webhook/paypal 加入來源 IP 觀察 log-only）
+   版本：2.4.0（2026-05-29：JWT 加 tier 欄位 — Phase 2.3 Freemium 上線）
+        2.3.0（2026-05-16：/webhook/paypal 加入來源 IP 觀察 log-only）
 
    端點：
      GET  /health              → 健康檢查（含 KV ping）
@@ -27,6 +28,11 @@
      sub:{subscriptionId}      → { status, planId, activatedAt, ... }
      evt:{eventId}             → 1（30 天 TTL，去重）
      oauth:token               → { token, expiresAt }（緩存 8 小時）
+
+   JWT payload（v2.4.0+）：
+     { sub, type, plan, tier, iat, exp }
+     - tier：'pro'（目前所有 active 訂閱者皆 pro；保留欄位以利未來多層擴充）
+     - 無 tier 欄位的舊 token（v2.3.0 以前簽發）視為 'pro' 以維持向下相容
    ===================================================================== */
 
 const ALGORITHM = 'HS256';
@@ -178,6 +184,19 @@ async function kvRateLimit(env, scope, id, limit, windowSeconds) {
     console.warn('kvRateLimit error (allowing):', e?.message);
     return { ok: true, retryAfter: 0 };
   }
+}
+
+/* =====================================================================
+   Tier 推導（v2.4.0 — Phase 2.3 Freemium）
+   - 目前所有 active 訂閱（monthly / annual）皆映射為 'pro'
+   - 留擴充點：未來若有 enterprise / lifetime / team 等層級，
+     可在 KV sub:{id} 顯式存 tier 欄位並優先採用
+   ===================================================================== */
+function deriveTier(sub) {
+  // 1. 顯式優先：若 KV 已有 tier 欄位（未來擴充）直接用
+  if (sub && typeof sub.tier === 'string') return sub.tier;
+  // 2. 預設：active 訂閱者皆 pro
+  return 'pro';
 }
 
 /* =====================================================================
@@ -355,11 +374,12 @@ async function handleHealth(env) {
   }
   return jsonResponse({
     status: 'ok',
-    version: '2.3.0',
+    version: '2.4.0',
     timestamp: new Date().toISOString(),
     kv: kvOk,
     rateLimit: 'kv',
-    webhookIpObserve: 'log-only'
+    webhookIpObserve: 'log-only',
+    freemium: 'tier-in-jwt'
   });
 }
 
@@ -422,11 +442,14 @@ async function handleIssue(request, env) {
   }
 
   // 簽 JWT（短期 7 天，前端需週期呼叫 validate 來 refresh 信任）
+  // v2.4.0+：payload 加 tier 欄位（Phase 2.3 Freemium）
   const now = Math.floor(Date.now() / 1000);
+  const tier = deriveTier(sub);
   const payload = {
     sub: subscriptionId,
     type: 'license',
     plan: sub.planId,
+    tier,
     iat: now,
     exp: now + JWT_TTL_SECONDS
   };
@@ -437,7 +460,8 @@ async function handleIssue(request, env) {
     subscriptionId,
     expiresIn: `${JWT_TTL_SECONDS / 86400} days`,
     status: sub.status,
-    plan: sub.planId
+    plan: sub.planId,
+    tier
   });
 }
 
@@ -463,10 +487,16 @@ async function handleValidate(request, env) {
     }, 401);
   }
 
+  // v2.4.0+：回傳 tier。優先用 JWT payload 內的（簽發時點的快照），
+  // 若是舊 token（無 tier）則 fallback 到當下 KV 推導，
+  // 再 fallback 'pro' 以維持向下相容（v2.3.0 以前簽發的 token 全是 pro）。
+  const tier = payload.tier || deriveTier(sub) || 'pro';
+
   return jsonResponse({
     valid: true,
     subscriptionId: payload.sub,
     plan: sub.planId,
+    tier,
     expiresAt: new Date(payload.exp * 1000).toISOString(),
     subscriptionStatus: sub.status
   });
