@@ -1,9 +1,11 @@
-# 變現計畫 Phase 2 — 公式 100 條分層決策（草案）
+# 變現計畫 Phase 2 — 公式 100 條分層決策（已落地）
 
 > **建立**：2026-05-27（Phase 2.1）
-> **狀態**：📋 待使用者審核 — 名單確認後再寫入程式碼（加 `tier: 'pro'` 欄位 + UI 鎖頭）
-> **總計**：Free 59 / Pro 41（目標 60/40，可微調）
-> **參考**：[[supercalc-monetization-plan]] 第二層 Freemium 章節
+> **落地**：2026-06-03（Phase 2.3，commit `7ee5334`，v3.8.0）
+> **狀態**：✅ 已實作 — 41 條 Pro 公式皆已加 `tier: 'pro'` 欄位（`index.html`），UI 鎖頭 + 點擊攔截到 Pricing modal 全部上線
+> **總計**：Free 59 / Pro 41
+> **驗證**：`curl -s https://boboidvtw.github.io/index.html | grep -c "tier: 'pro'"` 應回 41
+> **參考**：[[supercalc-monetization-plan]] 第二層 Freemium 章節 / `CHANGELOG.md [3.8.0]`
 
 ---
 
