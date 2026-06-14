@@ -23,7 +23,7 @@
     // Live + Sandbox 配置
     const LIVE = {
         WORKER_URL: 'https://api.moneyai168.com',
-        PAYPAL_CLIENT_ID: 'BAAwe1vut4JSk6JhmXFWzzvQRUswxr3UWYOPNvhFYnsd60xmFL44_mEqaXSFr4mlRyW-eIIo7yprky-9L0',
+        PAYPAL_CLIENT_ID: 'BAAwe1vut4JSk6JhmXFWzzvQRUswxr3UWYOPNvhFYnsd60xmFL44_mEqaXSFr4mlRyW-eIlo7yprky-9L0',
         PAYPAL_PLAN_ID_MONTHLY: 'P-7YN578147A145924NNH6Y32I',
         PAYPAL_PLAN_ID_ANNUAL:  'P-6XU39039F20435621NH6Y5GI',
     };
