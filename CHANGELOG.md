@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.1] - 2026-06-14 — Hotfix: PayPal Live Client ID 反轉修復
+
+### 🔴 P0 反轉修復 — `eIIo` → `eIlo`（2026-06-03 commit 7ee5334 改錯方向）
+
+v3.8.0 上線同時的「P0 修復」commit `7ee5334`，把 PayPal Live Client ID 的第 67 字元從**對的** `l`（小寫 L）改成**錯的** `I`（大寫 i），導致 production PayPal SDK 自 2026-06-03 起 11 天 `onerror` 載入失敗，Pricing modal 開啟後 Subscribe Buttons 完全無法渲染。海外買家全部無法訂閱。
+
+#### 三連 commit 修復（cache 三層全清）
+
+- `a730e1f` **fix(paypal)**: pro-config.js Live `PAYPAL_CLIENT_ID` 還原 `mlRyW-eIIo7yprky-9L0` → `mlRyW-eIlo7yprky-9L0`（與 v3.4.0 上線當天 deploy verify 的 ground truth 一致）
+- `cce7ac8` **chore(sw)**: `CACHE_NAME` `sigma-calc-v3.8.0` → `v3.8.1`（強制 SW 清舊 cache；v3.8.0 P0 push 違反 SW cache trap 規則沒 bump，本次補回）
+- `82267b7` **chore**: index.html `pro-config.js?v=3.3.1` → `?v=3.3.2`（強制瀏覽器 HTTP cache miss）
+
+#### Why 需要三個 commit — 三層 cache 規則各異
+
+只 push pro-config.js 不夠：
+- **SW cache**：使用者瀏覽器的 Service Worker v3.8.0 持續服務舊 pro-config.js、CACHE_NAME 不變就不會自動清；實證 — 我 unregister SW + 清 caches API 後仍見舊 runtime
+- **HTTP cache**：即使 SW 升 v3.8.1、URL key `?v=3.3.1` 不變 → 瀏覽器 HTTP cache 在 SW 之前命中、回舊內容；只能 bump query string 才會 cache miss
+- **CDN cache**：GH Pages Fastly edge 10 分鐘自然到期（`Cache-Control: max-age=600`），不需手動處理
+
+#### 端對端驗證（Chrome MCP）
+
+- runtime `PRO_CONFIG.PAYPAL_CLIENT_ID` 含 `eIlo` ✅
+- `window.paypal.Buttons` 存在 ✅
+- `paypal-button-container` iframe × 2 ✅（PayPal 黃色 Subscribe + 黑色扣帳卡按鈕）
+- 「7 天免費試用」文案就位 ✅
+- DevTools console 無 PayPal 相關 error ✅
+
+#### 受影響範圍
+
+| 路徑 | 2026-06-03 → 2026-06-14（11 天）| 修復後 |
+|------|--------------------------------|---------|
+| 海外買家點 ✨ 升級 Pro | ❌ Pricing modal 開但 Buttons 完全不渲染、顯示「SDK 載入失敗」| ✅ Subscribe Buttons 正常 |
+| 海外回訪訂閱者 license 驗證 | ✅ 不受影響（不需重走 PayPal）| ✅ |
+| 台灣訪客 | ❌ Buttons 不渲染 | ⚠️ Buttons 渲染但 PayPal 法規禁 TW↔TW 互轉 |
+
+#### 五個教訓（記憶長期保存）
+
+1. **Memory ≠ source of truth** — 反例段落容易被當成正確值；後續記錄重要 client-id 必須附 deploy verify 證據連結
+2. **Fingerprint last6 + length 抓不到中段字元錯字** — 本次錯字在第 66 字元、末 6 字元與長度都不變、fingerprint 雙重檢查全通過但 SDK 拒絕；fingerprint 設計缺陷，必須升級到 backend hash cross-check 或 SDK 真實載入冒煙測試
+3. **健康檢查 `curl + grep` 全綠 ≠ 系統 healthy** — `curl` 只能驗 HTTP 層字串、不能驗第三方 SDK 真實接受 client-id；金流關鍵路徑必須有 Chrome MCP / Playwright 真實 browser smoke test
+4. **任何前端變更必須 bump SW CACHE_NAME** — 是 v3.8.0 P0 push 之所以被回訪用戶忽略的根本原因；今日同步補回
+5. **使用者一句話的價值** — 我原本懷疑 PayPal 帳號失效要建議使用者登 Dashboard 重設；使用者提醒「我之前貼過正確值」直接救了 session，最終翻 2026-05-08 journal 找到 ground truth
+
+#### 同 session 順帶發現（非本次修改副作用）
+
+- **PayPal TW↔TW 法規限制**：步驟 3 試訂閱踩到，台灣賣家 ↔ 台灣買家 PayPal 互轉被禁；不影響海外市場
+- **Sandbox PayPal Client ID 失效**（debug id `ca0b8688b8c51`）：與本 P0 修復獨立，下次開工需登 PayPal Developer Dashboard 重建或重啟 sandbox app
+
+兩件事均詳細記載至記憶系統，列為下次開工 P1 待辦。
+
+---
+
 ## [3.8.0] - 2026-05-29 — Freemium 公式分層上線（變現計畫 Phase 2.3）
 
 ### 🎯 Phase 2.3 Freemium 全套上線

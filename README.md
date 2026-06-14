@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.8.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.8.1-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#v33-安全架構升級-)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#v33-安全架構升級-)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -16,6 +16,8 @@
 💖 **支持本專案**：∑ Calc 保持 **免費、無廣告、無追蹤**。若覺得有用，歡迎透過 [GitHub Sponsors](https://github.com/sponsors/boboidvtw) 或 [Ko-fi](https://ko-fi.com/boboidvtw) 贊助 — 你的支持會直接 cover Cloudflare Worker / KV 月費，並讓開發者有更多時間補新公式。
 
 ✨ **v3.8.0 Freemium 上線**：100 條公式分層為 **Free 59 條**（國中／高中／大一通識）＋ **Pro 41 條**（量子、相對論、金融工程、TDEE…）。Pro 訂閱 **$2.99/月** 或 **$19.99/年**（省 44%），含 7 天免費試用，PayPal 安全處理，隨時取消。Pro 7 大繪圖工具（切線／積分／斜率場／交點／統計／3D／SVG）同步解鎖。
+
+🔴 **v3.8.1 P0 Hotfix**（2026-06-14）：修復 2026-06-03 反向誤改的 PayPal Live Client ID（`eIIo` → `eIlo`，11 天 production SDK `onerror`、海外買家全部無法訂閱）。同步 bump SW `CACHE_NAME` v3.8.1 與 `pro-config.js?v=3.3.2`。Chrome MCP 端對端驗證 Subscribe Buttons iframe×2 真實渲染。詳見 [CHANGELOG](CHANGELOG.md#381---2026-06-14--hotfix-paypal-live-client-id-反轉修復)。
 
 ---
 
