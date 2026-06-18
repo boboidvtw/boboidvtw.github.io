@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.2] - 2026-06-18 — Perf: HTML parser unblocking (defer 5 external JS)
+
+### ⚡ 性能優化 — body 尾部 5 個 `<script>` 加 `defer`
+
+把 `pro-config.js` / `license-api.js` / `pro-manager.js` / `paypal-integration.js` / `pro-ui.js` 從 sync `<script>` 改為 `<script defer>`。瀏覽器 HTML parser 不再被 5 個 14KB（gzip）的 sync 下載阻塞，5 檔並行下載、依文件順序延到 `DOMContentLoaded` 之前執行，Pro 模組初始化鏈（config → api → manager → integration → ui）保留 100%。
+
+#### 改動
+
+- `index.html` line 5774-5778：5 個 `<script src="js/...">` → `<script defer src="js/...">`
+- `sw.js` `CACHE_NAME` `sigma-calc-v3.8.1` → `v3.8.2`（強制 SW 清舊 index.html）
+
+#### Why `defer` 而非 `async`
+
+`async` 是「下載完立即執行、順序隨機」，會破壞 Pro 模組鏈（`pro-ui.js` 依賴 `pro-manager.js` 已 init）。`defer` 保留文件順序、延到 `DOMContentLoaded` 之前執行，與 inline JS（line 2449-5671）對 Pro 物件的 lazy 訪問模式（既有 `window.X && ...` graceful retry，line 3035 注釋已明示）完美搭配。
+
+#### 本地驗證（preview, 5 項全綠）
+
+- 5 個 Pro 全域物件全部 `typeof === 'object'`
+- `ProManager.getTier() === 'free'` + `isProActive() === false`（free 狀態正確）
+- 100 條公式渲染 + 41 個 🔒 鎖頭顯示
+- `console.error` = 0、`console.warn` = 0
+- SW state `activated`、新版 `sigma-calc-v3.8.2`
+
+#### 預期線上效益
+
+對 5 個 `js/*.js`（gzip 共 14KB）的 sync 阻塞解除，理論上對 TTI / FCP 有 50–200ms 量級改善。線上實測需跑 PSI Mobile / Desktop。
+
+#### 同 session 深審基準線（供下次效能 audit 參考）
+
+- `index.html`：306 KB raw / 66 KB gzip / 52 KB brotli（GitHub Pages 預設 gzip）
+- `js/*.js` × 5：raw 40 KB / gzip 14 KB
+- inline CSS（line 51-1627）：62 KB raw
+- inline JS（line 2449-5671）：177 KB raw / 3223 行
+- 0 個 `<img>`、0 個 `<iframe>`（零 CLS 風險來源）
+- 1 個 `<canvas>`（函數繪圖）
+
+---
+
 ## [3.8.1] - 2026-06-14 — Hotfix: PayPal Live Client ID 反轉修復
 
 ### 🔴 P0 反轉修復 — `eIIo` → `eIlo`（2026-06-03 commit 7ee5334 改錯方向）
