@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.3] - 2026-06-25 — Chore: drop dead AdSense script + plan Carbon Ads route
+
+### 🧹 清負債 — 移除 AdSense 殘留
+
+`index.html` 一直有但從未運作的 Google AdSense `<script async ... adsbygoogle.js?client=ca-pub-3360648495679709>`（AdSense 申請被拒後遺留 30+ 天，使用者瀏覽器每次都載一個無 ad 的 HTTP request）終於拿掉。順手清 `sw.js` 對應 `'googlesyndication'` host bypass 與 comment。
+
+### 🎯 變現方向確認 — Carbon Ads（取代 AdSense）
+
+決定走 **Carbon Ads**（BuySellAds 旗下、開發者工具站專用、單一區塊、UX 友善）。Ezoic 2026-02-19 起新門檻 250K MAU 不適合現階段；Adsterra/PropellerAds UX 差排除。
+
+**地雷**：Carbon Ads 是 **exclusive network**，加入後不能與其他聯播網並存。
+
+**Pro 賣點不變**：Carbon 通過後 → Free 看廣告 / Pro 與 Trial 隱藏廣告（複用 `ProManager.isProActive()` 同步 API）。Pricing modal 既有「✓ 無廣告」項目對位，待 Carbon 通過再同步 README / modal 文案。
+
+#### 改動
+
+- `index.html`：刪除 line 49-50 dead AdSense `<script>` tag
+- `sw.js`：`CACHE_NAME` `sigma-calc-v3.8.2` → `v3.8.3`；`NETWORK_FIRST_HOSTS` 移除 `'googlesyndication'`；相關 comment 更新
+
+#### 下一步
+
+Carbon Ads 申請文案備齊於 `docs/CARBON-ADS-APPLICATION.md`，送 https://www.carbonads.net/join 後等審 5-7 工作天。通過後一次性整合：
+
+1. 右側 sidebar 底部加第四個 panel（130×100 ad slot、桌機 only、手機隱藏照舊）
+2. `ProManager.isProActive()` 條件渲染（Pro / Trial 不載 Carbon embed script、不顯示容器）
+3. README.md / README_EN.md line 270 + `index.html` pricing modal line 5706「含 AdSense 廣告」改「含 Carbon Ads（贊助廣告）」
+4. SW bump `v3.8.4`
+
+---
+
 ## [3.8.2] - 2026-06-18 — Perf: HTML parser unblocking (defer 5 external JS)
 
 ### ⚡ 性能優化 — body 尾部 5 個 `<script>` 加 `defer`

@@ -21,6 +21,8 @@
 
 ⚡ **v3.8.2 性能優化**（2026-06-18）：body 尾部 5 個 `<script>` 加 `defer`，HTML parser 不再被 14KB（gzip）sync 下載阻塞、Pro 模組鏈順序保留。本地 preview 驗證零回歸（5 Pro 模組 init 成功、100 公式 + 41 鎖頭渲染、`console.error` = 0），預期 TTI/FCP 有 50–200ms 改善。同步 bump SW `CACHE_NAME` v3.8.2。詳見 [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js)。
 
+🧹 **v3.8.3 清負債**（2026-06-25）：移除 30+ 天空載的 Google AdSense `<script>`（被拒後遺留）與 `sw.js` 對應 host bypass。同步決定變現方向走 **Carbon Ads**（取代 AdSense），申請中（5-7 工作天）；通過後 Free 看廣告 / Pro 與 Trial 隱藏廣告。詳見 [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route)。
+
 ---
 
 ## 目錄

@@ -1,5 +1,5 @@
 // ∑ Calc Service Worker — Cache-first for offline support
-const CACHE_NAME = 'sigma-calc-v3.8.2';
+const CACHE_NAME = 'sigma-calc-v3.8.3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -12,7 +12,7 @@ const ASSETS = [
 ];
 
 // Bypass cache for Cloudflare Worker license API (always go network-first)
-const NETWORK_FIRST_HOSTS = ['workers.dev', 'exchangerate', 'paypal', 'googlesyndication'];
+const NETWORK_FIRST_HOSTS = ['workers.dev', 'exchangerate', 'paypal'];
 
 // Install: pre-cache core assets
 self.addEventListener('install', event => {
@@ -36,7 +36,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Network-first for external APIs (exchange rate, PayPal, AdSense, Cloudflare Worker)
+  // Network-first for external APIs (exchange rate, PayPal, Cloudflare Worker)
   if (NETWORK_FIRST_HOSTS.some(host => url.hostname.includes(host))) {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))

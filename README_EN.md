@@ -21,6 +21,8 @@
 
 ⚡ **v3.8.2 Perf optimization** (2026-06-18): Added `defer` to 5 body-end external JS scripts so the HTML parser no longer blocks on 14KB (gzip) of sync downloads, while preserving the Pro module initialization chain. Verified locally with zero regression (5 Pro modules init correctly, 100 formulas + 41 lock badges rendered, `console.error` = 0). Expected 50–200ms improvement in TTI/FCP. Concurrently bumped SW `CACHE_NAME` v3.8.2. See [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js).
 
+🧹 **v3.8.3 Cleanup** (2026-06-25): Removed the dead Google AdSense `<script>` (rejected long ago, loaded 30+ days as a no-op HTTP request) plus the matching `sw.js` host bypass. Concurrently committed to **Carbon Ads** (replacing AdSense) as the ad route — application under review (5-7 business days); once approved, Free will see ads while Pro and Trial users stay ad-free. See [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route).
+
 ---
 
 ## Table of Contents
