@@ -1,7 +1,7 @@
 {
   "name": "∑ Calc - 超強萬能計算機",
   "short_name": "∑ Calc",
-  "description": "免費線上科學計算機，內建 80+ 公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率",
+  "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

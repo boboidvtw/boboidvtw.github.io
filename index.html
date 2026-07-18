@@ -15,10 +15,15 @@
     <meta property="og:url" content="https://boboidvtw.github.io/">
     <meta property="og:site_name" content="∑ Calc">
     <meta property="og:locale" content="zh_TW">
+    <meta property="og:image" content="https://boboidvtw.github.io/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="∑ Calc - 免費線上科學計算機，內建 100 條公式庫、函數繪圖與單位匯率換算">
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="∑ Calc - 超強萬能計算機">
     <meta name="twitter:description" content="免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、單位換算與即時匯率。">
+    <meta name="twitter:image" content="https://boboidvtw.github.io/og-image.png">
     <!-- Favicon (emoji fallback) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∑</text></svg>">
     <!-- Preconnect -->
@@ -41,9 +46,42 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.1.0",
+      "softwareVersion": "3.8.4",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "∑ Calc 的資料需要連上網路才能用嗎？",
+          "acceptedAnswer": { "@type": "Answer", "text": "除了「即時匯率」需連網外，所有計算皆在您的瀏覽器端離線執行。" }
+        },
+        {
+          "@type": "Question",
+          "name": "我的歷史紀錄會被上傳嗎？",
+          "acceptedAnswer": { "@type": "Answer", "text": "絕對不會。我們無後端資料庫，所有設定均存於本地。詳見隱私權政策。" }
+        },
+        {
+          "@type": "Question",
+          "name": "∑ Calc 可以安裝成 App 嗎？",
+          "acceptedAnswer": { "@type": "Answer", "text": "可以。∑ Calc 是 PWA（漸進式網頁應用），在 Chrome / Edge / Safari 使用「安裝」或「加入主畫面」，即可像原生 App 一樣離線使用。" }
+        },
+        {
+          "@type": "Question",
+          "name": "∑ Calc 支援哪些語言？",
+          "acceptedAnswer": { "@type": "Answer", "text": "繁體中文、English、简体中文、日本語共四種語言，透過右上角語言選單即可切換。" }
+        },
+        {
+          "@type": "Question",
+          "name": "免費版與 Pro 版差在哪裡？",
+          "acceptedAnswer": { "@type": "Answer", "text": "免費版永久免費，含基礎與科學計算、函數繪圖、59 條公式與單位匯率換算；Pro 版（月付 $2.99 / 年付 $19.99，7 天免費試用）解鎖全部 100 條公式、切線 / 積分 / 斜率場 / 多函數交點 / 統計圖表、3D 表面繪圖與 SVG 匯出。" }
+        }
+      ]
     }
     </script>
     <style>
@@ -62,6 +100,8 @@
             --red-light: #991b1b;
             --green: #10b981;
             --purple: #8b5cf6;
+            /* guide/footer 標題與連結專用：雙主題皆須達 WCAG AA 4.5:1（--primary 系列在其中一側會不及格） */
+            --guide-accent: #22d3ee;
         }
 
         body {
@@ -80,6 +120,7 @@
             --text-dark: #0f172a;
             --text-dark-secondary: #475569;
             --border-dark: #cbd5e1;
+            --guide-accent: #0e7490;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
 
@@ -1625,7 +1666,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container">
         <div class="header">
             <h1 class="title">∑ Calc</h1>
             <div class="controls">
@@ -2051,7 +2092,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- 使用說明 Modal -->
     <div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
@@ -2388,40 +2429,43 @@
 
         <!-- Content Enrichment for AdSense & SEO -->
         <section id="guide" style="max-width: 900px; margin: 40px auto; padding: 20px; background: var(--bg-dark-secondary); border-radius: 12px; color: var(--text-dark-secondary); line-height: 1.6; font-size: 0.95rem;">
-            <h2 style="color: var(--primary); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; margin-bottom: 20px;">📖 ∑ Calc 終極使用指南與計算原理</h2>
+            <h2 style="color: var(--guide-accent); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; margin-bottom: 20px;">📖 ∑ Calc 終極使用指南與計算原理</h2>
             
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">1. 基礎與科學計算</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">1. 基礎與科學計算</h3>
             <p>除了加減乘除，∑ Calc 提供了完整的科學與工程計算功能。支援 <code>sin</code>、<code>cos</code>、<code>tan</code>、自然對數 <code>ln</code> 與常用對數 <code>log</code>。使用 <code>^</code> 進行次方運算（例如 2^10 = 1024）。在處理極大或極小的物理數值時，您可以使用 <code>EE</code> 代表科學記號（例如 1.5EE3 = 1500）。內建階乘 <code>n!</code>，以及機率統計常用的組合數 <code>nCr</code> 與排列數 <code>nPr</code>。</p>
             
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">2. 進位制換算</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">2. 進位制換算</h3>
             <p>在 ∑ Calc 中切換到「進位」分類，您可以自由在 DEC (十進位)、BIN (二進位)、OCT (八進位) 與 HEX (十六進位) 之間無縫換算，適合軟體工程師與資訊科學學生使用。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">3. 單位換算與即時匯率</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">3. 單位換算與即時匯率</h3>
             <p>內建長度、重量、溫度、面積等八大類別。特別支援台灣常見的「坪」（1 坪 ≈ 3.305785 平方公尺）與「台斤」（1 台斤 = 0.6 公斤）。透過串接 ExchangeRate-API，我們提供每小時更新一次的即時匯率資料，您可以一鍵將換算出的金額帶回計算機中繼續運算。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">4. 內建公式與自建公式</h3>
-            <p>涵蓋數學、工程、科學、物理、金融、健康六大領域共 <strong>100 條公式</strong>。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--primary); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。v3.5.5 新增 20 條熱門公式，v3.5.6 再增 5 條健康公式（TDEE、體脂率、水分需求），v3.5.9 再擴充 12 條使公式庫正式突破 100 條，覆蓋國高中數學競賽常考、健康族群常用、創業財管必備。</p>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">4. 內建公式與自建公式</h3>
+            <p>涵蓋數學、工程、科學、物理、金融、健康六大領域共 <strong>100 條公式</strong>。如果您需要特定的計算（例如<a href="docs/mortgage.html" style="color: var(--guide-accent); text-decoration: underline;">房貸本息攤還</a>），可以直接使用。您更可以在「✏️ 自建」分頁輸入自己的專屬公式，資料會安全地保存在您的裝置本地（Local Storage），無須擔心隱私外洩。v3.5.5 新增 20 條熱門公式，v3.5.6 再增 5 條健康公式（TDEE、體脂率、水分需求），v3.5.9 再擴充 12 條使公式庫正式突破 100 條，覆蓋國高中數學競賽常考、健康族群常用、創業財管必備。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">5. 🆕 v3.5.5 → v3.7.1 更新速覽</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">5. 🆕 v3.5.5 → v3.7.1 更新速覽</h3>
             <p><strong>📐 數學進階（7 條）：</strong>海倫公式（已知三邊求三角形面積）、扇形面積與弧長（自動度→弧度換算）、等差與等比數列求和 Sn、二維向量長度與內積。涵蓋國中至高中數學的常考必背公式，學生族群可直接代入快速驗算。</p>
             <p><strong>⚖️ 健康自我量測（4 條）：</strong>BMI 身體質量指數（自動換算公分→公尺）、BMR 基礎代謝率（採用最新 Mifflin-St Jeor 公式，比傳統 Harris-Benedict 更精準，分男女兩條）、目標心率（%最大心率法，健身強度計算）。例：體重 70 公斤、身高 170 公分 → BMI ≈ 24.22，落在正常範圍上緣；30 歲男性 BMR ≈ 1648 大卡/日。</p>
             <p><strong>🔬 物理與工程（7 條）：</strong>向心加速度 v²/r、彈簧簡諧運動週期 2π√(m/k)、彈簧位能 ½kx²、普朗克量子能量 E=hf、動摩擦力 μmg。電子工程 LC 諧振頻率與 RC 截止頻率，用於濾波器與震盪電路設計。</p>
             <p><strong>💼 金融進階（2 條）：</strong>實質年利率 EAR — 揭穿「名目利率 12% 月複利」實際是 12.68% 的真相；損益平衡點 BEP — 創業者必算的「賣多少才回本」公式。</p>
             <p><strong>🎯 v3.5.9 公式庫突破 100 條（新增 12 條）：</strong>科學 3 條（放射性半衰期剩餘量、由頻率求光波長、理想氣體體積）、物理 4 條（壓力 P=F/A、功率 P=W/t、阿基米德浮力、質能等價 E=mc²）、數學 2 條（球的表面積、指數成長/衰減模型）、工程與金融 3 條（分壓定則、毛利率、股息殖利率）。同版本並修復 nCr/nPr 大數組合數溢位與三角函數特殊角浮點殘渣。</p>
             <p><strong>♿ v3.6.0 無障礙深審（WCAG 2.1 AA）：</strong>補齊自專案建立以來缺漏的鍵盤焦點指示器、說明手風琴鍵盤操作、三大 modal 焦點管理（焦點移入、焦點陷阱、Escape 關閉、焦點還原）、標題大綱 <code>h1</code>/<code>h2</code>/<code>h3</code> 階層、<code>aria-live</code> 即時計算結果播報、<code>aria-label</code> 補齊所有按鈕與下拉選單。為視覺障礙、動作不便、依賴鍵盤操作的使用者把計算機重做一遍。</p>
-            <p><strong>💖 v3.7.0 + v3.7.1 — 變現計畫 Phase 1 & 3.2：</strong>v3.7.0 加 Header ❤ 贊助入口（GitHub Sponsors / Ko-fi），讓重度使用者可一鍵 cover 站台維運費用，<strong>保持免費、保護使用者資料</strong>。v3.7.1 加 <code>?formula=N</code> 深連結，讓 Bobo Labs 的<a href="https://labs.moneyai168.com/formulas/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">公式深度文章庫</a>能直接 iframe 嵌入指定公式（如 <code>?formula=11</code> 直開「勾股定理」計算視窗）。兩項皆零 console error、零回歸驗證通過。</p>
+            <p><strong>💖 v3.7.0 + v3.7.1 — 變現計畫 Phase 1 & 3.2：</strong>v3.7.0 加 Header ❤ 贊助入口（GitHub Sponsors / Ko-fi），讓重度使用者可一鍵 cover 站台維運費用，<strong>保持免費、保護使用者資料</strong>。v3.7.1 加 <code>?formula=N</code> 深連結，讓 Bobo Labs 的<a href="https://labs.moneyai168.com/formulas/" target="_blank" rel="noopener noreferrer" style="color: var(--guide-accent); text-decoration: underline;">公式深度文章庫</a>能直接 iframe 嵌入指定公式（如 <code>?formula=11</code> 直開「勾股定理」計算視窗）。兩項皆零 console error、零回歸驗證通過。</p>
 
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">6. 📝 實用計算教學專欄</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">6. 📝 實用計算教學專欄</h3>
             <ul style="list-style: none; padding: 0; margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
-                <li><a href="docs/mortgage.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">🏠 房貸本息攤還公式與計算原理</a></li>
-                <li><a href="docs/trig-functions.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">📐 三角函數 (Sin,Cos,Tan) 速查表教學</a></li>
-                <li><a href="docs/rule-of-72.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">💰 複利的威力：72法則與投資試算</a></li>
-                <li><a href="docs/bmi-guide.html" style="color: var(--primary); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">⚖️ BMI 怎麼算？男女標準體重計算</a></li>
+                <li><a href="docs/mortgage.html" style="color: var(--guide-accent); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">🏠 房貸本息攤還公式與計算原理</a></li>
+                <li><a href="docs/trig-functions.html" style="color: var(--guide-accent); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">📐 三角函數 (Sin,Cos,Tan) 速查表教學</a></li>
+                <li><a href="docs/rule-of-72.html" style="color: var(--guide-accent); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">💰 複利的威力：72法則與投資試算</a></li>
+                <li><a href="docs/bmi-guide.html" style="color: var(--guide-accent); text-decoration: none; padding: 10px; background: rgba(6,182,212,0.1); border-radius: 8px; display: block;">⚖️ BMI 怎麼算？男女標準體重計算</a></li>
             </ul>
             
-            <h3 style="color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em;">常見問題 (FAQ)</h3>
+            <h3 style="color: var(--guide-accent); margin-top: 1.5em; margin-bottom: 0.5em;">常見問題 (FAQ)</h3>
             <p><strong>Q: ∑ Calc 的資料需要連上網路才能用嗎？</strong><br>A: 除了「即時匯率」需連網外，所有計算皆在您的瀏覽器端離線執行。</p>
-            <p><strong>Q: 我的歷史紀錄會被上傳嗎？</strong><br>A: 絕對不會。我們無後端資料庫，所有設定均存於本地。詳見<a href="docs/privacy.html" style="color: var(--primary); text-decoration: underline;">隱私權政策</a>。</p>
+            <p><strong>Q: 我的歷史紀錄會被上傳嗎？</strong><br>A: 絕對不會。我們無後端資料庫，所有設定均存於本地。詳見<a href="docs/privacy.html" style="color: var(--guide-accent); text-decoration: underline;">隱私權政策</a>。</p>
+            <p><strong>Q: ∑ Calc 可以安裝成 App 嗎？</strong><br>A: 可以。∑ Calc 是 PWA（漸進式網頁應用），在 Chrome / Edge / Safari 使用「安裝」或「加入主畫面」，即可像原生 App 一樣離線使用。</p>
+            <p><strong>Q: ∑ Calc 支援哪些語言？</strong><br>A: 繁體中文、English、简体中文、日本語共四種語言，透過右上角語言選單即可切換。</p>
+            <p><strong>Q: 免費版與 Pro 版差在哪裡？</strong><br>A: 免費版永久免費，含基礎與科學計算、函數繪圖、59 條公式與單位匯率換算；Pro 版（月付 $2.99 / 年付 $19.99，7 天免費試用）解鎖全部 100 條公式、切線 / 積分 / 斜率場 / 多函數交點 / 統計圖表、3D 表面繪圖與 SVG 匯出。</p>
         </section>
 
         <!-- Footer / Trust Pages -->
@@ -2430,14 +2474,14 @@
             <p style="margin-top: 4px; font-size: 0.8rem; opacity: 0.75;">
                 ∑&nbsp;Calc™, ∑&nbsp;Super&nbsp;Calculator™, ∑&nbsp;Calc&nbsp;Pro™ and MoneyAI168™ are trademarks of MoneyAI168.
                 Pro subscription powered by the official MoneyAI168 service only.
-                <a href="https://github.com/boboidvtw/boboidvtw.github.io/blob/main/NOTICE.md" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">View NOTICE</a>
+                <a href="https://github.com/boboidvtw/boboidvtw.github.io/blob/main/NOTICE.md" target="_blank" rel="noopener" style="color: var(--guide-accent); text-decoration: none;">View NOTICE</a>
             </p>
             <p style="margin-top: 10px;">
-                <a href="docs/about.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">關於我們</a> |
-                <a href="docs/mortgage.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">教學專欄</a> |
-                <a href="docs/privacy.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">隱私權政策</a> | 
-                <a href="docs/terms.html" style="color: var(--primary); text-decoration: none; margin: 0 10px;">服務條款</a> | 
-                <a href="mailto:boboidvtw+supercalc@gmail.com" style="color: var(--primary); text-decoration: none; margin: 0 10px;">聯絡我們</a>
+                <a href="docs/about.html" style="color: var(--guide-accent); text-decoration: none; margin: 0 10px;">關於我們</a> |
+                <a href="docs/mortgage.html" style="color: var(--guide-accent); text-decoration: none; margin: 0 10px;">教學專欄</a> |
+                <a href="docs/privacy.html" style="color: var(--guide-accent); text-decoration: none; margin: 0 10px;">隱私權政策</a> | 
+                <a href="docs/terms.html" style="color: var(--guide-accent); text-decoration: none; margin: 0 10px;">服務條款</a> | 
+                <a href="mailto:boboidvtw+supercalc@gmail.com" style="color: var(--guide-accent); text-decoration: none; margin: 0 10px;">聯絡我們</a>
             </p>
         </footer>
 
@@ -5701,7 +5745,7 @@
                         <li>✓ 特殊點偵測（零點 / 極值）</li>
                         <li>✓ PNG 匯出</li>
                         <li>✓ 4 國語言 + 主題切換</li>
-                        <li class="muted">▾ 含 Google AdSense 廣告</li>
+                        <li class="muted">▾ 未來可能顯示贊助廣告</li>
                     </ul>
                 </div>
 

@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.8.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.8.4-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -22,6 +22,8 @@
 ⚡ **v3.8.2 Perf optimization** (2026-06-18): Added `defer` to 5 body-end external JS scripts so the HTML parser no longer blocks on 14KB (gzip) of sync downloads, while preserving the Pro module initialization chain. Verified locally with zero regression (5 Pro modules init correctly, 100 formulas + 41 lock badges rendered, `console.error` = 0). Expected 50–200ms improvement in TTI/FCP. Concurrently bumped SW `CACHE_NAME` v3.8.2. See [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js).
 
 🧹 **v3.8.3 Cleanup** (2026-06-25): Removed the dead Google AdSense `<script>` (rejected long ago, loaded 30+ days as a no-op HTTP request) plus the matching `sw.js` host bypass. Concurrently committed to **Carbon Ads** (replacing AdSense) as the ad route — application under review (5-7 business days); once approved, Free will see ads while Pro and Trial users stay ad-free. See [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route).
+
+🔍 **v3.8.4 SEO + a11y deep audit** (2026-07-18): After a Lighthouse mobile run scored Perf 98 / SEO 100 with all Core Web Vitals passing, fixed the remaining gaps — added an `og:image` social share card and FAQPage JSON-LD (FAQ expanded to 5 entries), made guide/footer heading and link contrast WCAG-AA compliant in both themes (new `--guide-accent` token), and added the missing `<main>` landmark. The Carbon Ads application was **rejected**, so pricing copy was updated for honesty (Free currently shows no ads). See [CHANGELOG](CHANGELOG.md#384---2026-07-18--quality-seo--a11y-%E6%B7%B1%E5%AF%A9%E4%BF%AE%E5%BE%A9ogimage--faqpage--%E5%B0%8D%E6%AF%94%E5%BA%A6--main-landmark).
 
 ---
 
@@ -269,7 +271,7 @@ v3.1 introduces a **Pro subscription tier** that gates the advanced math visuali
 - ✅ Function plotting + marking + special-point detection (zeros / extrema)
 - ✅ PNG export
 - ✅ 4 languages + Light/Dark theme
-- 🟡 Includes Google AdSense ads
+- 🟡 May show sponsor ads in the future (currently ad-free)
 
 ### Pro tier features
 

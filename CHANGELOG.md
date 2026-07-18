@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.4] - 2026-07-18 — Quality: SEO + a11y 深審修復（og:image / FAQPage / 對比度 / main landmark）
+
+品質深審 session：Lighthouse mobile 實測 **Perf 98 / A11y 94 / BP 100 / SEO 100**（LCP 1.8s、CLS 0、TBT 20ms，CWV 全達標），針對剩餘缺口一次修齊。
+
+### 🔍 SEO
+
+- **新增 `og:image` / `twitter:image`**（1200×630 `og-image.png`，headless Chrome 產生）：先前完全沒有社群分享預覽圖；`twitter:card` 同步升級 `summary` → `summary_large_image`
+- **新增 FAQPage JSON-LD 結構化資料**：guide 區 FAQ 從 2 題擴充至 5 題（新增 PWA 安裝、語言支援、Free vs Pro 比較），JSON-LD 與可見內容逐字對位，爭取 Google rich result
+- `WebApplication` JSON-LD `softwareVersion` 3.1.0 → 3.8.4（停更多時）
+- `sitemap.xml` 首頁 `lastmod` 2026-05-11 → 2026-07-18
+- `manifest.json` 描述「80+ 公式庫」→「100 條公式庫」（v3.5.9 破百後未同步）
+
+### ♿ A11y（WCAG 2.1 AA 對比度）
+
+- **新增 `--guide-accent` 主題色 token**（深色 `#22d3ee` 8.09:1 / 淺色 `#0e7490` 5.36:1）：guide 區 7 個 `h3` 原用 `--primary-dark`（深色主題僅 3.97:1，Lighthouse 揪出）；guide `h2` 與 guide/footer 全部 13 處連結原用 `--primary`（淺色主題僅 2.43:1，Lighthouse 只測深色所以漏掉）——全部換上雙主題合規 token
+- **`<div class="container">` → `<main class="container">`**：補上缺失的 main landmark（Lighthouse `landmark-one-main`）
+
+### 📝 文案誠實化（Carbon Ads 被拒後）
+
+- Carbon Ads 申請**被拒**（2026-07 確認），目前無任何廣告聯播網。Pricing modal Free 方案「▾ 含 Google AdSense 廣告」（廣告根本不存在）→「▾ 未來可能顯示贊助廣告」；README ZH/EN 對比表同步
+
+### 🔧 其他
+
+- `sw.js` `CACHE_NAME` v3.8.3 → v3.8.4
+
+### 已評估、刻意不做
+
+- **PayPal SDK lazy-load**（97KB、43KB unused，每個訪客都載）：金流路徑動它風險高於效益，defer 已不阻塞 CWV — 列 backlog
+- **inline CSS/JS minify**（est. 19KB）：與單檔可讀性核心設計衝突
+- **TTFB 690ms / 靜態資源 10 分鐘 cache**：GitHub Pages 平台固定，無法調整
+
+---
+
 ## [3.8.3] - 2026-06-25 — Chore: drop dead AdSense script + plan Carbon Ads route
 
 ### 🧹 清負債 — 移除 AdSense 殘留
