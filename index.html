@@ -46,7 +46,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.8.4",
+      "softwareVersion": "3.8.5",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }
@@ -102,6 +102,15 @@
             --purple: #8b5cf6;
             /* guide/footer 標題與連結專用：雙主題皆須達 WCAG AA 4.5:1（--primary 系列在其中一側會不及格） */
             --guide-accent: #22d3ee;
+            /* 全站文字色專用 token：淺色主題下這些飽和色直接當文字色對比不足 4.5:1（深色主題不受影響，維持原色相） */
+            --primary-text: var(--primary);
+            --green-text: var(--green);
+            --science-text: #fbbf24;
+            --physics-text: #a78bfa;
+            --finance-text: #fb7185;
+            --custom-text: #fb923c;
+            /* 固定深色文字，不隨主題翻轉：用於綠色實心按鈕上的文字（bg-dark 在淺色主題會變近白，導致文字消失） */
+            --text-on-accent: #0f172a;
         }
 
         body {
@@ -121,6 +130,12 @@
             --text-dark-secondary: #475569;
             --border-dark: #cbd5e1;
             --guide-accent: #0e7490;
+            --primary-text: #155e75;
+            --green-text: #065f46;
+            --science-text: #92400e;
+            --physics-text: #5b21b6;
+            --finance-text: #9f1239;
+            --custom-text: #9a3412;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
 
@@ -168,7 +183,7 @@
         .help-btn {
             background: rgba(6, 182, 212, 0.15);
             border: 1.5px solid var(--primary);
-            color: var(--primary);
+            color: var(--primary-text);
             border-radius: 50%; width: 36px; height: 36px;
             font-size: 16px; font-weight: 700; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
@@ -194,7 +209,7 @@
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px;
         }
-        .help-modal-title { font-size: 20px; font-weight: 700; color: var(--primary); }
+        .help-modal-title { font-size: 20px; font-weight: 700; color: var(--primary-text); }
         .help-close-btn {
             background: none; border: none; font-size: 22px;
             color: var(--text-dark-secondary); cursor: pointer; line-height: 1;
@@ -207,9 +222,9 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 14px 4px; cursor: pointer; user-select: none;
         }
-        .help-section-header:hover .help-section-title { color: var(--primary); }
+        .help-section-header:hover .help-section-title { color: var(--primary-text); }
         .help-section-title { font-size: 15px; font-weight: 600; color: var(--text-dark); }
-        .help-section-icon { font-size: 18px; color: var(--primary); min-width: 28px; }
+        .help-section-icon { font-size: 18px; color: var(--primary-text); min-width: 28px; }
         .help-chevron { font-size: 12px; color: var(--text-dark-secondary); transition: transform 0.2s; }
         .help-section.open .help-chevron { transform: rotate(180deg); }
         .help-body {
@@ -219,7 +234,7 @@
         .help-section.open .help-body { display: block; }
         .help-body strong { color: var(--text-dark); }
         .help-body code {
-            background: rgba(6,182,212,0.12); color: var(--primary);
+            background: rgba(6,182,212,0.12); color: var(--primary-text);
             padding: 1px 6px; border-radius: 4px; font-family: 'Courier New', monospace;
             font-size: 12px;
         }
@@ -282,7 +297,7 @@
         }
         body.light .support-uses { background: rgba(6, 182, 212, 0.08); }
         .support-uses-title {
-            font-weight: 700; color: var(--primary);
+            font-weight: 700; color: var(--primary-text);
             margin-bottom: 8px; font-size: 14px;
         }
         .support-uses ul {
@@ -304,7 +319,7 @@
             font-size: 14px; line-height: 1.6;
             color: var(--text-dark-secondary);
         }
-        .pricing-intro strong { color: var(--primary); }
+        .pricing-intro strong { color: var(--primary-text); }
         .pricing-cycle-toggle {
             display: flex; gap: 8px; margin-bottom: 20px;
             padding: 6px;
@@ -364,10 +379,10 @@
         }
         .pricing-col-price {
             font-size: 28px; font-weight: 800;
-            color: var(--primary);
+            color: var(--primary-text);
             margin-bottom: 12px;
         }
-        .pricing-col-pro .pricing-col-price { color: #fbbf24; }
+        .pricing-col-pro .pricing-col-price { color: var(--science-text); }
         .pricing-col-cycle {
             font-size: 14px; font-weight: 500;
             color: var(--text-dark-secondary);
@@ -391,7 +406,7 @@
             text-align: center;
         }
         .pricing-note a {
-            color: var(--primary); text-decoration: none;
+            color: var(--primary-text); text-decoration: none;
             border-bottom: 1px dashed currentColor;
         }
         .pricing-note a:hover { color: var(--primary-dark); }
@@ -445,7 +460,7 @@
 
         .display-text {
             font-size: 32px; font-weight: 700;
-            color: var(--primary);
+            color: var(--primary-text);
             font-family: 'Courier New', monospace;
             word-break: break-all; max-width: 100%;
         }
@@ -474,8 +489,8 @@
             border-bottom: 2px solid transparent;
             font-size: 14px;
         }
-        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary-text); border-bottom-color: var(--primary); }
+        .tab:hover { color: var(--primary-text); }
 
         /* ===== 計算分類按鈕 (5 categories) ===== */
         .calc-cats {
@@ -498,10 +513,10 @@
         }
         .calc-cat.active {
             background: rgba(6, 182, 212, 0.2);
-            color: var(--primary);
+            color: var(--primary-text);
             border-color: var(--primary);
         }
-        .calc-cat:hover { color: var(--primary); }
+        .calc-cat:hover { color: var(--primary-text); }
 
         /* ===== Button grid ===== */
         .button-grid {
@@ -519,12 +534,12 @@
             color: var(--text-dark);
         }
         .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn-function { background: rgba(6, 182, 212, 0.2); color: var(--primary); }
-        .btn-operator { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+        .btn-function { background: rgba(6, 182, 212, 0.2); color: var(--primary-text); }
+        .btn-operator { background: rgba(16, 185, 129, 0.2); color: var(--green-text); }
         .btn-delete { background: rgba(220, 38, 38, 0.2); color: var(--red); }
-        .btn-equals { background: rgba(6, 182, 212, 0.3); color: var(--primary); }
+        .btn-equals { background: rgba(6, 182, 212, 0.3); color: var(--primary-text); }
         .btn-zero { grid-column: span 2; }
-        .btn-constant { background: rgba(139, 92, 246, 0.2); color: #a78bfa; font-size: 14px; }
+        .btn-constant { background: rgba(139, 92, 246, 0.2); color: var(--physics-text); font-size: 14px; }
         .btn-spacer { opacity: 0; pointer-events: none; }
 
         /* ===== Base conversion ===== */
@@ -554,7 +569,7 @@
         }
         .base-value {
             font-size: 13px; font-weight: 600;
-            color: var(--primary);
+            color: var(--primary-text);
             font-family: 'Courier New', monospace;
             word-break: break-all; text-align: right;
         }
@@ -574,7 +589,7 @@
         }
         .base-mode.active {
             background: rgba(6, 182, 212, 0.2);
-            color: var(--primary);
+            color: var(--primary-text);
             border-color: var(--primary);
         }
 
@@ -589,8 +604,8 @@
             background: transparent; color: var(--text-dark-secondary);
             font-size: 12px; cursor: pointer; transition: all 0.15s;
         }
-        .ucbtn.active { background: rgba(6,182,212,0.15); color: var(--primary); border-color: var(--primary); }
-        .ucbtn:hover { color: var(--primary); }
+        .ucbtn.active { background: rgba(6,182,212,0.15); color: var(--primary-text); border-color: var(--primary); }
+        .ucbtn:hover { color: var(--primary-text); }
 
         .unit-converter {
             background: rgba(6,182,212,0.05);
@@ -602,10 +617,10 @@
             flex: 1; min-width: 0; padding: 10px 12px;
             border: 1px solid var(--primary); border-radius: 10px;
             background: var(--bg-dark-tertiary);
-            color: var(--primary); font-size: 20px; font-weight: 700;
+            color: var(--primary-text); font-size: 20px; font-weight: 700;
             font-family: 'Courier New', monospace; text-align: right;
         }
-        .unit-input.to-input { border-color: #10b981; color: #10b981; }
+        .unit-input.to-input { border-color: #10b981; color: var(--green-text); }
         .unit-select {
             flex: 0 0 130px; background: var(--bg-dark-tertiary);
             border: 1px solid var(--border-dark);
@@ -619,7 +634,7 @@
         .unit-swap-btn {
             background: rgba(6,182,212,0.1); border: 1px solid var(--primary);
             border-radius: 50%; width: 32px; height: 32px;
-            color: var(--primary); font-size: 16px; cursor: pointer; transition: all 0.15s;
+            color: var(--primary-text); font-size: 16px; cursor: pointer; transition: all 0.15s;
         }
         .unit-swap-btn:hover { background: rgba(6,182,212,0.25); transform: rotate(180deg); }
         .unit-ref-label { font-size: 11px; color: var(--text-dark-secondary); margin-bottom: 8px; }
@@ -634,7 +649,7 @@
         .unit-ref-left { display: flex; flex-direction: column; gap: 2px; }
         .unit-ref-name { font-size: 12px; color: var(--text-dark-secondary); }
         .unit-ref-code { font-size: 10px; color: var(--text-dark-secondary); opacity: 0.6; }
-        .unit-ref-value { font-size: 15px; font-weight: 700; color: var(--primary); font-family: 'Courier New', monospace; }
+        .unit-ref-value { font-size: 15px; font-weight: 700; color: var(--primary-text); font-family: 'Courier New', monospace; }
 
         /* ===== Unit / Currency (legacy) ===== */
         .conversion-input {
@@ -657,7 +672,7 @@
             border-radius: 12px; padding: 12px; text-align: center;
         }
         .conversion-label { font-size: 12px; color: var(--text-dark-secondary); margin-bottom: 4px; }
-        .conversion-value { font-size: 18px; font-weight: 700; color: var(--primary); font-family: 'Courier New', monospace; }
+        .conversion-value { font-size: 18px; font-weight: 700; color: var(--primary-text); font-family: 'Courier New', monospace; }
 
         .hidden { display: none; }
 
@@ -690,7 +705,7 @@
             border: 1px solid var(--primary);
             border-radius: 10px;
             background: var(--bg-dark-tertiary);
-            color: var(--primary); font-size: 20px; font-weight: 700;
+            color: var(--primary-text); font-size: 20px; font-weight: 700;
             font-family: 'Courier New', monospace;
             text-align: right;
         }
@@ -701,7 +716,7 @@
             margin-bottom: 10px;
         }
         .currency-source { font-size: 11px; color: var(--text-dark-secondary); }
-        .currency-source a { color: var(--primary); text-decoration: none; }
+        .currency-source a { color: var(--primary-text); text-decoration: none; }
         .currency-update { font-size: 11px; color: var(--text-dark-secondary); }
 
         .currency-list {
@@ -728,7 +743,7 @@
         .currency-card-code { font-size: 13px; font-weight: 700; color: var(--text-dark); }
         .currency-card-name { font-size: 11px; color: var(--text-dark-secondary); margin-top: 1px; }
         .currency-card-right { text-align: right; }
-        .currency-card-converted { font-size: 16px; font-weight: 700; color: var(--primary); font-family: 'Courier New', monospace; }
+        .currency-card-converted { font-size: 16px; font-weight: 700; color: var(--primary-text); font-family: 'Courier New', monospace; }
         .currency-card-rate { font-size: 10px; color: var(--text-dark-secondary); margin-top: 2px; }
 
         .currency-loading { text-align: center; padding: 30px; color: var(--text-dark-secondary); font-size: 13px; }
@@ -752,7 +767,7 @@
         }
         .foreign-select:focus { border-color: #10b981; }
         body.light .foreign-select { background: #f8fafc; }
-        .foreign-input { flex: 1; min-width: 0; border-color: #10b981 !important; color: #10b981 !important; }
+        .foreign-input { flex: 1; min-width: 0; border-color: #10b981 !important; color: var(--green-text) !important; }
         .foreign-result {
             margin-top: 10px;
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -761,12 +776,12 @@
         }
         .foreign-result.hidden { display: none; }
         .foreign-result-expr { font-size: 13px; color: var(--text-dark-secondary); }
-        .foreign-result-twd { font-size: 20px; font-weight: 700; color: #10b981; font-family: 'Courier New', monospace; }
+        .foreign-result-twd { font-size: 20px; font-weight: 700; color: var(--green-text); font-family: 'Courier New', monospace; }
         .foreign-result-unit { font-size: 12px; color: var(--text-dark-secondary); }
         .foreign-result-btn {
             margin-left: auto; padding: 6px 12px; font-size: 11px;
             background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;
-            border-radius: 8px; color: #10b981; cursor: pointer;
+            border-radius: 8px; color: var(--green-text); cursor: pointer;
         }
         .foreign-result-btn:hover { background: rgba(16, 185, 129, 0.35); }
 
@@ -779,7 +794,7 @@
         }
         .quick-rate-row:last-child { border-bottom: none; }
         .quick-rate-cur { color: var(--text-dark-secondary); }
-        .quick-rate-val { color: var(--primary); font-family: 'Courier New', monospace; font-weight: 600; }
+        .quick-rate-val { color: var(--primary-text); font-family: 'Courier New', monospace; font-weight: 600; }
 
         h3, h4 { color: var(--text-dark); }
 
@@ -799,13 +814,13 @@
         }
         .fcbtn.active {
             background: rgba(6, 182, 212, 0.2);
-            color: var(--primary);
+            color: var(--primary-text);
             border-color: var(--primary);
         }
-        .fcbtn:hover { color: var(--primary); }
-        .fcbtn-custom { color: #fb923c !important; border-color: rgba(251,146,60,0.4) !important; }
+        .fcbtn:hover { color: var(--primary-text); }
+        .fcbtn-custom { color: var(--custom-text) !important; border-color: rgba(251,146,60,0.4) !important; }
         .fcbtn-custom.active { background: rgba(251,146,60,0.15) !important; border-color: #fb923c !important; }
-        .custom-section-label { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #fb923c; }
+        .custom-section-label { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--custom-text); }
         .custom-formula-group-select {
             width: 100%; padding: 8px 12px;
             background: var(--bg-dark-tertiary); border: 1px solid var(--border-dark);
@@ -834,23 +849,23 @@
             cursor: pointer; transition: all 0.2s;
         }
         .formula-item:hover { background: rgba(6, 182, 212, 0.2); transform: translateX(4px); }
-        .formula-name { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 4px; }
+        .formula-name { font-weight: 600; color: var(--primary-text); font-size: 14px; margin-bottom: 4px; }
         .formula-expr { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-dark-secondary); }
         .formula-category {
             display: inline-block; font-size: 10px;
-            background: rgba(6, 182, 212, 0.2); color: var(--primary);
+            background: rgba(6, 182, 212, 0.2); color: var(--primary-text);
             padding: 2px 6px; border-radius: 4px; margin-top: 4px;
         }
         .formula-group-badge {
             display: inline-block; font-size: 10px;
             padding: 2px 6px; border-radius: 4px; margin-top: 4px; margin-left: 4px;
         }
-        .group-數學 { background: rgba(6, 182, 212, 0.15); color: var(--primary); }
-        .group-工程 { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-        .group-科學 { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-        .group-物理 { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-        .group-金融 { background: rgba(251, 113, 133, 0.15); color: #fb7185; }
-        .group-健康 { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+        .group-數學 { background: rgba(6, 182, 212, 0.15); color: var(--primary-text); }
+        .group-工程 { background: rgba(16, 185, 129, 0.15); color: var(--green-text); }
+        .group-科學 { background: rgba(251, 191, 36, 0.15); color: var(--science-text); }
+        .group-物理 { background: rgba(139, 92, 246, 0.15); color: var(--physics-text); }
+        .group-金融 { background: rgba(251, 113, 133, 0.15); color: var(--finance-text); }
+        .group-健康 { background: rgba(251, 146, 60, 0.15); color: var(--custom-text); }
 
         /* ===== Pro 公式鎖頭（v3.8.0 Phase 2.3 Freemium）===== */
         .formula-item-pro {
@@ -882,7 +897,7 @@
             margin-top: 20px; margin-bottom: 10px;
             padding-bottom: 8px;
             border-bottom: 1px solid var(--border-dark);
-            color: var(--primary);
+            color: var(--primary-text);
         }
 
         .add-formula-form {
@@ -905,7 +920,7 @@
             border-radius: 8px; cursor: pointer;
             font-weight: 600; font-size: 12px; transition: all 0.2s;
         }
-        .btn-submit { background: var(--green); color: var(--bg-dark); }
+        .btn-submit { background: var(--green); color: var(--text-on-accent); }
         .btn-submit:hover { opacity: 0.9; }
         .btn-cancel { background: var(--bg-dark-tertiary); color: var(--text-dark); }
         .btn-cancel:hover { background: var(--red); }
@@ -934,12 +949,12 @@
             max-width: 500px; width: 90%;
             max-height: 80vh; overflow-y: auto;
         }
-        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--primary-text); }
         .modal-formula { font-size: 12px; color: var(--text-dark-secondary); margin-bottom: 16px; font-family: 'Courier New', monospace; }
         .modal-variables { margin-bottom: 16px; }
         .variable-input { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
         .variable-input label { min-width: 60px; display: flex; flex-direction: column; gap: 2px; }
-        .var-name { font-weight: 700; color: var(--primary); font-size: 14px; }
+        .var-name { font-weight: 700; color: var(--primary-text); font-size: 14px; }
         .var-desc { font-size: 10px; color: var(--text-dark-secondary); white-space: nowrap; }
         .variable-input input {
             flex: 1; padding: 8px;
@@ -963,7 +978,7 @@
             display: flex; justify-content: space-between; align-items: center;
         }
         .saved-formula { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-dark-secondary); }
-        .saved-result { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .saved-result { font-size: 16px; font-weight: 700; color: var(--primary-text); }
         .delete-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; transition: all 0.2s; }
         .delete-btn:hover { transform: scale(1.2); }
 
@@ -974,6 +989,7 @@
             color: rgba(167, 139, 250, 0.7);
             margin-top: 2px; line-height: 1;
         }
+        body.light .const-label { color: var(--physics-text); }
         /* ===== Responsive: mobile bottom-sticky quick-keys bar (v3.5.2 Bug C fix) ===== */
         /*
          * Bug C 修復：≤768px 時將 sidebar 從 display:none 改為底部固定浮動列，
@@ -1059,7 +1075,7 @@
             padding-bottom: 14px;
             border-bottom: 1px solid var(--border-dark);
         }
-        .graph-modal-title { font-size: 22px; font-weight: 700; color: var(--primary); }
+        .graph-modal-title { font-size: 22px; font-weight: 700; color: var(--primary-text); }
 
         .graph-controls {
             display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
@@ -1158,7 +1174,7 @@
         }
         .graph-panel-title {
             font-weight: 700; font-size: 13px;
-            color: var(--primary);
+            color: var(--primary-text);
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1210,7 +1226,7 @@
             font-size: 12px;
         }
         .graph-slider-row label {
-            min-width: 24px; font-weight: 600; color: var(--primary);
+            min-width: 24px; font-weight: 600; color: var(--primary-text);
             font-family: monospace;
         }
         .graph-slider-row input[type=range] {
@@ -1364,7 +1380,7 @@
         .pro-badge-btn.is-trial {
             background: rgba(6, 182, 212, 0.15);
             border: 1px solid var(--primary);
-            color: var(--primary);
+            color: var(--primary-text);
         }
         .pro-badge-btn.is-pro {
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -1501,7 +1517,7 @@
             background: #f59e0b; color: #0f172a; font-weight: 600;
         }
         .pro-billing-toggle .save {
-            background: rgba(16, 185, 129, .2); color: #10b981;
+            background: rgba(16, 185, 129, .2); color: #34d399;
             padding: 1px 6px; border-radius: 4px;
             font-size: .7rem; margin-left: 4px;
         }
@@ -2008,7 +2024,7 @@
 
                     <!-- 內建公式（自建 tab 時隱藏）-->
                     <div id="formulaBuiltinSection" style="margin-bottom: 16px;">
-                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary);" data-i18n="formula_builtin">內建公式</div>
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary-text);" data-i18n="formula_builtin">內建公式</div>
                         <div class="formula-list" id="formulaList"></div>
                     </div>
 
@@ -5816,7 +5832,7 @@
     <script defer src="js/pro-config.js?v=3.3.2"></script>
     <script defer src="js/license-api.js?v=3.3.1"></script>
     <script defer src="js/pro-manager.js?v=3.3.1"></script>
-    <script defer src="js/paypal-integration.js?v=3.3.1"></script>
+    <script defer src="js/paypal-integration.js?v=3.3.2"></script>
     <script defer src="js/pro-ui.js?v=3.3.1"></script>
 </body>
 </html>

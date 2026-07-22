@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.5] - 2026-07-22 — Fix: 全站淺色主題文字對比度（WCAG AA）
+
+延續 v3.8.4 只修 guide/footer 的對比度深審，本次擴大到**全站**：用瀏覽器實測（axe-core + 手動 alpha-compositing 逐元素驗算，覆蓋所有 tab、help/pricing/graph modal）掃出淺色主題下 51 處文字對比不足 WCAG AA 的地方，全部修復並回歸驗證歸零。
+
+### ♿ A11y（WCAG 2.1 AA 對比度，僅淺色主題）
+
+- **根因**：`--primary`（青）、`--green`、amber/violet/rose/orange 等強調色，淺色主題下 `--primary` 本身不隨主題變深，直接當文字色對白色/淺色背景僅 1.84–2.43:1，遠低於 4.5:1（沿用 v3.8.4 `--guide-accent` 的解法思路，但那次只套用在 guide/footer）
+- **新增 6 個文字色專用 token**（深色主題維持原色相不變，僅淺色主題覆寫加深）：`--primary-text`（cyan-800 `#155e75`）、`--green-text`（emerald-800 `#065f46`）、`--science-text`（amber-800 `#92400e`）、`--physics-text`（violet-800 `#5b21b6`）、`--finance-text`（rose-800 `#9f1239`）、`--custom-text`（orange-800 `#9a3412`），另加 `--text-on-accent`（固定 `#0f172a` 不隨主題翻轉，修 `.btn-submit` 用 `--bg-dark` 當文字色淺色主題下變近白消失的問題）
+- **修復範圍**：計算機按鈕（三角函數 / 運算子 / 等號 / 物理常數）、tab / 分類按鈕 active 態、單位換算與匯率輸入框與結果、公式卡片（名稱 / 分類 tag / 六種領域徽章 / 自建公式橘色標籤）、help modal（標題 / icon / code）、pricing modal（標題 / 價格 / 連結）、graph modal（標題 / 面板標題 / 滑桿標籤）— 共 43 個 CSS 選擇器
+- **驗證**：本地 preview 全站掃描（含隱藏 tab/modal 內容）淺色主題違規 51 → 0；深色主題以相同腳本回歸掃描，數值與修改前逐位元組相同（token 定義未變），確認零回歸
+- `sw.js` `CACHE_NAME` v3.8.4 → v3.8.5
+
+### 已知、留待未來（超出本次範圍）
+
+- 深色主題（預設主題）本身也存在 9 處邊緣性對比不足（3.81–4.39:1，僅略低於 4.5 門檻），與本次淺色主題翻轉問題無關、是獨立的既有瑕疵，未列入本次修復範圍
+- `border-color: var(--primary)`（如 tab 底線、calc-cat 邊框）作為非文字 UI 元件邊界，WCAG 1.4.11 門檻是 3:1 而非本次處理的文字 4.5:1，未一併稽核
+
+### 🔒 Security（Worker v2.4.1）：PayPal Client ID 前後端一致性 fail-loud 檢查
+
+- **動機**：2026-06-14 曾發生前端 `pro-config.js` 的 `PAYPAL_CLIENT_ID` 打錯一個字元（`eIlo` 誤植為 `eIIo`，肉眼幾乎無法辨識）導致 PayPal 訂閱按鈕整段消失且不拋出任何錯誤，直到人工三連 push 才反轉修復（見 [[journal/2026-06-14_supercalc_paypal_clientid_reversal]]）。本次補上自動偵測機制防止再犯。
+- **Worker `/health` 新增 `paypal_client_id_hash`**：回傳 `sha256(env.PAYPAL_CLIENT_ID)` 前 12 hex 字元（`worker/license-validator.js` v2.4.0 → v2.4.1）
+- **前端 `paypal-integration.js` 新增 `verifyClientIdMatchesBackend()`**：載入 PayPal SDK 前，用 Web Crypto API 算出 `PRO_CONFIG.PAYPAL_CLIENT_ID` 同款 hash 並與 Worker 回傳值比對
+  - 兩邊 hash 一致 → 正常放行
+  - **不一致 → `console.error` + 拋出例外阻擋 SDK 載入**，pricing modal 顯示明確錯誤訊息（雙方 hash 值 + 排查提示）
+  - Worker 網路失敗或回傳無此欄位（舊版 Worker）→ `console.warn` 後放行，不阻擋購買流程（避免基礎設施短暫異常誤傷金流）
+- `index.html` 內 `js/paypal-integration.js?v=3.3.1` → `?v=3.3.2`
+- **驗證**：(1) 用 2026-06-14 事故的實際錯字重現，確認兩者 hash 完全不同（`e3b111f4f353` vs `acc4fc8cfcac`），證明機制能偵測到那次事故；(2) 對現行（尚未部署新版）production Worker 真實請求 `/health`，確認缺欄位時走「警告放行」分支、PayPal 按鈕正常渲染，零回歸；(3) mock 一組錯誤 hash 驗證阻擋分支正確觸發 `console.error` + 擋下 SDK、UI 顯示排查訊息
+- **待辦**：本次僅修改本機檔案，**尚未 `wrangler deploy`** — Worker 端 `paypal_client_id_hash` 要等實際部署後才會在 production 生效，部署前請先與使用者確認（金流 Worker 屬對外服務變更）
+
+---
+
 ## [3.8.4] - 2026-07-18 — Quality: SEO + a11y 深審修復（og:image / FAQPage / 對比度 / main landmark）
 
 品質深審 session：Lighthouse mobile 實測 **Perf 98 / A11y 94 / BP 100 / SEO 100**（LCP 1.8s、CLS 0、TBT 20ms，CWV 全達標），針對剩餘缺口一次修齊。

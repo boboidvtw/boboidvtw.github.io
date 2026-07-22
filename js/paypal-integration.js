@@ -15,11 +15,61 @@
     const { PRO_CONFIG, ProManager } = window;
 
     /**
+     * sha256(text) 前 12 hex 字元 — 與 Worker /health 的 paypal_client_id_hash 對位用
+     * @param {string} text
+     * @returns {Promise<string>}
+     */
+    async function shortSha256(text) {
+        const data = new TextEncoder().encode(text);
+        const digest = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(digest))
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('')
+            .slice(0, 12);
+    }
+
+    /**
+     * 前後端 PayPal Client ID 一致性檢查（fail-loud）
+     * 背景：2026-06-14 曾發生前端 Client ID 打錯一個字元（eIIo vs eIlo）
+     * 導致 PayPal 按鈕整段消失，肉眼幾乎無法辨識、也不會拋出任何 error。
+     * 做法：向 Worker /health 要後端 Client ID 的 hash，與前端自己算的比對。
+     * 網路失敗 / 舊版 Worker（無此欄位）→ 視為無法判斷，放行但印警告，不阻擋購買流程。
+     * 只有「兩邊都拿得到 hash 且不一致」才判定為真的設定錯誤並擋下 SDK 載入。
+     * @returns {Promise<void>}
+     */
+    async function verifyClientIdMatchesBackend() {
+        const clientId = PRO_CONFIG.PAYPAL_CLIENT_ID;
+        let serverHash;
+        try {
+            const res = await fetch(`${PRO_CONFIG.WORKER_URL}/health`);
+            const body = await res.json();
+            serverHash = body.paypal_client_id_hash;
+        } catch (e) {
+            console.warn('⚠️ 無法向 Worker 取得 paypal_client_id_hash 做一致性檢查（略過，不阻擋）：', e.message);
+            return;
+        }
+        if (!serverHash) {
+            console.warn('⚠️ Worker /health 未回傳 paypal_client_id_hash（可能是舊版 Worker），略過一致性檢查');
+            return;
+        }
+        const localHash = await shortSha256(clientId);
+        if (localHash !== serverHash) {
+            const message =
+                `PayPal Client ID 前後端不一致（前端 hash ${localHash} ≠ 後端 hash ${serverHash}）。` +
+                '請檢查 js/pro-config.js 的 PAYPAL_CLIENT_ID 是否與 Worker secrets 同步。';
+            console.error('🚨 ' + message);
+            throw new Error(message);
+        }
+    }
+
+    /**
      * 動態載入 PayPal SDK
      * 為什麼動態：sandbox/live 使用不同 client-id，無法在 index.html 寫死
      * @returns {Promise<void>} resolves 後可使用 window.paypal
      */
-    function loadPayPalSDK() {
+    async function loadPayPalSDK() {
+        await verifyClientIdMatchesBackend();
+
         return new Promise((resolve, reject) => {
             if (typeof paypal !== 'undefined') {
                 resolve();

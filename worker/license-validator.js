@@ -1,7 +1,8 @@
 /* =====================================================================
    ∑ Calc License Validator — Cloudflare Worker v2
    建立日期：2026-05-14
-   版本：2.4.0（2026-05-29：JWT 加 tier 欄位 — Phase 2.3 Freemium 上線）
+   版本：2.4.1（2026-07-22：/health 加 paypal_client_id_hash，供前端 fail-loud cross-check）
+        2.4.0（2026-05-29：JWT 加 tier 欄位 — Phase 2.3 Freemium 上線）
         2.3.0（2026-05-16：/webhook/paypal 加入來源 IP 觀察 log-only）
 
    端點：
@@ -363,6 +364,14 @@ function jsonResponse(data, status = 200) {
   });
 }
 
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 async function handleHealth(env) {
   // 順便 ping KV
   let kvOk = false;
@@ -372,14 +381,20 @@ async function handleHealth(env) {
   } catch (e) {
     kvOk = false;
   }
+  // 前端 fail-loud cross-check 用：讓 pro-config.js 的 PAYPAL_CLIENT_ID 打錯字/前後端不同步時能自我偵測
+  // （2026-06-14 PayPal Client ID 打錯字事故：eIIo vs eIlo 肉眼幾乎不可辨，曾造成 PayPal 按鈕整整消失）
+  const paypalClientIdHash = env.PAYPAL_CLIENT_ID
+    ? (await sha256Hex(env.PAYPAL_CLIENT_ID)).slice(0, 12)
+    : null;
   return jsonResponse({
     status: 'ok',
-    version: '2.4.0',
+    version: '2.4.1',
     timestamp: new Date().toISOString(),
     kv: kvOk,
     rateLimit: 'kv',
     webhookIpObserve: 'log-only',
-    freemium: 'tier-in-jwt'
+    freemium: 'tier-in-jwt',
+    paypal_client_id_hash: paypalClientIdHash
   });
 }
 
