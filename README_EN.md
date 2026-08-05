@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.8.5-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.9.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -22,6 +22,8 @@
 ⚡ **v3.8.2 Perf optimization** (2026-06-18): Added `defer` to 5 body-end external JS scripts so the HTML parser no longer blocks on 14KB (gzip) of sync downloads, while preserving the Pro module initialization chain. Verified locally with zero regression (5 Pro modules init correctly, 100 formulas + 41 lock badges rendered, `console.error` = 0). Expected 50–200ms improvement in TTI/FCP. Concurrently bumped SW `CACHE_NAME` v3.8.2. See [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js).
 
 🧹 **v3.8.3 Cleanup** (2026-06-25): Removed the dead Google AdSense `<script>` (rejected long ago, loaded 30+ days as a no-op HTTP request) plus the matching `sw.js` host bypass. Concurrently committed to **Carbon Ads** (replacing AdSense) as the ad route — application under review (5-7 business days); once approved, Free will see ads while Pro and Trial users stay ad-free. See [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route).
+
+⌨️ **v3.9.0 physical keyboard input + dark-theme contrast completion** (2026-08-05): Until now the page had no global key listener at all — desktop users could only click buttons one by one and could not type numbers. This release extracts the button logic into a shared entry point and wires the physical keyboard to it (digits, operators, parentheses, Enter, Backspace, Esc; the base-conversion tab accepts `0`-`9` and `A`-`F`), with focus and modal guards, and lets you keep typing straight after an `Error`. It also finishes the contrast audit that v3.8.5 left half-done: dark-theme violations on solid backgrounds went **236 → 0** and the light theme's remaining **18 → 0** (including white-on-white at 1.17:1, dark-on-dark headings in the Pro modal at 1.23:1, and white text on the amber Upgrade-Pro gradient at 2.15:1 — none of which earlier audits caught). See [CHANGELOG](CHANGELOG.md#390---2026-08-05--feat-實體鍵盤輸入--深色主題對比度收尾).
 
 ♿ **v3.8.5 site-wide light-theme contrast fix** (2026-07-22): Following up on v3.8.4's guide/footer-only fix, a full browser sweep (axe-core + per-element contrast math) found 51 places where light-theme text fell below WCAG AA 4.5:1. Added 6 dedicated text-color tokens and fixed every occurrence site-wide (calculator buttons, formula cards, currency/unit conversion, help/pricing/graph modals), verified back to zero violations with no dark-theme regression. See [CHANGELOG](CHANGELOG.md#385---2026-07-22--fix-site-wide-light-theme-text-contrast-wcag-aa).
 

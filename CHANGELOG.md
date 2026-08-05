@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.0] - 2026-08-05 — Feat: 實體鍵盤輸入 + 深色主題對比度收尾
+
+本版三件事：補上一台計算機最基本卻一直缺席的輸入方式（實體鍵盤）、把 v3.8.5 只做了一半的對比度稽核做完（深色主題 + 淺色主題剩餘缺口），以及讓儲存列表的 render path 與 v3.5.3/v3.5.4 的安全修復對齊。
+
+### ⌨️ Feat：全域鍵盤輸入（本版重點）
+
+- **問題**：在此之前整份 `index.html` 沒有任何全域按鍵監聽器（`document` / `window` 上的 keydown 為 0 處，只有 modal 焦點陷阱、help 手風琴、繪圖輸入框三處局部監聽）。也就是說桌機使用者**無法用鍵盤輸入數字**，只能滑鼠逐鍵點擊。
+- **重構**：把按鈕點擊處理的核心抽成 `applyCalcToken(text)`、進位換算抽成 `applyBaseToken(d)`，讓畫面按鈕與實體鍵盤共用單一入口，避免兩份會漂移的邏輯。
+- **對應鍵位**（刻意對應按鈕上的 Unicode 字元，讓打鍵盤與點按鈕產生逐字相同的算式）：
+  - 數字 `0`–`9`、小數點 `.`
+  - `+` `-` `*` `/` → `+` `−` `×` `÷`
+  - `^` 次方、`%` 百分比、`!` 階乘、`|` 絕對值、`(` `)` 括號、`,` 參數分隔
+  - `Enter` / `=` 計算、`Backspace` 退格、`Esc` / `Delete` 清除
+  - 「進位」分類下改走 `applyBaseToken`：`0`–`9` `A`–`F`（大小寫皆可），不合法的位元顯式擋掉（按鈕靠 `disabled` 擋，鍵盤沒有這層保護）
+- **守衛**：`Ctrl`/`Cmd`/`Alt` 組合鍵放行（不搶瀏覽器快捷鍵）、游標在 `input`/`textarea`/`select`/`contenteditable` 內不攔截、任何 modal 開啟時不攔截、只在「計算」tab 生效；焦點在 `button`/`a` 上時 `Enter`/`Space` 交還瀏覽器原生 click（否則一次按鍵觸發兩份行為，也會破壞鍵盤操作按鈕的無障礙語意）。
+- **用捕獲階段而非冒泡**：`_modalKeydown` 綁在 modal 元素上，冒泡時它已先跑完並移除 `.active`，document 端再檢查就看不到 modal 了 —— 實測到的症狀是「按 Esc 關閉說明視窗會連帶把計算機清成 0」。改用 capture 後狀態才是準的。
+- **視覺回饋**：`.btn-keypress`（`transform: scale(0.94)` + `opacity`，只動合成屬性、不觸發 layout），找不到對應的可見按鈕就不閃，避免給出「有輸入」的假回饋；`prefers-reduced-motion` 下不縮放。
+- 說明 modal 新增「⌨️ 鍵盤快捷鍵」章節。
+
+### 🐛 Fix：Error 後無法接續輸入
+
+`calculate()` 回 `Error` 後再按任何鍵會變成 `Error7` 這種死狀態，使用者只能按 `C` 才救得回來。改為任何非 `=` 的輸入自動先重置為 `0`。（物理常數按鈕同步處理。）
+
+### ♿ A11y：深色主題文字對比度（WCAG 2.1 AA）
+
+v3.8.5 只修了淺色主題，深色主題的既有缺口留在 backlog。本次用 alpha-compositing 掃描器實測全站（含所有 tab、5 個 modal、隱藏的分類面板），**深色主題純色背景違規 236 → 0**。
+
+- **根因與 v3.8.5 同源**：飽和強調色直接當文字色。`:root`（深色主題）的六個 `*-text` token 原本等同原始強調色，本次改為提亮版：`--primary-text` `#22d3ee`、`--green-text` `#34d399`、`--physics-text` `#c4b5fd`、`--finance-text` `#fda4af`、`--custom-text` `#fdba74`（`--science-text` 實測通過，不動）
+- **新增 `--red-text`**：`--red`(`#dc2626`) 當文字色在深色底只有 2.56–2.70:1（`C` / `←` / 刪除鈕）。深色 `#fca5a5`、淺色 `#b91c1c`（淺色沿用 `--red` 實測也只有 3.49:1）
+- **白字配實心強調色底**：`#fff` 對 `--primary` 僅 2.43:1、對 `--green` 僅 2.54:1。`.graph-mode-tab.active` / `.graph-tool.active` / `.pricing-cycle-btn.active` / `.graph-btn` 改用既有的 `--text-on-accent`
+- **`--purple` `#8b5cf6` → `#7c3aed`**：violet-500 當實心底時白字只有 4.22:1
+- **`.const-label`**：原 `rgba(167,139,250,0.7)` 的 alpha 把 4.31:1 拉低到 2.90:1，改直接用 `--physics-text`
+- **贊助按鈕品牌色**：`#f43f5e` / `#ea4aaa` / `#29abe0` 在深色底可讀、淺色底不可讀，改為 `--support-rose` / `--support-pink` / `--support-sky` 雙主題 token
+
+### ♿ A11y：淺色主題 v3.8.5 漏掉的缺口
+
+同一輪掃描順帶掃出淺色主題**純色背景違規 18 筆**（v3.8.5 之後殘留），一併修完歸零：
+
+- `.base-row.active-row .base-value` 寫死 `#ffffff` → 淺色主題白字白底 **1.17:1**，改用 `--text-dark`
+- `.btn-calculate`（公式 modal 的「計算」鈕）用 `--bg-dark` 當文字色 → 淺色主題下 `--bg-dark` 是近白的 `#f8fafc`，**2.32:1**，改用 `--text-on-accent`
+- 側欄「支援函數」區塊用 inline 的 `rgba(15,23,42,0.6)` 寫死深底、淺色主題無對應覆寫 → **1.61:1**，抽成 `.sidebar-note` 並比照 `.base-displays` 補上 `body.light` 覆寫
+- Pro modal 底色是寫死的深色漸層、不隨主題翻轉，但 `h3`/`h4` 跟著全域 `h3, h4 { color: var(--text-dark) }` → 淺色主題下深字配深底 **1.23:1**，改為 `.pro-modal-content h3, .pro-modal-content h4` 釘住淺色
+- `.pro-badge-btn.is-free` / `.pro-badge` 的 `#f59e0b → #ef4444` 漸層配白字僅 **2.15:1**（兩個主題都失敗，歷次稽核皆未抓到，因掃描器讀不到漸層），壓深為 `#c2410c → #b91c1c`（5.18:1 / 6.47:1）
+- Pro modal 的 `li.muted` / `.pro-footer` `#64748b` → `#94a3b8`（2.78:1 / 3.04:1）
+
+### 🔒 Security：`renderSaved()` 對齊 v3.5.3/v3.5.4 的修復
+
+儲存列表仍用 `innerHTML` 直接插入 `f.formula` / `f.result`，並以 inline `onclick="deleteSaved(id)"` 綁定 —— 當年自建公式（v3.5.3）與內建公式（v3.5.4）都改掉了，這條 render path 被漏掉。改為 `escapeFormulaHtml()` + `data-saved-id` + `addEventListener`，三條 render path 一致。內容雖然只源自使用者自己輸入（僅 self-XSS 面），但同款 pattern 留兩種比統一更難維護。刪除鈕另補 `aria-label`。
+
+### 🔍 稽核：WCAG 1.4.11 非文字對比（本版未修，僅記錄）
+
+互動元件邊界對相鄰背景的 3:1 門檻，實測深色主題 9 種、淺色主題 17 種邊框未達標，根因是 `--border-dark`（深 `#475569` 1.93:1 / 淺 `#cbd5e1` 1.42:1）被表單控制項當作唯一邊界。修法是新增 `--border-interactive`（深 `#94a3b8` / 淺 `#64748b`）並套用到 input/select/button —— 屬全站可見的視覺調整，待確認後再動。
+
+### 🧪 驗證
+
+- **鍵盤**：以瀏覽器真實按鍵事件（`isTrusted: true`）端對端驗證 `12+7*3=33`、`100/4=25`、`2^10=1024`、`(2+3)*4=20`、`1.5+2.5=4`、`5!=120`、`10-3=7`、`|−7|=7`、`200*15%=30`；Error 後接續輸入自動重置；Backspace；進位模式 `ff` → HEX FF / DEC 255 / BIN 11111111，BIN 模式下 `7`/`9` 正確忽略
+- **守衛**：切到「單位」tab 打字不進計算機；游標在輸入框內打字進輸入框、display 不動；modal 開啟時打字不進計算機、Esc 只關 modal 不清計算機
+- **對比度**：深色 236→0、淺色 18→0（純色背景）；漸層背景 4 組逐一以色停實算確認為誤報或已修復（6.81 / 5.18 / 5.71 / 5.24）
+- **計算引擎回歸**：24 案例全綠（含 `nCr(171,2)=14535`、`sin(180°)=0`、`0.1+0.2=0.3`、`6.62607015e-34×3e8=1.987821045e-25`、`1÷0=Error`）
+- **儲存列表**：以 `<img src=x onerror=...>` payload 驗證輸出為字面文字、零注入元素、零 inline `onclick`、XSS 未觸發；刪除與計數徽章正常
+- console 零 error；`sw.js` `CACHE_NAME` v3.8.5 → v3.9.0
+
+### ⚠️ 未完成
+
+Worker v2.4.1（`/health` 的 `paypal_client_id_hash`）**仍未部署** —— 本機 Cloudflare OAuth token 已失效（`wrangler whoami` 回 `Failed to fetch auth token: 400`），需重新 `wrangler login`。雙環境 `--dry-run` 已通過、bindings 正確。前端的一致性檢查在 Worker 未回傳該欄位時走「警告放行」分支，不影響金流。
+
+---
+
 ## [3.8.5] - 2026-07-22 — Fix: 全站淺色主題文字對比度（WCAG AA）
 
 延續 v3.8.4 只修 guide/footer 的對比度深審，本次擴大到**全站**：用瀏覽器實測（axe-core + 手動 alpha-compositing 逐元素驗算，覆蓋所有 tab、help/pricing/graph modal）掃出淺色主題下 51 處文字對比不足 WCAG AA 的地方，全部修復並回歸驗證歸零。
