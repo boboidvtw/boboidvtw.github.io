@@ -56,9 +56,14 @@ v3.8.5 只修了淺色主題，深色主題的既有缺口留在 backlog。本�
 
 儲存列表仍用 `innerHTML` 直接插入 `f.formula` / `f.result`，並以 inline `onclick="deleteSaved(id)"` 綁定 —— 當年自建公式（v3.5.3）與內建公式（v3.5.4）都改掉了，這條 render path 被漏掉。改為 `escapeFormulaHtml()` + `data-saved-id` + `addEventListener`，三條 render path 一致。內容雖然只源自使用者自己輸入（僅 self-XSS 面），但同款 pattern 留兩種比統一更難維護。刪除鈕另補 `aria-label`。
 
-### 🔍 稽核：WCAG 1.4.11 非文字對比（本版未修，僅記錄）
+### ♿ A11y：WCAG 1.4.11 非文字對比（互動元件邊界 3:1）
 
-互動元件邊界對相鄰背景的 3:1 門檻，實測深色主題 9 種、淺色主題 17 種邊框未達標，根因是 `--border-dark`（深 `#475569` 1.93:1 / 淺 `#cbd5e1` 1.42:1）被表單控制項當作唯一邊界。修法是新增 `--border-interactive`（深 `#94a3b8` / 淺 `#64748b`）並套用到 input/select/button —— 屬全站可見的視覺調整，待確認後再動。
+實測深色主題 20 種、淺色主題 33 種互動元件邊框未達 3:1。根因是 `--border-dark` —— 它是給 panel / 卡片這類**裝飾性分隔線**用的（深 `#475569` 1.93:1 / 淺 `#cbd5e1` 1.47:1），被表單控制項當成**唯一可辨識邊界**就不合格；控制項自身的填色也救不了（`--bg-dark-tertiary` 對 panel 底只有 1.18:1）。
+
+- **新增 `--border-interactive`**（深 `#94a3b8` / 淺 `#64748b`）：套用到 18 個互動控制項規則 —— `.lang-selector`、`.calc-cat`、`.base-mode`、`.ucbtn`、`.fcbtn`、`.unit-select`、`.foreign-select`、`.refresh-btn`、`.form-group input`、`.formula-search input`、`.custom-formula-group-select`、`.graph-expr-input`、`.graph-range-input`、`.graph-tool`、`.graph-mode-tab`、`.graph-stat-select`、`.graph-stat-input textarea` 等。**裝飾性 panel / 卡片邊框維持 `--border-dark` 不動。**
+- **新增 `--border-accent` / `--border-accent-green`**：`--primary` 與 `--green` 當邊框在深色底達標（5.95:1 / 5.70:1）、在淺色底只有 2.2–2.4:1，故只在淺色主題加深為 `#0e7490` / `#047857`。套用於 `.help-btn`、`.unit-input`、`.unit-swap-btn`、`.currency-amount-input`、`.foreign-input`、`.foreign-result-btn` 與五組 `.active` 狀態邊框。
+- **三個一次性項目**：`.fcbtn-custom` 的 `rgba(251,146,60,0.4)` → `--custom-text`；`.pro-license-input input` 的 `rgba(255,255,255,.15)`（1.44:1）→ `.45`（3.84:1）；`.btn-submit` 補 `border: none`（沒宣告會吃到 UA 預設黑框，1.29:1，此鈕靠綠色實心底辨識即可）。
+- **驗證**：雙主題重掃 1.4.11 **皆歸零**；同時重跑文字對比掃描確認零回歸（深淺主題純色底仍為 0）。
 
 ### 🧪 驗證
 

@@ -117,6 +117,12 @@
             --support-rose: #fb7185;
             --support-pink: #f472b6;
             --support-sky: #29abe0;
+            /* WCAG 1.4.11：互動元件邊界對相鄰背景需達 3:1。--border-dark 是 panel / 卡片這類
+               裝飾性分隔線用的（深 1.93:1 / 淺 1.47:1），拿來當表單控制項的唯一邊界不合格，
+               故分出一組專用 token；accent 版只有淺色主題需要加深。 */
+            --border-interactive: #94a3b8;
+            --border-accent: var(--primary);
+            --border-accent-green: var(--green);
             /* 固定深色文字，不隨主題翻轉：用於實心強調色按鈕上的文字。
                白字對 --primary / --green 這類亮底只有 2.4–2.5:1，比在淺色主題消失更早出事。 */
             --text-on-accent: #0f172a;
@@ -149,6 +155,9 @@
             --support-rose: #be123c;
             --support-pink: #be185d;
             --support-sky: #0369a1;
+            --border-interactive: #64748b;
+            --border-accent: #0e7490;
+            --border-accent-green: #047857;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
 
@@ -169,7 +178,7 @@
 
         .lang-selector {
             background: var(--bg-dark-tertiary);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             color: var(--text-dark);
             padding: 8px 12px;
             border-radius: 8px;
@@ -195,7 +204,7 @@
         /* ===== Help Button & Modal ===== */
         .help-btn {
             background: rgba(6, 182, 212, 0.15);
-            border: 1.5px solid var(--primary);
+            border: 1.5px solid var(--border-accent);
             color: var(--primary-text);
             border-radius: 50%; width: 36px; height: 36px;
             font-size: 16px; font-weight: 700; cursor: pointer;
@@ -514,7 +523,7 @@
         .calc-cat {
             flex: 1; min-width: 52px;
             padding: 8px 4px;
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px;
             background: var(--bg-dark-tertiary);
             color: var(--text-dark-secondary);
@@ -526,7 +535,7 @@
         .calc-cat.active {
             background: rgba(6, 182, 212, 0.2);
             color: var(--primary-text);
-            border-color: var(--primary);
+            border-color: var(--border-accent);
         }
         .calc-cat:hover { color: var(--primary-text); }
 
@@ -606,7 +615,7 @@
             gap: 6px; margin-bottom: 12px;
         }
         .base-mode {
-            padding: 8px; border: 1px solid var(--border-dark);
+            padding: 8px; border: 1px solid var(--border-interactive);
             border-radius: 8px;
             background: var(--bg-dark-tertiary);
             color: var(--text-dark-secondary);
@@ -616,7 +625,7 @@
         .base-mode.active {
             background: rgba(6, 182, 212, 0.2);
             color: var(--primary-text);
-            border-color: var(--primary);
+            border-color: var(--border-accent);
         }
 
         .btn-base { font-size: 14px; padding: 14px; }
@@ -626,11 +635,11 @@
         .unit-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
         .ucbtn {
             padding: 5px 12px; border-radius: 20px;
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             background: transparent; color: var(--text-dark-secondary);
             font-size: 12px; cursor: pointer; transition: all 0.15s;
         }
-        .ucbtn.active { background: rgba(6,182,212,0.15); color: var(--primary-text); border-color: var(--primary); }
+        .ucbtn.active { background: rgba(6,182,212,0.15); color: var(--primary-text); border-color: var(--border-accent); }
         .ucbtn:hover { color: var(--primary-text); }
 
         .unit-converter {
@@ -641,15 +650,15 @@
         .unit-row { display: flex; gap: 8px; align-items: center; }
         .unit-input {
             flex: 1; min-width: 0; padding: 10px 12px;
-            border: 1px solid var(--primary); border-radius: 10px;
+            border: 1px solid var(--border-accent); border-radius: 10px;
             background: var(--bg-dark-tertiary);
             color: var(--primary-text); font-size: 20px; font-weight: 700;
             font-family: 'Courier New', monospace; text-align: right;
         }
-        .unit-input.to-input { border-color: #10b981; color: var(--green-text); }
+        .unit-input.to-input { border-color: var(--border-accent-green); color: var(--green-text); }
         .unit-select {
             flex: 0 0 130px; background: var(--bg-dark-tertiary);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 10px; padding: 8px 10px;
             color: var(--text-dark); font-size: 13px; font-weight: 600;
             cursor: pointer; outline: none;
@@ -658,7 +667,7 @@
         body.light .unit-select { background: #f8fafc; }
         .unit-swap-row { text-align: center; margin: 6px 0; }
         .unit-swap-btn {
-            background: rgba(6,182,212,0.1); border: 1px solid var(--primary);
+            background: rgba(6,182,212,0.1); border: 1px solid var(--border-accent);
             border-radius: 50%; width: 32px; height: 32px;
             color: var(--primary-text); font-size: 16px; cursor: pointer; transition: all 0.15s;
         }
@@ -705,7 +714,7 @@
         .refresh-btn {
             padding: 8px 12px;
             background: var(--bg-dark-tertiary);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px; color: var(--text-dark);
             cursor: pointer; transition: all 0.2s;
         }
@@ -728,7 +737,7 @@
         .currency-amount-wrap { display: flex; align-items: center; gap: 8px; }
         .currency-amount-input {
             width: 120px; padding: 8px 12px;
-            border: 1px solid var(--primary);
+            border: 1px solid var(--border-accent);
             border-radius: 10px;
             background: var(--bg-dark-tertiary);
             color: var(--primary-text); font-size: 20px; font-weight: 700;
@@ -786,14 +795,14 @@
         .foreign-select {
             flex: 0 0 auto;
             background: var(--bg-dark-tertiary);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 10px; padding: 8px 10px;
             color: var(--text-dark); font-size: 14px; font-weight: 600;
             cursor: pointer; outline: none; max-width: 150px;
         }
         .foreign-select:focus { border-color: #10b981; }
         body.light .foreign-select { background: #f8fafc; }
-        .foreign-input { flex: 1; min-width: 0; border-color: #10b981 !important; color: var(--green-text) !important; }
+        .foreign-input { flex: 1; min-width: 0; border-color: var(--border-accent-green) !important; color: var(--green-text) !important; }
         .foreign-result {
             margin-top: 10px;
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -806,7 +815,7 @@
         .foreign-result-unit { font-size: 12px; color: var(--text-dark-secondary); }
         .foreign-result-btn {
             margin-left: auto; padding: 6px 12px; font-size: 11px;
-            background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;
+            background: rgba(16, 185, 129, 0.2); border: 1px solid var(--border-accent-green);
             border-radius: 8px; color: var(--green-text); cursor: pointer;
         }
         .foreign-result-btn:hover { background: rgba(16, 185, 129, 0.35); }
@@ -831,7 +840,7 @@
         }
         .fcbtn {
             padding: 6px 10px;
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px;
             background: var(--bg-dark-tertiary);
             color: var(--text-dark-secondary);
@@ -841,15 +850,15 @@
         .fcbtn.active {
             background: rgba(6, 182, 212, 0.2);
             color: var(--primary-text);
-            border-color: var(--primary);
+            border-color: var(--border-accent);
         }
         .fcbtn:hover { color: var(--primary-text); }
-        .fcbtn-custom { color: var(--custom-text) !important; border-color: rgba(251,146,60,0.4) !important; }
+        .fcbtn-custom { color: var(--custom-text) !important; border-color: var(--custom-text) !important; }
         .fcbtn-custom.active { background: rgba(251,146,60,0.15) !important; border-color: #fb923c !important; }
         .custom-section-label { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--custom-text); }
         .custom-formula-group-select {
             width: 100%; padding: 8px 12px;
-            background: var(--bg-dark-tertiary); border: 1px solid var(--border-dark);
+            background: var(--bg-dark-tertiary); border: 1px solid var(--border-interactive);
             border-radius: 8px; color: var(--text-dark); font-size: 14px; cursor: pointer;
         }
         body.light .custom-formula-group-select { background: #f8fafc; }
@@ -857,7 +866,7 @@
         .formula-search { display: flex; gap: 8px; margin-bottom: 12px; }
         .formula-search input {
             flex: 1; padding: 12px;
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 12px;
             background: var(--bg-dark-tertiary);
             color: var(--text-dark); font-size: 14px;
@@ -935,7 +944,7 @@
         .form-group label { display: block; font-size: 12px; margin-bottom: 4px; color: var(--text-dark-secondary); }
         .form-group input {
             width: 100%; padding: 8px;
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px;
             background: var(--bg-dark-tertiary);
             color: var(--text-dark); font-size: 12px;
@@ -946,7 +955,8 @@
             border-radius: 8px; cursor: pointer;
             font-weight: 600; font-size: 12px; transition: all 0.2s;
         }
-        .btn-submit { background: var(--green); color: var(--text-on-accent); }
+        /* 不寫 border 會吃到 UA 預設的黑色按鈕邊框（1.29:1）；此鈕靠綠色實心底辨識即可 */
+        .btn-submit { background: var(--green); color: var(--text-on-accent); border: none; }
         .btn-submit:hover { opacity: 0.9; }
         .btn-cancel { background: var(--bg-dark-tertiary); color: var(--text-dark); }
         .btn-cancel:hover { background: var(--red); }
@@ -1109,7 +1119,7 @@
             flex: 1; min-width: 240px;
             padding: 10px 14px;
             background: var(--bg-dark-tertiary);
-            border: 1.5px solid var(--border-dark);
+            border: 1.5px solid var(--border-interactive);
             border-radius: 8px;
             color: var(--text-dark);
             font-family: 'Consolas', 'Monaco', monospace;
@@ -1151,7 +1161,7 @@
             width: 70px;
             padding: 4px 8px;
             background: var(--bg-dark);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 5px;
             color: var(--text-dark);
             font-family: monospace;
@@ -1292,7 +1302,7 @@
             padding: 8px 16px;
             background: transparent;
             color: var(--text-dark);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px 8px 0 0;
             cursor: pointer;
             font-size: 13px;
@@ -1303,7 +1313,7 @@
         .graph-mode-tab.active {
             background: var(--primary);
             color: var(--text-on-accent);
-            border-color: var(--primary);
+            border-color: var(--border-accent);
         }
         .graph-tool-bar {
             display: flex;
@@ -1325,7 +1335,7 @@
             padding: 4px 10px;
             background: transparent;
             color: var(--text-dark);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
@@ -1335,7 +1345,7 @@
         .graph-tool.active {
             background: var(--primary);
             color: var(--text-on-accent);
-            border-color: var(--primary);
+            border-color: var(--border-accent);
         }
         .graph-tool-hint {
             margin-left: auto;
@@ -1347,7 +1357,7 @@
             padding: 8px 12px;
             background: var(--bg-dark);
             color: var(--text-dark);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px;
             font-size: 13px;
             cursor: pointer;
@@ -1360,7 +1370,7 @@
             padding: 10px;
             background: var(--bg-dark);
             color: var(--text-dark);
-            border: 1px solid var(--border-dark);
+            border: 1px solid var(--border-interactive);
             border-radius: 8px;
             font-family: monospace;
             font-size: 12px;
@@ -1617,7 +1627,8 @@
         .pro-license-input input {
             flex: 1;
             background: rgba(0,0,0,.3);
-            border: 1px solid rgba(255,255,255,.15);
+            /* .15 alpha 在 modal 深底上僅 1.44:1，提高到 .45 得 3.84:1 */
+            border: 1px solid rgba(255,255,255,.45);
             color: #f1f5f9;
             padding: .7rem 1rem;
             border-radius: 8px;
