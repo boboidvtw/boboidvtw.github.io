@@ -2,6 +2,22 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <!-- v3.10.2 CSP。GitHub Pages 不能設 HTTP header，只能用 meta，因此有兩個先天限制：
+         不支援 Report-Only（實測：meta 版的 Report-Only 會被完全忽略，收不到任何違規事件），
+         也不支援 frame-ancestors / report-uri。所以這條政策是直接 enforce 的，沒有觀察期。
+
+         script-src 保留 'unsafe-inline'（本檔有 8 個 inline script 與數處 onclick）與
+         'unsafe-eval'（calculate() 用 new Function 求值，是這台計算機的核心）——
+         也就是說**這條 CSP 擋不住 XSS 本身**，不要誤以為它有。
+         它買到的是「XSS 得手之後能做什麼」的傷害控制：connect-src / img-src /
+         frame-src / base-uri 把外洩管道封住。v3.10.0 那個 #calc= 漏洞的傷害模型
+         正是「payload 執行後把 localStorage 送出去」，而那條路現在是死的。
+
+         PayPal 用 wildcard 涵蓋子網域（c.paypal.com 之類），降低金流被擋的機率；
+         *.paypal.com 一樣匹配不到攻擊者的網域，connect-src 的收益幾乎全部保留。
+         [WARNING] 新增任何外部資源（換匯率 API、加字型 CDN…）都要同步更新這裡，
+         否則會被靜默擋掉。沒有 CI 在守這件事。 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.paypal.com https://*.paypalobjects.com; connect-src 'self' https://open.er-api.com https://api.exchangerate-api.com https://api.moneyai168.com https://*.workers.dev https://*.paypal.com https://*.paypalobjects.com; frame-src https://*.paypal.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>∑ Calc - 超強萬能計算機 | 公式庫、函數繪圖、單位匯率換算</title>
     <meta name="description" content="∑ Calc 是一款免費、零依賴的線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。支援離線使用，單一 HTML 檔案，開箱即用。">
@@ -46,7 +62,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.10.1",
+      "softwareVersion": "3.10.2",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }

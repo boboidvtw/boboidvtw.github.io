@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.10.2] - 2026-08-14 — Security: 加上 Content-Security-Policy
+
+v3.10.0 把兩條外部輸入路徑（貼上、`#calc=`）都收斂到同一套文法驗證了，本版加上第二層：萬一還有沒發現的注入點，限制它**得手之後能做什麼**。
+
+### 🔒 CSP（meta 版）
+
+- **這條 CSP 擋不住 XSS 本身，不要誤以為它有。** `script-src` 必須保留 `'unsafe-inline'`（本檔有 8 個 inline script 與數處 `onclick`）與 `'unsafe-eval'`（`calculate()` 用 `new Function` 求值，是這台計算機的核心）。
+- 它買到的是**傷害控制**：`connect-src` / `img-src` / `frame-src` / `base-uri` 把外洩管道封住。v3.10.0 那個 `#calc=` 漏洞的傷害模型正是「payload 執行後把 `localStorage` 送出去」，而那條路現在是死的。
+- PayPal 用 wildcard 涵蓋子網域（`c.paypal.com` 之類）以降低金流被誤擋的機率；`*.paypal.com` 一樣匹配不到攻擊者的網域，`connect-src` 的收益幾乎全部保留。
+
+### ⚠️ meta 版 CSP 的兩個先天限制（實測過，不是查文件抄的）
+
+- **不支援 Report-Only**：`<meta http-equiv="Content-Security-Policy-Report-Only">` 會被完全忽略 —— 實測掛上 `img-src 'none'; connect-src 'none'` 的 report-only 政策後，被禁的 fetch 照常成功、且收不到任何 `securitypolicyviolation` 事件。GitHub Pages 不能設 HTTP header，所以**沒有「先觀察一週再收緊」這條路**，只能直接 enforce。
+- 不支援 `frame-ancestors` / `report-uri`。
+- 回滾成本很低：刪掉那一行 meta 重新部署即可（約 30 秒）。
+
+### ✅ 驗證（本地副本掛上同一份政策實測）
+
+- **合法路徑零違規**：頁面乾淨載入、計算引擎（`2^10+sin(30)` = 1024.5，走 `unsafe-eval`）、記憶鍵、貼上、繪圖 canvas、匯率 API（16 種幣別實際渲染到畫面）、Worker `/health`、PayPal SDK 載入且 `window.paypal` 成形、Subscribe 按鈕渲染成功。
+- **六種外洩管道全部被擋**，逐一觸發並以 `securitypolicyviolation` 事件確認：`fetch` 帶 `localStorage` 外送（`connect-src`）、WebSocket（`connect-src`）、注入外部 `<script>`（`script-src-elem`）、`<img>` beacon（`img-src`）、注入 `<iframe>`（`frame-src`）、`<base>` 劫持（`base-uri`）。
+  - [WARNING] 第一輪用 `try/catch` + `onerror` 測，得到「WebSocket 沒被擋」的**錯誤結論** —— WebSocket 的 CSP 違規是非同步的，`onerror` 也分不出「CSP 擋下」與「目標網域本來就連不到」。**驗 CSP 只能看 `securitypolicyviolation` 事件。**
+
+### 📌 已知未驗證項
+
+**完整付款流程沒有端到端驗證。** PayPal SDK 載入與 Subscribe 按鈕渲染都通過，但按鈕畫出來的 iframe 是無 `src` 的 `about:blank`，所以 `frame-src` 實際上沒被真正行使；要點擊 Subscribe 才會開 PayPal 視窗，而 sandbox client ID 失效（見開工指引 P1）擋住了那段。用 live plan ID 去點會在 PayPal 帳戶建立 pending subscription，屬於對外部服務產生副作用，故未執行。**上線後請人工點一次 Subscribe（不必完成付款，開得出視窗即可）**；若被擋，刪掉 meta 那行即可回滾。
+
+### [WARNING] 維護注意
+
+新增任何外部資源（換匯率 API、加字型 CDN、換 Worker 網域…）都要同步更新這條 CSP，否則會被**靜默擋掉**。這個 repo 沒有 CI 在守這件事。
+
 ## [3.10.1] - 2026-08-14 — A11y: 付款 / 授權碼 modal 的焦點陷阱
 
 v3.10.0 修掉了「pro-modal 開著時打字與貼上會灌進背景計算機」（安全面），但**鍵盤焦點**仍會跑出視窗外 —— 這是同一個根因（`#pro-modal` 用 `hidden` 屬性切換、不帶 `.active`，與本檔其餘 modal 是兩套顯示機制）的另一半。
