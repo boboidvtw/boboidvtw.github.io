@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.10.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.10.3-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#v33-安全架構升級-)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#v33-安全架構升級-)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -22,6 +22,8 @@
 ⚡ **v3.8.2 性能優化**（2026-06-18）：body 尾部 5 個 `<script>` 加 `defer`，HTML parser 不再被 14KB（gzip）sync 下載阻塞、Pro 模組鏈順序保留。本地 preview 驗證零回歸（5 Pro 模組 init 成功、100 公式 + 41 鎖頭渲染、`console.error` = 0），預期 TTI/FCP 有 50–200ms 改善。同步 bump SW `CACHE_NAME` v3.8.2。詳見 [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js)。
 
 🧹 **v3.8.3 清負債**（2026-06-25）：移除 30+ 天空載的 Google AdSense `<script>`（被拒後遺留）與 `sw.js` 對應 host bypass。同步決定變現方向走 **Carbon Ads**（取代 AdSense），申請中（5-7 工作天）；通過後 Free 看廣告 / Pro 與 Trial 隱藏廣告。詳見 [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route)。
+
+🔧 **v3.10.3 修正 `#79 萬有引力` 的分級**（2026-08-14）：這條公式誤標為 Pro，但它在 Bobo Labs 有一篇已發布的**免費**深度文章，讀者點進來卻會撞上 Pro 鎖。已改回 Free，物理分類回到 13 Free / 8 Pro。詳見 [CHANGELOG](CHANGELOG.md)。
 
 🔒 **v3.10.2 加上 CSP**（2026-08-14）：第二層防禦 —— 萬一還有沒發現的注入點，限制它得手之後能做什麼。**這條 CSP 擋不住 XSS 本身**（`script-src` 必須保留 `unsafe-inline` 與 `unsafe-eval`，後者是計算引擎的核心），它買到的是傷害控制：實測六種外洩管道（fetch / WebSocket / 注入 script / img beacon / iframe / base 劫持）全部被擋，而合法路徑（計算、匯率、Worker、PayPal SDK 與按鈕渲染）零違規。[WARNING] GitHub Pages 只能用 meta，而 meta 版**不支援 Report-Only**（已實測確認被完全忽略），所以沒有觀察期、只能直接 enforce；回滾就是刪掉那一行。詳見 [CHANGELOG](CHANGELOG.md#3102---2026-08-14--security-加上-content-security-policy)。
 

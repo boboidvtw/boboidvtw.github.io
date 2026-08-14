@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.10.3] - 2026-08-14 — Fix: #79 萬有引力回歸 Free
+
+### 🔧 修正
+
+- **`#79 萬有引力` 的 `tier: 'pro'` 移除，回歸 Free。** 這條公式在 Bobo Labs 公式庫的卡片自建立以來一直標示 Free，且 [萬有引力公式詳解](https://labs.moneyai168.com/formulas/universal-gravitation.html) 是一篇已發布的免費文章 —— 讀者從文章點進 `?formula=79` 卻會撞上 Pro 鎖，等於免費內容承諾跳票。以文章的承諾為準，把這裡改回 Free。
+- 連帶影響：物理分類的 Tier 分佈由 12 Free / 9 Pro 回到 **13 Free / 8 Pro**，與 Bobo Labs 公式庫頁的宣告數一致。
+
+### 📌 這個漂移是怎麼被發現的
+
+不是靠人工核對，是把 Bobo Labs 的 97 張公式卡逐筆對回本檔 `builtInFormulas` 時跳出來的唯一一筆不符。**兩邊各自內部一致（卡片 Free + 該頁宣告 13F/8P；registry Pro + 實際 12F/9P），所以任何單邊檢查都看不出問題** —— 只有跨來源比對才照得出來。
+
+---
+
 ## [3.10.2] - 2026-08-14 — Security: 加上 Content-Security-Policy
 
 v3.10.0 把兩條外部輸入路徑（貼上、`#calc=`）都收斂到同一套文法驗證了，本版加上第二層：萬一還有沒發現的注入點，限制它**得手之後能做什麼**。

@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.10.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.10.3-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -22,6 +22,8 @@
 ⚡ **v3.8.2 Perf optimization** (2026-06-18): Added `defer` to 5 body-end external JS scripts so the HTML parser no longer blocks on 14KB (gzip) of sync downloads, while preserving the Pro module initialization chain. Verified locally with zero regression (5 Pro modules init correctly, 100 formulas + 41 lock badges rendered, `console.error` = 0). Expected 50–200ms improvement in TTI/FCP. Concurrently bumped SW `CACHE_NAME` v3.8.2. See [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js).
 
 🧹 **v3.8.3 Cleanup** (2026-06-25): Removed the dead Google AdSense `<script>` (rejected long ago, loaded 30+ days as a no-op HTTP request) plus the matching `sw.js` host bypass. Concurrently committed to **Carbon Ads** (replacing AdSense) as the ad route — application under review (5-7 business days); once approved, Free will see ads while Pro and Trial users stay ad-free. See [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route).
+
+🔧 **v3.10.3 fixes the tier of `#79 Universal Gravitation`** (2026-08-14): the formula was mistakenly gated as Pro, yet it has a published **free** deep-dive article on Bobo Labs — readers following that link hit a paywall. Restored to Free; the physics category is back to 13 Free / 8 Pro. See [CHANGELOG](CHANGELOG.md).
 
 🔒 **v3.10.2 Content-Security-Policy** (2026-08-14): a second layer — if an injection point still exists somewhere, limit what it can do once it fires. **This CSP does not stop XSS itself** (`script-src` must keep `unsafe-inline` and `unsafe-eval`, the latter being the calculator engine's core); what it buys is damage limitation: six exfiltration channels (fetch, WebSocket, injected script, img beacon, iframe, base-tag hijack) were each triggered and confirmed blocked, while every legitimate path (calculation, exchange rates, Worker, PayPal SDK and button render) produced zero violations. [WARNING] GitHub Pages only allows the meta form, and the meta form **does not support Report-Only** (verified: it is ignored outright), so there is no observation period — it goes straight to enforce; rollback is deleting that one line. See [CHANGELOG](CHANGELOG.md#3102---2026-08-14--security-加上-content-security-policy).
 
