@@ -36,11 +36,27 @@
 
         modal.hidden = false;
         document.body.style.overflow = 'hidden';
+
+        // v3.10.1：焦點陷阱。這個 modal 用 hidden 屬性顯示（不是 index.html 其餘 modal
+        // 用的 .active class），所以不能走 openModal()；焦點管理本身則共用同一份實作，
+        // 避免兩套會漂移的邏輯。必須在 hidden = false 之後呼叫 —— 焦點候選是用
+        // offsetParent 過濾的，還沒顯示就會抓到空清單。
+        if (typeof window.trapModalFocus === 'function') {
+            window.trapModalFocus(modal, hideProModal);
+        } else {
+            // 不靜默略過：少了焦點陷阱，鍵盤使用者會 Tab 到 modal 背後的計算機
+            console.warn('[pro-ui] trapModalFocus 不存在，付款 modal 沒有焦點陷阱');
+        }
     }
 
     function hideProModal() {
-        document.getElementById('pro-modal').hidden = true;
+        const modal = document.getElementById('pro-modal');
+        modal.hidden = true;
         document.body.style.overflow = '';
+        // 焦點還原到當初開啟 modal 的那顆按鈕，否則焦點會掉回 <body> 從頭開始
+        if (typeof window.releaseModalFocus === 'function') {
+            window.releaseModalFocus(modal);
+        }
     }
 
     /* =====================================================================

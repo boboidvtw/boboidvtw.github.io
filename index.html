@@ -46,7 +46,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.10.0",
+      "softwareVersion": "3.10.1",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }
@@ -3194,14 +3194,21 @@
         updateAngleBtn();
 
         // ========== Modal 無障礙：焦點管理 + 焦點陷阱 + Escape ==========
+        // v3.10.1：「怎麼顯示」與「焦點怎麼管」是兩件事。本檔的 modal 用 .active class，
+        // Pro 的付款 / 授權碼 modal（js/pro-ui.js）用 hidden 屬性 —— 兩套顯示機制。
+        // 焦點管理抽出來共用，而不是在 pro-ui.js 再寫一份會漂移的實作
+        // （這個 repo 已經因為「兩套 modal 機制」吃過一次虧：v3.10.0 修的輸入守衛
+        //  就是因為選擇器只認 .active 而漏掉 pro-modal）。
         let _modalLastFocus = null;
+        let _modalCloseFn = null;
         function _modalFocusables(modal) {
             return [...modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
                 .filter(el => el.offsetParent !== null);
         }
         function _modalKeydown(e) {
             const modal = e.currentTarget;
-            if (e.key === 'Escape') { closeModal(modal); return; }
+            // 關閉方式由開啟方注入：.active 的用 closeModal，hidden 屬性的用它自己的
+            if (e.key === 'Escape') { (_modalCloseFn || closeModal)(modal); return; }
             if (e.key !== 'Tab') return;
             const f = _modalFocusables(modal);
             if (!f.length) return;
@@ -3212,21 +3219,37 @@
                 e.preventDefault(); first.focus();
             }
         }
-        function openModal(modal) {
+        // 只管焦點，不管顯示。呼叫前 modal 必須已經是可見的 ——
+        // _modalFocusables() 用 offsetParent 過濾，還沒顯示就會抓到空清單。
+        function trapModalFocus(modal, closeFn) {
             _modalLastFocus = document.activeElement;
-            modal.classList.add('active');
+            _modalCloseFn = typeof closeFn === 'function' ? closeFn : null;
             modal.addEventListener('keydown', _modalKeydown);
             const f = _modalFocusables(modal);
             if (f.length) f[0].focus();
         }
-        function closeModal(modal) {
-            modal.classList.remove('active');
+
+        function releaseModalFocus(modal) {
             modal.removeEventListener('keydown', _modalKeydown);
+            _modalCloseFn = null;
             if (_modalLastFocus && typeof _modalLastFocus.focus === 'function') {
                 _modalLastFocus.focus();
             }
             _modalLastFocus = null;
         }
+
+        function openModal(modal) {
+            modal.classList.add('active');
+            trapModalFocus(modal);
+        }
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            releaseModalFocus(modal);
+        }
+
+        // pro-ui.js 是獨立的 defer 檔案，靠 window 取用這兩個
+        window.trapModalFocus = trapModalFocus;
+        window.releaseModalFocus = releaseModalFocus;
 
         // ========== Help Modal ==========
         const helpModal = document.getElementById('helpModal');
@@ -6314,13 +6337,13 @@
     <!-- =====================================================================
          PRO UPGRADE MODULE — v1.0
          ===================================================================== -->
-    <div id="pro-modal" class="pro-modal-overlay" hidden>
+    <div id="pro-modal" class="pro-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pro-modal-title" hidden>
         <div class="pro-modal-content">
             <button class="pro-close" onclick="hideProModal()" aria-label="關閉">×</button>
 
             <div class="pro-header">
                 <div class="pro-icon">✨</div>
-                <h2>升級到 <span class="pro-brand">∑ Calc Pro</span></h2>
+                <h2 id="pro-modal-title">升級到 <span class="pro-brand">∑ Calc Pro</span></h2>
                 <p class="pro-tagline">解鎖完整的數學視覺化體驗</p>
             </div>
 
@@ -6416,6 +6439,6 @@
     <script defer src="js/license-api.js?v=3.3.1"></script>
     <script defer src="js/pro-manager.js?v=3.3.1"></script>
     <script defer src="js/paypal-integration.js?v=3.3.2"></script>
-    <script defer src="js/pro-ui.js?v=3.3.1"></script>
+    <script defer src="js/pro-ui.js?v=3.3.2"></script>
 </body>
 </html>

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.10.1] - 2026-08-14 — A11y: 付款 / 授權碼 modal 的焦點陷阱
+
+v3.10.0 修掉了「pro-modal 開著時打字與貼上會灌進背景計算機」（安全面），但**鍵盤焦點**仍會跑出視窗外 —— 這是同一個根因（`#pro-modal` 用 `hidden` 屬性切換、不帶 `.active`，與本檔其餘 modal 是兩套顯示機制）的另一半。
+
+### ♿ A11y：焦點管理
+
+- **抽出 `trapModalFocus()` / `releaseModalFocus()`**：把「怎麼顯示」與「焦點怎麼管」分開。`openModal()` / `closeModal()`（`.active` 機制）與 `showProModal()` / `hideProModal()`（`hidden` 機制）現在共用同一份焦點實作，而不是在 `js/pro-ui.js` 再寫一份會漂移的。這個 repo 已經因為「兩套 modal 機制」吃過一次虧，不再增加第二處。
+- `_modalKeydown` 的 Escape 改為呼叫**注入的**關閉函式（`.active` 的用 `closeModal`，`hidden` 的用 `hideProModal`），而不是寫死一種。
+- 開啟時焦點移入 modal、`Tab` / `Shift+Tab` 在 modal 內循環、關閉後焦點還原到當初的觸發按鈕。四條關閉路徑（`×` 按鈕、點背景、modal 內 Escape、pro-ui.js 既有的 document 層 Escape）全部涵蓋，因為它們都收斂在 `hideProModal()`。
+- `#pro-modal` 補上 `role="dialog"` / `aria-modal="true"` / `aria-labelledby`（標題加 `id="pro-modal-title"`）。
+- `pro-ui.js` 取不到 `window.trapModalFocus` 時 `console.warn` 而不是靜默略過 —— 少了焦點陷阱是使用者看不見的失效。
+
+### ✅ 驗證
+
+- 焦點陷阱：開啟後焦點落在 modal 內、`Tab` 從最後一個循環回第一個、`Shift+Tab` 從第一個回到最後一個、Escape 關閉後焦點還原到 `.pro-badge-btn`、`body` 的 `overflow` 復原。
+- **對照組**：先 `releaseModalFocus()` 解除陷阱、modal 仍開著，同一個 `Tab` 事件就不再循環 —— 確認循環行為確實來自新加的陷阱，不是瀏覽器本來就會那樣。
+- **modal 轉場**（唯一會交接 `_modalLastFocus` 的路徑）：pricing modal →「復原授權」→ pro-modal，焦點正確移入 pro-modal，關閉後仍還原到最初的 `.pro-badge-btn`。
+- 回歸：help modal（`.active` 機制）的焦點陷阱、Escape、焦點還原皆未受重構影響；v3.10.0 的輸入守衛仍成立（pro-modal 開著時鍵盤與貼上不進計算機）；記憶鍵與貼上在 modal 全關後恢復正常；`tests/` 12 個測試全綠。
+
+### 🔧 Chore
+
+- `js/pro-ui.js` 的 cache-bust 由 `?v=3.3.1` bump 到 `?v=3.3.2` —— 改了這支檔案而不 bump，瀏覽器 HTTP cache 會繼續餵舊版（v3.8.1 就是這樣出事的）。SW `CACHE_NAME` 同步 v3.10.1。
+
 ## [3.10.0] - 2026-08-14 — Feat: 記憶鍵 M+/M−/MR/MC + 剪貼簿貼上（含一個 CRITICAL 安全修復）
 
 補上兩件「一台計算機本來就該有、這台卻一直沒有」的事，並在安全審查時挖出一個**既有的 CRITICAL XSS**（見下方安全段，與本版新功能無關但一併修掉）。
