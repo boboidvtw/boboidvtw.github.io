@@ -18,7 +18,7 @@
          [WARNING] 新增任何外部資源（換匯率 API、加字型 CDN…）都要同步更新這裡，
          否則會被靜默擋掉。沒有 CI 在守這件事。 -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.paypal.com https://*.paypalobjects.com; connect-src 'self' https://open.er-api.com https://api.exchangerate-api.com https://api.moneyai168.com https://*.workers.dev https://*.paypal.com https://*.paypalobjects.com; frame-src https://*.paypal.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>∑ Calc - 超強萬能計算機 | 公式庫、函數繪圖、單位匯率換算</title>
     <meta name="description" content="∑ Calc 是一款免費、零依賴的線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。支援離線使用，單一 HTML 檔案，開箱即用。">
     <meta name="keywords" content="計算機,科學計算機,公式庫,函數繪圖,單位換算,匯率換算,線上計算機,calculator,formula,graphing">
@@ -62,7 +62,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.10.3",
+      "softwareVersion": "3.11.0",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }
@@ -142,6 +142,8 @@
             /* 固定深色文字，不隨主題翻轉：用於實心強調色按鈕上的文字。
                白字對 --primary / --green 這類亮底只有 2.4–2.5:1，比在淺色主題消失更早出事。 */
             --text-on-accent: #0f172a;
+            /* v3.11.0：行動版 sticky header 用 -var 的負 margin 打滿寬，不能與 body 內距各寫一份 */
+            --page-pad-x: 20px;
         }
 
         body {
@@ -150,7 +152,7 @@
             color: var(--text-dark);
             transition: background 0.3s;
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px var(--page-pad-x);
         }
 
         body.light {
@@ -203,6 +205,147 @@
             transition: all 0.2s;
         }
         .lang-selector:hover { background: var(--primary); }
+
+        /* ===== v3.11.0 行動版功能選單（三槓下拉面板）=====
+           桌機完全不出現；≤768px 取代 .controls / .tabs / .calc-cats 三列（共 237px）。
+           三槓圖示的開合狀態、選單項目的啟用狀態，全部由 aria 屬性驅動樣式，
+           不另外掛 .active class —— 視覺與無障礙狀態只能有一個來源。 */
+        .nav-toggle {
+            display: none;
+            align-items: center; gap: 10px;
+            min-height: 44px; padding: 8px 14px;
+            background: var(--bg-dark-tertiary);
+            border: 1px solid var(--border-interactive);
+            border-radius: 12px;
+            color: var(--text-dark);
+            font-size: 15px; font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .nav-toggle[aria-expanded="true"] {
+            background: rgba(6, 182, 212, 0.14);
+            border-color: var(--border-accent);
+            color: var(--primary-text);
+        }
+        .nav-toggle-label {
+            max-width: 8em;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        /* 三槓：span 本身是中間那條，::before / ::after 是上下兩條 */
+        .nav-toggle-icon {
+            position: relative; flex: none;
+            width: 18px; height: 2px; border-radius: 2px;
+            background: currentColor;
+            transition: background 0.2s;
+        }
+        .nav-toggle-icon::before,
+        .nav-toggle-icon::after {
+            content: ''; position: absolute; left: 0;
+            width: 18px; height: 2px; border-radius: 2px;
+            background: currentColor;
+            transition: transform 0.2s, top 0.2s;
+        }
+        .nav-toggle-icon::before { top: -6px; }
+        .nav-toggle-icon::after  { top: 6px; }
+        .nav-toggle[aria-expanded="true"] .nav-toggle-icon { background: transparent; }
+        .nav-toggle[aria-expanded="true"] .nav-toggle-icon::before { top: 0; transform: rotate(45deg); }
+        .nav-toggle[aria-expanded="true"] .nav-toggle-icon::after  { top: 0; transform: rotate(-45deg); }
+
+        .nav-scrim {
+            display: none;
+            position: fixed; inset: 0; z-index: 94;
+            background: rgba(15, 23, 42, 0.45);
+        }
+
+        .nav-menu {
+            display: none;
+            /* 對齊三槓鈕的右緣，而不是螢幕邊 —— header 的水平內距同樣是 --page-pad-x */
+            position: absolute; top: calc(100% + 6px); right: var(--page-pad-x); z-index: 96;
+            width: min(300px, calc(100vw - 24px));
+            /* 這份清單就是「上下滾動的列表」—— 高度封頂後由自己捲，不去捲整頁。
+               dvh 那行給支援的瀏覽器，不支援的就沿用上一行的 vh。 */
+            max-height: min(68vh, 560px);
+            max-height: min(68dvh, 560px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding: 6px 0;
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+        }
+        body.light .nav-menu { box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18); }
+
+        .nav-section + .nav-section { border-top: 1px solid var(--border-dark); margin-top: 4px; padding-top: 4px; }
+        .nav-section-title {
+            padding: 8px 16px 4px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.09em;
+            color: var(--text-dark-secondary);
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; min-height: 48px;
+            padding: 10px 16px;
+            background: none; border: none;
+            border-left: 3px solid transparent;
+            text-align: left;
+            color: var(--text-dark);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .nav-item[aria-checked="true"] {
+            border-left-color: var(--border-accent);
+            background: rgba(6, 182, 212, 0.12);
+            color: var(--primary-text);
+        }
+        .nav-item-icon { flex: none; width: 22px; font-size: 17px; text-align: center; }
+        .nav-item-value {
+            margin-left: auto;
+            font-size: 13px; font-weight: 700;
+            color: var(--primary-text);
+            font-family: 'Courier New', monospace;
+        }
+        .nav-item:focus-visible {
+            outline: 2px solid var(--border-accent);
+            outline-offset: -3px;
+        }
+
+        /* 語言列：4 個選項橫排，仍是 ≥44px 的觸控目標 */
+        .nav-langs {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 6px; padding: 4px 16px 10px;
+        }
+        .nav-lang {
+            min-height: 44px; padding: 8px 6px;
+            background: var(--bg-dark-tertiary);
+            border: 1px solid var(--border-interactive);
+            border-radius: 10px;
+            color: var(--text-dark);
+            font-family: inherit; font-size: 13px; font-weight: 600;
+            cursor: pointer;
+        }
+        .nav-lang[aria-checked="true"] {
+            background: rgba(6, 182, 212, 0.16);
+            border-color: var(--border-accent);
+            color: var(--primary-text);
+        }
+        .nav-lang:focus-visible { outline: 2px solid var(--border-accent); outline-offset: -3px; }
+
+        /* 觸控裝置沒有真的 hover：不包這層的話，點完按鈕會一直保持 hover 樣式 */
+        @media (hover: hover) {
+            .nav-toggle:hover { border-color: var(--border-accent); }
+            .nav-item:hover { background: rgba(6, 182, 212, 0.10); color: var(--primary-text); }
+            .nav-lang:hover { border-color: var(--border-accent); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .nav-toggle, .nav-toggle-icon,
+            .nav-toggle-icon::before, .nav-toggle-icon::after,
+            .nav-item { transition: none; }
+        }
 
         .theme-btn {
             background: var(--bg-dark-tertiary);
@@ -1086,9 +1229,50 @@
          *      只保留 5 顆關鍵鍵（π e ( ) ,）橫向佈局，min-height 44px 觸控標準。
          */
         @media (max-width: 768px) {
+            /* [P0] `1fr` 軌道的自動最小值是 min-content，而 .panel 的 min-content 被 4 欄鍵盤
+               撐到 411px —— 軌道因此拒絕縮到容器的 335px，整頁橫向溢出到 478px（375 寬時
+               超出 27%，320 寬時超出 49%），運算子整欄跑到畫面外。minmax(0, …) 才允許縮。
+               [WARNING] 這條規則本身帶 !important，且元素上還有 inline 的
+               grid-template-columns，改寫時必須一併帶 !important 才蓋得過去。 */
             .main-grid {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: minmax(0, 1fr) !important;
             }
+
+            /* ===== v3.11.0 行動版：三列導覽收進三槓選單 =====
+               .controls（7 顆，98px）+ .tabs（51px）+ .calc-cats（35px）合計 237px，
+               在 812 高的螢幕上把鍵盤第一列壓到 505px（62%），等號鍵落在摺線下。
+               這三列在此隱藏，改由 #navMenu 呈現；DOM 節點保留，事件與狀態仍在原處。 */
+            .controls, .tabs, .calc-cats { display: none !important; }
+            .nav-toggle { display: inline-flex; }
+            .nav-menu:not([hidden]) { display: block; }
+            .nav-scrim:not([hidden]) { display: block; }
+
+            :root { --page-pad-x: 12px; }
+
+            /* header 收成 sticky 精簡列：三槓要一直按得到，否則捲到鍵盤時就沒有導覽了 */
+            .header {
+                position: sticky; top: 0; z-index: 95;
+                flex-wrap: nowrap;
+                margin: -20px calc(-1 * var(--page-pad-x)) 12px;
+                padding: calc(8px + env(safe-area-inset-top)) var(--page-pad-x) 8px;
+                background: var(--bg-dark-secondary);
+                border-bottom: 1px solid var(--border-dark);
+            }
+            .title { font-size: 24px; letter-spacing: -0.5px; }
+
+            /* 首屏瘦身：省下來的高度直接還給鍵盤 */
+            .panel { padding: 14px; border-radius: 18px; }
+            .display { padding: 14px 16px; min-height: 64px; margin-bottom: 12px; }
+            .display-text { font-size: 28px; }
+            .button-grid { gap: 8px; }
+            .btn { padding: 14px 8px; }
+
+            /* iOS Safari 對 font-size < 16px 的欄位會在聚焦時自動放大整頁，而且不會縮回來 */
+            input, select, textarea { font-size: 16px; }
+
+            /* 沒有這行，數字鍵連按會吃到 double-tap zoom 的延遲 */
+            .btn, .mem-btn, .nav-item, .nav-lang, .nav-toggle { touch-action: manipulation; }
+
             /* 主 sidebar：底部固定浮動列 */
             .main-sidebar {
                 display: block !important;
@@ -1794,7 +1978,18 @@
                 <button class="theme-btn" id="angleBtn" title="角度 / 弧度切換" style="font-size: 13px; font-weight: 700;">DEG</button>
                 <button class="theme-btn" id="themeBtn" aria-label="切換深色 / 淺色主題">☀️</button>
             </div>
+
+            <!-- v3.11.0 行動版功能選單。桌機 display:none，≤768px 才取代 .controls / .tabs / .calc-cats。
+                 面板內容不是第二份 markup —— 每次開啟時從上述三處的既有節點投影產生
+                 （renderNavMenu），所以標籤、i18n、啟用狀態、Pro 徽章文字永遠只有一個來源。 -->
+            <button class="nav-toggle" id="navToggle" type="button"
+                    aria-expanded="false" aria-controls="navMenu" aria-haspopup="true">
+                <span class="nav-toggle-label" id="navToggleLabel">計算</span>
+                <span class="nav-toggle-icon" aria-hidden="true"></span>
+            </button>
+            <div class="nav-menu" id="navMenu" role="menu" aria-labelledby="navToggle" hidden></div>
         </div>
+        <div class="nav-scrim" id="navScrim" hidden></div>
 
         <div class="main-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <!-- 主計算機 -->
@@ -2660,6 +2855,10 @@
             'zh-TW': {
                 tab_calc: '計算', tab_unit: '單位', tab_currency: '匯率',
                 tab_formula: '公式', tab_saved: '儲存',
+                nav_view: '功能頁', nav_keypad: '鍵盤', nav_tools: '工具', nav_settings: '設定',
+                nav_open: '功能選單', nav_help: '使用說明', nav_graph: '函數繪圖', nav_support: '贊助',
+                nav_angle: '角度單位', nav_theme: '主題', nav_theme_dark: '深色', nav_theme_light: '淺色',
+                nav_lang: '語言',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '新增',
                 mem_clear: '記憶清除', mem_recall: '記憶讀取',
                 mem_add: '記憶加上目前的值', mem_sub: '記憶減去目前的值',
@@ -2688,6 +2887,10 @@
             'en': {
                 tab_calc: 'Calc', tab_unit: 'Unit', tab_currency: 'Exchange',
                 tab_formula: 'Formula', tab_saved: 'Saved',
+                nav_view: 'Views', nav_keypad: 'Keypad', nav_tools: 'Tools', nav_settings: 'Settings',
+                nav_open: 'Menu', nav_help: 'Help', nav_graph: 'Graphing', nav_support: 'Support',
+                nav_angle: 'Angle unit', nav_theme: 'Theme', nav_theme_dark: 'Dark', nav_theme_light: 'Light',
+                nav_lang: 'Language',
                 btn_clear: 'C', btn_backspace: '←', btn_add: 'Add',
                 mem_clear: 'Clear memory', mem_recall: 'Recall memory',
                 mem_add: 'Add displayed value to memory', mem_sub: 'Subtract displayed value from memory',
@@ -2716,6 +2919,10 @@
             'zh-CN': {
                 tab_calc: '计算', tab_unit: '单位', tab_currency: '汇率',
                 tab_formula: '公式', tab_saved: '保存',
+                nav_view: '功能页', nav_keypad: '键盘', nav_tools: '工具', nav_settings: '设置',
+                nav_open: '功能菜单', nav_help: '使用说明', nav_graph: '函数绘图', nav_support: '赞助',
+                nav_angle: '角度单位', nav_theme: '主题', nav_theme_dark: '深色', nav_theme_light: '浅色',
+                nav_lang: '语言',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '添加',
                 mem_clear: '记忆清除', mem_recall: '记忆读取',
                 mem_add: '记忆加上当前的值', mem_sub: '记忆减去当前的值',
@@ -2744,6 +2951,10 @@
             'ja': {
                 tab_calc: '計算', tab_unit: '単位', tab_currency: 'レート',
                 tab_formula: '公式', tab_saved: '保存',
+                nav_view: '機能', nav_keypad: 'キーパッド', nav_tools: 'ツール', nav_settings: '設定',
+                nav_open: 'メニュー', nav_help: '使い方', nav_graph: 'グラフ', nav_support: '支援',
+                nav_angle: '角度の単位', nav_theme: 'テーマ', nav_theme_dark: 'ダーク', nav_theme_light: 'ライト',
+                nav_lang: '言語',
                 btn_clear: 'C', btn_backspace: '←', btn_add: '追加',
                 mem_clear: 'メモリクリア', mem_recall: 'メモリ呼び出し',
                 mem_add: '表示中の値をメモリに加算', mem_sub: '表示中の値をメモリから減算',
@@ -3178,6 +3389,8 @@
                 const key = el.dataset.i18nAria;
                 el.setAttribute('aria-label', t(key, el.getAttribute('aria-label')));
             });
+            // 三槓鈕上顯示的是「目前在哪個分頁」，它的字來自 .tab，所以切語言要一起更新
+            syncNavToggleLabel();
         }
 
         langSelector.addEventListener('change', e => updateLanguage(e.target.value));
@@ -5618,6 +5831,241 @@
                 else if (tabName === 'currency') { renderCurrencyGrid(); syncFromTWD(); if (Object.keys(exchangeRates).length === 0) fetchExchangeRates(); }
             });
         });
+
+        // ========== v3.11.0 行動版功能選單（三槓下拉面板）==========
+        // 這裡刻意排在 Main Tabs 之後：同一個 .tab 上的 handler 依註冊順序執行，
+        // 排在前面的話 syncNavToggleLabel() 會讀到還沒更新的 .active。
+        //
+        // 設計前提：選單不是第二份 markup。每次開啟都從 .tabs / .calc-cats / .controls
+        // 的既有節點重新投影，所以標籤、i18n、啟用狀態、Pro 徽章文字（'✨ 升級 Pro' /
+        // '💎 Pro' / '⏱️ 試用 N 天'，由 pro-ui.js 改寫）永遠只有一個來源，不會漂移。
+        const navToggle = document.getElementById('navToggle');
+        const navToggleLabel = document.getElementById('navToggleLabel');
+        const navMenu = document.getElementById('navMenu');
+        const navScrim = document.getElementById('navScrim');
+        const navMq = window.matchMedia('(max-width: 768px)');
+        let navOpen = false;
+        let navSecSeq = 0;
+
+        function navEl(tag, cls, text) {
+            const el = document.createElement(tag);
+            if (cls) el.className = cls;
+            if (text != null) el.textContent = text;
+            return el;
+        }
+
+        function navSection(titleText) {
+            const sec = navEl('div', 'nav-section');
+            const head = navEl('div', 'nav-section-title', titleText);
+            head.id = 'navSec' + (++navSecSeq);
+            sec.setAttribute('role', 'group');
+            sec.setAttribute('aria-labelledby', head.id);
+            sec.appendChild(head);
+            return sec;
+        }
+
+        // radio 型（功能頁 / 鍵盤 / 語言）帶 aria-checked，樣式也由它驅動 ——
+        // 視覺的「目前選中」與無障礙的「目前選中」是同一個屬性，不會各說各話。
+        function navItem(opt) {
+            const b = navEl('button', opt.cls || 'nav-item');
+            b.type = 'button';
+            b.setAttribute('role', opt.checked == null ? 'menuitem' : 'menuitemradio');
+            if (opt.checked != null) b.setAttribute('aria-checked', opt.checked ? 'true' : 'false');
+            if (opt.icon) {
+                const ic = navEl('span', 'nav-item-icon', opt.icon);
+                ic.setAttribute('aria-hidden', 'true');   // 圖示只是重複，名稱交給文字
+                b.appendChild(ic);
+            }
+            b.appendChild(navEl('span', 'nav-item-label', opt.label));
+            if (opt.value) b.appendChild(navEl('span', 'nav-item-value', opt.value));
+            b.addEventListener('click', opt.onSelect);
+            return b;
+        }
+
+        // 動作會開 modal 或換頁的一律先關選單再執行：關閉時焦點已還給三槓鈕，
+        // trapModalFocus() 記下的 _modalLastFocus 才不會是一個馬上被丟棄的節點。
+        function navRunAndClose(fn) {
+            closeNav();
+            fn();
+        }
+
+        function renderNavMenu() {
+            navMenu.textContent = '';
+            navSecSeq = 0;
+
+            // --- 功能頁：原 .tabs
+            const secView = navSection(t('nav_view', '功能頁'));
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                secView.appendChild(navItem({
+                    label: tab.textContent.trim(),
+                    checked: tab.classList.contains('active'),
+                    onSelect: () => navRunAndClose(() => tab.click())
+                }));
+            });
+            navMenu.appendChild(secView);
+
+            // --- 鍵盤：原 .calc-cats。這些鍵盤只長在計算分頁裡，
+            //     所以從別的分頁選鍵盤時要先切回計算，否則按了沒有任何反應。
+            const secKeypad = navSection(t('nav_keypad', '鍵盤'));
+            document.querySelectorAll('.calc-cats .calc-cat').forEach(cat => {
+                secKeypad.appendChild(navItem({
+                    label: cat.textContent.trim(),
+                    checked: cat.classList.contains('active'),
+                    onSelect: () => navRunAndClose(() => {
+                        const calcTab = document.querySelector('.tab[data-tab="calc"]');
+                        if (calcTab && !calcTab.classList.contains('active')) calcTab.click();
+                        cat.click();
+                    })
+                }));
+            });
+            navMenu.appendChild(secKeypad);
+
+            // --- 工具：圖示直接沿用 header 按鈕自己的字面，補上文字說明
+            const secTools = navSection(t('nav_tools', '工具'));
+            [
+                { id: 'helpBtn',   key: 'nav_help',    fallback: '使用說明' },
+                { id: 'graphBtn',  key: 'nav_graph',   fallback: '函數繪圖' },
+                { id: 'supportBtn', key: 'nav_support', fallback: '贊助' }
+            ].forEach(tool => {
+                const btn = document.getElementById(tool.id);
+                if (!btn) return;
+                secTools.appendChild(navItem({
+                    icon: btn.textContent.trim(),
+                    label: t(tool.key, tool.fallback),
+                    onSelect: () => navRunAndClose(() => btn.click())
+                }));
+            });
+            const proBtn = document.getElementById('proBadgeBtn');
+            if (proBtn) {
+                secTools.appendChild(navItem({
+                    label: proBtn.textContent.trim(),
+                    onSelect: () => navRunAndClose(() => proBtn.click())
+                }));
+            }
+            navMenu.appendChild(secTools);
+
+            // --- 設定：這些是切換，按完留在選單裡重畫，不關閉
+            const secSet = navSection(t('nav_settings', '設定'));
+            secSet.appendChild(navItem({
+                label: t('nav_angle', '角度單位'),
+                value: angleBtn.textContent.trim(),
+                onSelect: () => { angleBtn.click(); refreshNavMenu(); }
+            }));
+            secSet.appendChild(navItem({
+                label: t('nav_theme', '主題'),
+                value: document.body.classList.contains('light')
+                    ? t('nav_theme_light', '淺色') : t('nav_theme_dark', '深色'),
+                onSelect: () => { themeBtn.click(); refreshNavMenu(); }
+            }));
+            navMenu.appendChild(secSet);
+
+            const secLang = navSection(t('nav_lang', '語言'));
+            const langWrap = navEl('div', 'nav-langs');
+            // role=menu 底下的 menuitemradio 必須被 menu 或 group 擁有，
+            // 但巢狀 group 沒有名字時螢幕閱讀器會報一個無名分組 —— 指回分區標題。
+            langWrap.setAttribute('role', 'group');
+            langWrap.setAttribute('aria-labelledby', secLang.getAttribute('aria-labelledby'));
+            [...langSelector.options].forEach(opt => {
+                langWrap.appendChild(navItem({
+                    cls: 'nav-lang',
+                    label: opt.textContent.trim(),
+                    checked: opt.value === langSelector.value,
+                    onSelect: () => {
+                        if (opt.value !== langSelector.value) {
+                            langSelector.value = opt.value;
+                            langSelector.dispatchEvent(new Event('change'));
+                        }
+                        refreshNavMenu();
+                    }
+                }));
+            });
+            secLang.appendChild(langWrap);
+            navMenu.appendChild(secLang);
+        }
+
+        function navItems() {
+            return [...navMenu.querySelectorAll('.nav-item, .nav-lang')];
+        }
+
+        // 設定類的切換會改到選單自己的內容（DEG↔RAD、主題、語言），整份重畫。
+        // 兩件事必須自己接回來，否則每按一次設定都像是選單被重開了一次：
+        //   1. scrollTop —— 清空 children 會歸零，捲到「設定」再按一下就被彈回「功能頁」。
+        //   2. 焦點 —— 只在焦點原本就在選單內時才還原。滑鼠／觸控點按鈕在 macOS 與 iOS
+        //      不會讓按鈕獲得焦點（activeElement 是 body），這時硬 focus 第一項會平白
+        //      給沒有在用鍵盤的人一個焦點環，還會把清單捲回頂端。
+        function refreshNavMenu() {
+            if (!navOpen) return;
+            const hadFocus = navMenu.contains(document.activeElement);
+            const idx = hadFocus ? navItems().indexOf(document.activeElement) : -1;
+            const scrollTop = navMenu.scrollTop;
+            renderNavMenu();
+            navMenu.scrollTop = scrollTop;
+            if (idx >= 0) {
+                const after = navItems();
+                (after[idx] || after[after.length - 1]).focus();
+            }
+        }
+
+        function syncNavToggleLabel() {
+            if (!navToggleLabel) return;
+            const active = document.querySelector('.tabs .tab.active');
+            if (!active) return;
+            // 「儲存 (3)」的字被拆成 <span data-i18n>儲存</span> + 計數，
+            // 三槓上只放分頁名，計數留給選單裡的那一列。
+            const named = active.querySelector('[data-i18n]');
+            const label = (named || active).textContent.trim();
+            navToggleLabel.textContent = label;
+            navToggle.setAttribute('aria-label', label + ' · ' + t('nav_open', '功能選單'));
+        }
+
+        function openNav() {
+            if (navOpen) return;
+            navOpen = true;
+            renderNavMenu();
+            navMenu.hidden = false;
+            navScrim.hidden = false;
+            navToggle.setAttribute('aria-expanded', 'true');
+            document.addEventListener('keydown', navKeydown, true);
+            const first = navItems()[0];
+            if (first) first.focus();
+        }
+
+        function closeNav(restoreFocus) {
+            if (!navOpen) return;
+            navOpen = false;
+            navMenu.hidden = true;
+            navScrim.hidden = true;
+            navToggle.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('keydown', navKeydown, true);
+            if (restoreFocus !== false) navToggle.focus();
+        }
+
+        // 這是選單不是 modal：不做焦點陷阱，Tab 移出就關閉。
+        function navKeydown(e) {
+            if (!navOpen) return;
+            if (e.key === 'Escape') { e.preventDefault(); closeNav(); return; }
+            if (e.key === 'Tab') { closeNav(); return; }
+            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+            e.preventDefault();
+            const items = navItems();
+            if (!items.length) return;
+            const i = items.indexOf(document.activeElement);
+            const step = e.key === 'ArrowDown' ? 1 : -1;
+            items[(i + step + items.length) % items.length].focus();
+        }
+
+        navToggle.addEventListener('click', () => { navOpen ? closeNav() : openNav(); });
+        navScrim.addEventListener('click', () => closeNav());
+        // 轉成橫向或放大到桌機寬度時，.controls / .tabs 會重新出現 —— 選單必須跟著收掉
+        navMq.addEventListener('change', e => { if (!e.matches) closeNav(false); });
+        // 站上有 #/support 與 #calc= 兩種深連結，hash 一變就等同換頁 ——
+        // 選單留在原地會變成蓋在新開的 modal 前面的孤兒。
+        window.addEventListener('hashchange', () => closeNav(false));
+        // 分頁換了，三槓上的名字要跟著換
+        document.querySelectorAll('.tabs .tab').forEach(tab => {
+            tab.addEventListener('click', syncNavToggleLabel);
+        });
+        syncNavToggleLabel();
 
         // ========== Formula Category Filter ==========
         function setFormulaSections(isCustomTab) {

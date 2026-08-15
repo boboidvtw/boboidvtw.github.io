@@ -7,6 +7,107 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.11.0] - 2026-08-15 — 行動版：三槓功能選單 + 修掉整頁橫向溢出
+
+### 🐛 修正（P0）：≤768px 整頁橫向溢出
+
+行動版的 `.main-grid` 用 `grid-template-columns: 1fr`，而 **`1fr` 軌道的自動最小值是
+min-content**。`.panel` 的 min-content 被裡面 4 欄鍵盤撐到 411px，容器只有 335px，軌道
+因此拒絕縮小 —— 375px 寬時整頁 `scrollWidth` 是 **478px（超出 27%）**，320px 寬時同樣
+478px（**超出 49%**）。實際後果是運算子整欄（`÷ × − + =` 與 `C ←`）跑到畫面外，
+**手機上必須橫捲才點得到等號鍵**。單位分頁更寬，到 513px。
+
+改成 `minmax(0, 1fr)`。五個分頁 × 320 / 375 / 414 三個寬度實測 `scrollWidth === clientWidth`。
+
+> ⚠️ 這條規則本身帶 `!important`，且 `.main-grid` 元素上還有 inline 的
+> `grid-template-columns` —— 覆寫時必須一併帶 `!important`，否則毫無作用。
+
+### ✨ 新增：行動版三槓功能選單
+
+≤768px 時，`.controls`（7 顆按鈕，98px）、`.tabs`（51px）、`.calc-cats`（35px）共 **237px**
+收進 header 右側的三槓下拉面板，內部垂直捲動，分五區：功能頁 / 鍵盤 / 工具 / 設定 / 語言。
+
+- **選單不是第二份 markup。** 每次開啟都從上述三處的既有節點重新投影產生，所以標籤、i18n、
+  啟用狀態、Pro 徽章文字（`✨ 升級 Pro` / `💎 Pro` / `⏱️ 試用 N 天`，由 `pro-ui.js` 改寫）
+  永遠只有一個來源，不會出現「header 改了、選單還是舊的」這種漂移。
+- 三槓鈕上顯示目前所在分頁名，解掉 hamburger 最常見的「不知道自己在哪」問題。
+- header 在行動版改為 sticky，否則捲到鍵盤時就沒有導覽入口。
+- 從別的分頁選鍵盤分類會自動切回計算分頁 —— 那些鍵盤只長在計算分頁裡，不切的話按了沒反應。
+- 鍵盤操作：Escape 關閉並還原焦點、上下鍵循環、Tab 移出即關閉（選單不做焦點陷阱）、
+  點遮罩關閉。開 modal 前一律先關選單，讓 `trapModalFocus()` 記到的是三槓鈕而不是
+  一個馬上要被丟棄的節點。
+- 三槓圖示的開合與選單列的選中狀態都由 `aria-expanded` / `aria-checked` 驅動樣式，
+  不另外掛 class —— 視覺狀態與無障礙狀態只有一個來源。
+
+**首屏效果（375×812）**：鍵盤第一列從 505px（佔視窗 62%）提前到 226px，
+首屏可見按鍵從 **16/27 變成 27/27**，等號鍵不再需要捲動。按鍵也從 63px 寬變 74px。
+
+桌機完全不受影響：兩欄版面、`.controls` / `.tabs` / `.calc-cats` 照舊，
+header 維持 static，三槓鈕與面板即使強制 `hidden=false` 也是 `display: none`。
+
+### ♿ 行動版觸控與 iOS 修正
+
+- `viewport` 補上 `viewport-fit=cover`。**底部浮動快捷列裡的 `env(safe-area-inset-bottom)`
+  在此之前一直是 0** —— 沒有這個值 `env()` 不會生效，等於那段程式碼從沒作用過，
+  快捷鍵會壓在 Home indicator 底下。
+- ≤768px 的 `input / select / textarea` 字級拉到 16px。低於 16px 時
+  **iOS Safari 一聚焦就自動放大整頁而且不會縮回來**，站上原本有 20 個這種欄位。
+- 按鈕加 `touch-action: manipulation`，去掉 double-tap zoom 造成的連按延遲。
+- 選單相關的 `:hover` 全部包進 `@media (hover: hover)`，避免觸控點完樣式黏著。
+- 選單所有觸控目標 ≥44px（分頁 / 鍵盤 / 工具 / 設定列 48px，語言 chip 44px）。
+
+### 📌 開發過程中被實測抓掉的兩個缺陷
+
+1. **重畫選單會把捲動位置彈回頂端。** 設定類切換（DEG↔RAD / 主題 / 語言）會整份重畫，
+   清空 children 讓 `scrollTop` 歸零 —— 捲到「設定」按一下就被彈回「功能頁」。改成重畫前後接回。
+2. **焦點還原會誤把焦點推進清單。** 原本無條件把焦點放回同索引，但
+   **macOS 與 iOS 點按 `<button>` 不會讓它獲得焦點**（`activeElement` 是 `body`），
+   於是索引是 -1、退回第一項，平白給沒在用鍵盤的人一個焦點環還把清單捲回頂端。
+   改成只在焦點原本就在選單內時才還原。
+
+### ♿ a11y 閘門（`design:accessibility-review`）抓到並修掉的三項
+
+- **焦點環在淺色主題不合格。** 原本寫 `outline: 2px solid var(--primary)`，
+  而 `--primary`（`#06b6d4`）對淺色主題的白底只有 **2.43:1**，低於 WCAG 1.4.11 對
+  焦點指示器要求的 3:1。這個 repo 早就為了同一個原因分出 `--border-accent`
+  （淺色主題覆寫成 `#0e7490`），改用它之後實測 **深色 6.03:1 / 淺色 5.36:1**。
+  選中列的左側標示條同樣改掉。
+- **工具列的圖示會被讀出來。** `❤`、`📈`、`?` 只是 header 按鈕字面的重複，
+  沒有 `aria-hidden` 時無障礙名稱會變成「紅色愛心 贊助」。補上後名稱乾淨地只剩「贊助」。
+- **語言那層 grid 是個沒有名字的巢狀 group。** `role=menu` 底下的 `menuitemradio`
+  必須被 menu 或 group 擁有，但無名分組會被螢幕閱讀器報成一個空殼；`aria-labelledby`
+  指回「語言」分區標題。
+
+實測通過：兩個主題 × 六類文字全部 ≥4.5:1（最低 6.13:1）、觸控目標全部 ≥44px、
+三槓圖示 7.87:1、選中標示條 ≥5.36:1。
+
+### 🎯 anti-slop 閘門（`/taste`）抓到並修掉的一項
+
+- **INT-007「選單缺少完整關閉路徑」**：規則要求非持久性浮層必須在 Escape、外部點擊、
+  重新點觸發鈕、**以及換頁**時關閉。站上有 `#/support` 與 `#calc=` 兩種深連結，
+  hash 一變就等同換頁 —— 原本選單會留在原地變成蓋在新開 modal 前面的孤兒。
+  補上 `hashchange` 關閉。
+
+其餘硬禁訊號掃描（`href="#"` / lorem / `user-scalable` / `maximum-scale` /
+`outline: none` / TODO）在本次 diff 中命中 0 筆（站上既有的 5 筆與這次改動無關）。
+
+### 🔧 其他
+
+- 頁面左右內距抽成 `--page-pad-x`（行動版 12px）：sticky header 要用負 margin 打滿寬，
+  兩處各寫一份數字遲早漂移。
+- 四語系新增 13 個 `nav_*` 鍵。
+- `sw.js` `CACHE_NAME` bump 到 `sigma-calc-v3.11.0`（不 bump 既有使用者拿不到這版）。
+
+### ⚠️ 已知未做
+
+- **計算分類（數學 / 工程 / 科學 / 物理 / 進位）本來就沒有 i18n**，選單裡照樣顯示繁中。
+  這是既有狀態，不是這次改出來的。
+- 繪圖 modal 的 `#graphCanvas` 屬性尺寸仍寫死 720×420，手機上是「能開但難用」，未處理。
+- iOS 專屬的三項（`viewport-fit` / 16px 欄位 / `touch-action`）是在 Chromium 上驗證版面無誤，
+  **實機 iPhone Safari 尚未實測**。
+
+---
+
 ## [3.10.3] - 2026-08-14 — Fix: #79 萬有引力回歸 Free
 
 ### 🔧 修正

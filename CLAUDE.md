@@ -53,17 +53,32 @@
 </body>
 ```
 
-### 響應式規則
+### 響應式規則（v3.11.0 更新）
 
 ```css
 /* 手機（≤ 768px）*/
 @media (max-width: 768px) {
-    .main-grid  { grid-template-columns: 1fr !important; }
-    .main-sidebar { display: none !important; }
+    /* 必須是 minmax(0, 1fr)，不能只寫 1fr */
+    .main-grid { grid-template-columns: minmax(0, 1fr) !important; }
+
+    /* 導覽三列收進三槓下拉選單 #navMenu */
+    .controls, .tabs, .calc-cats { display: none !important; }
+    .nav-toggle { display: inline-flex; }
 }
 ```
 
-**原則**：手機只顯示左欄主計算區，右欄 sidebar 完全隱藏。不要在手機版增加 sidebar 內容。
+**⚠️ `1fr` 是陷阱，不要改回去。** `1fr` 軌道的自動最小值是 min-content，而 `.panel`
+的 min-content 被裡面 4 欄鍵盤撐到 411px。容器只有 335px，軌道會拒絕縮 —— 375px 寬時
+整頁溢出到 478px、運算子整欄跑到畫面外。v3.11.0 修掉的就是這個。改寫時記得這條規則
+自己帶 `!important`，元素上還有 inline 的 `grid-template-columns`，不帶就毫無作用。
+
+**手機導覽**：`.controls`（7 顆 header 按鈕）、`.tabs`（5 個主分頁）、`.calc-cats`
+（5 個鍵盤分類）在 ≤768px 隱藏，改由 header 右側的三槓下拉面板呈現。
+**面板內容不要另外寫一份 markup** —— `renderNavMenu()` 每次開啟時從這三處的既有節點
+投影產生，加新按鈕到 `.controls` / `.tabs` / `.calc-cats` 就會自動出現在選單裡。
+
+**右欄 sidebar**：v3.5.2 起手機版不再是 `display: none`，而是底部固定浮動列
+（只留 `π e ( ) ,` 五顆快捷鍵），因為手機沒有它就閉合不了 `sin(` 這類函式括號。
 
 ---
 
