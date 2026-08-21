@@ -62,7 +62,7 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "免費線上科學計算機，內建 100 條公式庫、函數繪圖、3D 曲面、微積分可視化、單位換算與即時匯率。",
       "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-      "softwareVersion": "3.11.0",
+      "softwareVersion": "3.11.1",
       "inLanguage": ["zh-TW", "en", "zh-CN", "ja"],
       "author": { "@type": "Person", "name": "boboidvtw" }
     }
@@ -585,11 +585,21 @@
             font-size: 12.5px; color: var(--text-dark-secondary);
             text-align: center;
         }
-        .pricing-note a {
+        .pricing-note a,
+        .pricing-note-btn {
             color: var(--primary-text); text-decoration: none;
             border-bottom: 1px dashed currentColor;
         }
-        .pricing-note a:hover { color: var(--primary-dark); }
+        /* 「復原授權」是 JS 動作不是連結目的地，故用 <button>；以下把 UA 按鈕外觀歸零，
+           讓它與原本的 <a> 視覺一致，但保有 button 的語意、Enter/Space 行為與 AT 角色。 */
+        .pricing-note-btn {
+            background: none; border: none;
+            border-bottom: 1px dashed currentColor;
+            padding: 0; cursor: pointer;
+            font: inherit; line-height: inherit;
+        }
+        .pricing-note a:hover,
+        .pricing-note-btn:hover { color: var(--primary-dark); }
         .paypal-error {
             padding: 12px;
             background: rgba(239, 68, 68, 0.1);
@@ -857,9 +867,12 @@
             border: 1px solid var(--border-interactive);
             border-radius: 10px; padding: 8px 10px;
             color: var(--text-dark); font-size: 13px; font-weight: 600;
-            cursor: pointer; outline: none;
+            cursor: pointer;
         }
-        .unit-select:focus { border-color: var(--primary); }
+        /* WCAG 2.4.7：outline 只在「非鍵盤焦點」時移除，鍵盤焦點交給全站 :focus-visible 環。
+           換色用 --border-accent（淺色主題會覆寫成 #0e7490）；--primary 對 #f8fafc 只有 2.32:1。 */
+        .unit-select:focus:not(:focus-visible) { outline: none; }
+        .unit-select:focus { border-color: var(--border-accent); }
         body.light .unit-select { background: #f8fafc; }
         .unit-swap-row { text-align: center; margin: 6px 0; }
         .unit-swap-btn {
@@ -994,9 +1007,11 @@
             border: 1px solid var(--border-interactive);
             border-radius: 10px; padding: 8px 10px;
             color: var(--text-dark); font-size: 14px; font-weight: 600;
-            cursor: pointer; outline: none; max-width: 150px;
+            cursor: pointer; max-width: 150px;
         }
-        .foreign-select:focus { border-color: #10b981; }
+        /* 同 .unit-select：保留鍵盤焦點環。原本寫死的 #10b981 對淺色底只有 2.42:1，改用綠色 accent token。 */
+        .foreign-select:focus:not(:focus-visible) { outline: none; }
+        .foreign-select:focus { border-color: var(--border-accent-green); }
         body.light .foreign-select { background: #f8fafc; }
         .foreign-input { flex: 1; min-width: 0; border-color: var(--border-accent-green) !important; color: var(--green-text) !important; }
         .foreign-result {
@@ -1362,8 +1377,11 @@
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
         }
+        /* WCAG 1.4.11：換邊框色當焦點指示器需對相鄰色達 3:1。--primary 在淺色主題只有
+           2.22:1（對 --bg-dark-tertiary）／2.43:1（對 modal 白底），改用 --border-accent 得 4.89:1／5.36:1。 */
+        .graph-expr-input:focus:not(:focus-visible) { outline: none; }
         .graph-expr-input:focus {
-            outline: none; border-color: var(--primary);
+            border-color: var(--border-accent);
             box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
         }
         .graph-btn {
@@ -1663,6 +1681,10 @@
 
         /* ---------- Pro Modal Overlay ---------- */
         .pro-modal-overlay {
+            /* 這個 modal 的底色固定深色、不隨主題翻轉，所以 accent token 也必須釘回深色版：
+               淺色主題的 --border-accent (#0e7490) 落在 #1e293b 上只有 2.73:1，
+               釘成 #06b6d4 後為 6.03–7.35:1，合 WCAG 1.4.11。 */
+            --border-accent: #06b6d4;
             position: fixed; inset: 0; z-index: 9999;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
@@ -1873,8 +1895,11 @@
             letter-spacing: .05em;
             font-size: .95rem;
         }
+        /* Pro modal 底色固定深色（不隨主題翻轉），#f59e0b 對 modal 底實測 6.81–8.31:1，
+           顏色本身合格；此處只補回鍵盤焦點環。 */
+        .pro-license-input input:focus:not(:focus-visible) { outline: none; }
         .pro-license-input input:focus {
-            outline: none; border-color: #f59e0b;
+            border-color: #f59e0b;
             box-shadow: 0 0 0 3px rgba(245, 158, 11, .2);
         }
         .pro-license-input button {
@@ -1947,14 +1972,17 @@
             opacity: 0.6;
         }
 
-        /* ===== a11y：鍵盤焦點指示器（WCAG 2.4.7）===== */
+        /* ===== a11y：鍵盤焦點指示器（WCAG 2.4.7 + 1.4.11）=====
+           焦點環因 outline-offset 落在元件「外側」，相鄰色是面板／頁面底而非元件填色。
+           原本用 --primary：深色主題 4.26–7.35:1 合格，淺色主題僅 2.22–2.43:1 全數不及格
+           —— 這是站台級缺陷，涵蓋每一個可聚焦元件。改用 --border-accent 後淺色 4.89–5.36:1。 */
         a:focus-visible,
         button:focus-visible,
         input:focus-visible,
         select:focus-visible,
         textarea:focus-visible,
         [tabindex]:focus-visible {
-            outline: 3px solid var(--primary) !important;
+            outline: 3px solid var(--border-accent) !important;
             outline-offset: 2px;
             border-radius: 4px;
         }
@@ -2664,7 +2692,7 @@
 
             <p class="pricing-note">
                 由 PayPal 安全處理結帳。
-                已訂閱？<a href="#" id="pricingRestoreLink">復原授權</a>
+                已訂閱？<button type="button" class="pricing-note-btn" id="pricingRestoreLink">復原授權</button>
             </p>
         </div>
     </div>
@@ -3559,9 +3587,9 @@
         document.getElementById('pricingCloseBtn').addEventListener('click', () => closeModal(pricingModal));
         pricingModal.addEventListener('click', e => { if (e.target === pricingModal) closeModal(pricingModal); });
 
-        // 復原授權連結 — 開既有 #pro-modal（內含 license 輸入框 + 試用啟動）
-        document.getElementById('pricingRestoreLink').addEventListener('click', e => {
-            e.preventDefault();
+        // 復原授權按鈕 — 開既有 #pro-modal（內含 license 輸入框 + 試用啟動）
+        // v3.11.1：由 <a href="#"> 改為 <button type="button">，故不再需要 preventDefault
+        document.getElementById('pricingRestoreLink').addEventListener('click', () => {
             closeModal(pricingModal);
             if (window.ProUI && typeof window.ProUI.showProModal === 'function') {
                 window.ProUI.showProModal();

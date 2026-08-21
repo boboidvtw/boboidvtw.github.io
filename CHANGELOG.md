@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.11.1] - 2026-08-18 — 焦點指示器：補完 WCAG 2.4.7 / 1.4.11
+
+v3.11.0 的 a11y 稽核掃到但不屬於當次改動範圍的四處遺留問題，連同追查過程中發現的
+一個**站台級缺陷**一併修掉。所有數值都在 375×812、深淺兩個主題下實測 computed style
+取得，非查表推算。
+
+### 🐛 修正（P0）：全站鍵盤焦點環在淺色主題全數不及格
+
+`:focus-visible` 的全站焦點環用 `outline: 3px solid var(--primary)`。因為有
+`outline-offset: 2px`，環落在元件**外側**，相鄰色是面板／頁面底而不是元件填色：
+
+| 主題 | 相鄰底色 | 對比 | |
+|------|---------|------|---|
+| 深色 | `#0f172a` / `#1e293b` / `#334155` | 7.35 / 6.03 / 4.26:1 | 合格 |
+| 淺色 | `#f8fafc` / `#ffffff` / `#f1f5f9` | **2.32 / 2.43 / 2.22:1** | **全數不及格** |
+
+影響範圍是**每一個可聚焦元件**，不只下面列的四處。改用 `--border-accent`
+（淺色主題覆寫為 `#0e7490`）後淺色為 4.89–5.36:1。
+
+### 🐛 修正：Pro modal 內焦點環（修上一條時發現的連帶問題）
+
+`.pro-modal-content` 的底色是固定深色漸層 `#1e293b → #0f172a`，**不隨主題翻轉**，
+但 `--border-accent` 會。淺色主題下環變成 `#0e7490` 打在深底上，只有 **2.73:1**。
+
+在 `.pro-modal-overlay` 上把 token 釘回深色版（`--border-accent: #06b6d4`），得 6.03–7.35:1。
+全站唯一有此問題的容器 —— `.main-sidebar`、`.panel`、`.base-displays` 等固定深底
+都已有 `body.light` 覆寫。
+
+### 🐛 修正：基礎狀態的 `outline: none`（WCAG 2.4.7）
+
+`.unit-select`、`.foreign-select` 在**基礎狀態**寫了 `outline: none`。實測上因為全站
+`:focus-visible` 規則帶 `!important` 而未真正失去焦點環，但這等於把可及性押在另一條
+規則的 `!important` 上。四處一律改為只在 `:focus:not(:focus-visible)` 移除，
+鍵盤焦點交還給全站環。
+
+### 🐛 修正：換邊框色當焦點指示器未達 1.4.11 的 3:1
+
+| 元件 | 原本 | 淺色實測 | 改為 | 改後 |
+|------|------|---------|------|------|
+| `.graph-expr-input:focus` | `var(--primary)` | 2.22 / 2.43:1 | `var(--border-accent)` | 4.89 / 5.36:1 |
+| `.foreign-select:focus` | 寫死 `#10b981` | 2.42 / 2.54:1 | `var(--border-accent-green)` | 5.01–5.24:1 |
+| `.unit-select:focus` | `var(--primary)` | 2.32:1 | `var(--border-accent)` | 5.02:1 |
+| `.pro-license-input input:focus` | 寫死 `#f59e0b` | 6.81–8.31:1 | 不變 | — |
+
+Pro modal 的琥珀色本來就合格（該 modal 底色固定深色），只補回焦點環，顏色不動。
+`.foreign-select` 順手移除了違反專案規則的 hardcode hex。
+
+### ♿ 修正：`<a href="#">` 當按鈕用
+
+`#pricingRestoreLink`（「復原授權」）是 JS 驅動的動作、不是連結目的地，改為
+`<button type="button">` 並補 `.pricing-note-btn` 把 UA 按鈕外觀歸零，視覺與原本的
+連結一致（同色、同 dashed 底線、同 12.5px）。JS 端移除不再需要的 `preventDefault()`。
+實測點擊行為不變：關 pricing modal → 開 pro modal。
+
+### ✅ 驗證
+
+375×812、深淺兩主題，各 7 個目標（含全站環代表、四處修正點、Pro modal 關閉鈕）
+全部 `:focus-visible` 命中且環與邊框皆 ≥ 3:1；最低值為淺色主題 `.foreign-select`
+的 4.90:1。Console 無錯誤。
+
+> 量測註記：`.pro-modal-content` 用 `background-image: linear-gradient(...)`，
+> `backgroundColor` 是透明 —— 只讀 `backgroundColor` 會抓到底下的遮罩層而得出錯誤結論。
+> 另外元件多帶 `transition`，`focus()` 後需等收斂再讀，否則量到動畫中途值。
+
+---
+
 ## [3.11.0] - 2026-08-15 — 行動版：三槓功能選單 + 修掉整頁橫向溢出
 
 ### 🐛 修正（P0）：≤768px 整頁橫向溢出
