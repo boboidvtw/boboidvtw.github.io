@@ -95,7 +95,16 @@
     --bg-dark-tertiary:    #334155;   /* Input / 按鈕背景 */
     --text-dark:           #ffffff;   /* 主要文字 */
     --text-dark-secondary: #cbd5e1;   /* 次要文字 */
-    --border-dark:         #475569;   /* 邊框 */
+    --border-dark:         #475569;   /* 邊框：僅裝飾性分隔線用 */
+
+    /* 對比專用 token —— 飽和強調色直接當「文字色」或「互動邊界」時，
+       兩個主題各有一側不及格，故與視覺色分家。完整清單見 index.html 的 :root。 */
+    --border-interactive:  #94a3b8;   /* 表單控制項邊界，需對底 3:1（1.4.11）*/
+    --border-accent:       var(--primary);
+    --border-accent-green: var(--green);
+    --primary-text:        #22d3ee;   /* 青色當文字色用，需 4.5:1（1.4.3）*/
+    --green-text:          #34d399;
+    --text-on-accent:      #0f172a;   /* 實心強調色底上的文字，固定深色不翻轉 */
 }
 
 /* 淺色主題：body.light 覆蓋同名變數 */
@@ -106,11 +115,54 @@ body.light {
     --text-dark:           #0f172a;
     --text-dark-secondary: #475569;
     --border-dark:         #cbd5e1;
-    /* --primary 不變，保持青色 */
+    /* --primary 不變，保持青色；但它對淺底只有 2.43:1，
+       凡是要達對比門檻的用途一律走下面這組加深版，不要直接用 --primary */
+    --border-interactive:  #64748b;
+    --border-accent:       #0e7490;
+    --border-accent-green: #047857;
+    --primary-text:        #155e75;
+    --green-text:          #065f46;
 }
 ```
 
 **規則**：所有顏色必須用變數，不得 hardcode hex。淺色主題只需覆蓋背景與文字變數，強調色保持不變。
+
+### ⚠️ 固定深底容器不可用會翻轉的 token（v3.11.1）
+
+**前提**：站上有三個容器的底色是**寫死深色、不隨 `body.light` 翻轉**的：
+
+| 容器 | 內容 | 風險 |
+|------|------|------|
+| `.pro-modal-content` | 含可聚焦元件與主題 token | **會出事，已釘住** |
+| `.nav-scrim` | 空 div，純遮罩 | 無 |
+| `.graph-hover-info` | tooltip，用 `var(--primary)` | 目前安全 —— `--primary` 兩個主題同值。但若日後為了對比改用 `--border-accent`，就會踩同一個坑 |
+
+其餘固定深底的（`.panel` / `.display` / `.base-displays` / `.sidebar-note` / `.main-sidebar`）
+都已有 `body.light` 覆寫，不屬此類。
+
+在這種容器裡用 `--border-accent` / `--primary-text` / `--border-accent-green` 這類
+**會跟著主題翻轉**的 token，會在淺色主題下爆掉 —— token 換成了為淺底設計的深色值，
+底卻還是深的。v3.11.1 實測：焦點環 `#0e7490` 落在 `#1e293b` 上只有 **2.73:1**，
+不合 WCAG 1.4.11 的 3:1。
+
+**做法**：在容器根節點把 token 釘回深色版，讓底下所有子元素自動繼承正確值 ——
+不要逐個元素去覆寫顏色。
+
+```css
+.pro-modal-overlay {
+    /* 底色固定深色不隨主題翻轉，accent token 必須一併釘回深色版 */
+    --border-accent: #06b6d4;
+}
+```
+
+**新增固定配色容器時**，一律問一句：裡面有沒有用到會翻轉的 token？有就在容器根節點釘住。
+反過來，**優先做法是讓容器跟著主題翻**（加 `body.light` 覆寫），像 `.main-sidebar` /
+`.panel` / `.base-displays` 那樣 —— 固定配色是例外，不是預設。
+
+> 量測陷阱：這類容器常用 `background-image: linear-gradient(...)`，此時
+> `getComputedStyle(el).backgroundColor` 是**透明**的。只讀 `backgroundColor` 會往上
+> 抓到遮罩層而算出完全錯誤的對比值（v3.11.1 第一版量測就這樣誤判成 PASS）。
+> 另外元件多帶 `transition`，`focus()` 後要等收斂再讀，否則量到動畫中途值。
 
 ### 常用 CSS Class
 
@@ -344,6 +396,7 @@ const i18n = {
 | 雙向同步不加 flag | 會觸發無限迴圈 |
 | input 數值不加 `inputmode="decimal"` | 手機無法彈出數字鍵盤 |
 | 自建公式分類邏輯改為「全域顯示」 | 會讓不相關分類顯示到無關公式 |
+| 固定深底容器內直接用會翻轉的 token | 淺色主題下 token 變深色、底也是深的，對比爆掉（見 § 3） |
 
 ---
 
