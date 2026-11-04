@@ -1,5 +1,8 @@
 // ∑ Calc Service Worker — Cache-first for offline support
-const CACHE_NAME = 'sigma-calc-v3.11.2';
+// 只用這個前綴辨認「自己的」快取。同一個 origin 上還有別的 App（見 EXCLUDED_PATH_PREFIXES），
+// activate 清舊快取時只能動這個前綴底下的，否則會把它們的離線快取一起刪掉。
+const CACHE_PREFIX = 'sigma-calc-';
+const CACHE_NAME = CACHE_PREFIX + 'v3.11.3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -14,6 +17,10 @@ const ASSETS = [
 // Bypass cache for Cloudflare Worker license API (always go network-first)
 const NETWORK_FIRST_HOSTS = ['workers.dev', 'exchangerate', 'paypal'];
 
+// 同源上的獨立子路徑 App（各有自己的 SW）。本 SW 的 scope 是 '/'，不排除的話會在它們
+// 自己的 SW 註冊前攔截並快取它們的檔案。新增子路徑專案時加進這裡，結尾要帶 '/'。
+const EXCLUDED_PATH_PREFIXES = ['/super-calculator/'];
+
 // Install: pre-cache core assets
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -22,11 +29,15 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean our own old caches only (never other same-origin apps' caches)
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(
+        keys
+          .filter(k => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME)
+          .map(k => caches.delete(k))
+      )
     )
   );
   self.clients.claim();
@@ -35,6 +46,12 @@ self.addEventListener('activate', event => {
 // Fetch: cache-first for same-origin, network-first for API
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+
+  // 子路徑 App：不 respondWith，交給瀏覽器（或該 App 自己的 SW）處理
+  if (url.origin === location.origin &&
+      EXCLUDED_PATH_PREFIXES.some(prefix => url.pathname.startsWith(prefix))) {
+    return;
+  }
 
   // Network-first for external APIs (exchange rate, PayPal, Cloudflare Worker)
   if (NETWORK_FIRST_HOSTS.some(host => url.hostname.includes(host))) {

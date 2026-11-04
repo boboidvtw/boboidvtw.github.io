@@ -33,6 +33,7 @@ node --test tests/*.test.js
 | `extract.test.js` | 抽取器自身：marker 都在、抽出的是函式、找不到時大聲失敗 |
 | `paste-sanitize.test.js` | 貼上／`#calc=` 的清洗與驗證邊界。接受的案例還要求引擎算出**正確答案** |
 | `paste-security.test.js` | 具體的繞過構造（`abs.constructor`、`exp.call`、逗號運算子…）全部必須被拒 |
+| `sw.test.js` | `sw.js` 與同源子路徑 App 共存：activate 只清 `sigma-calc-*`、fetch 不攔截 `EXCLUDED_PATH_PREFIXES` |
 
 ## 這些測試在守什麼
 

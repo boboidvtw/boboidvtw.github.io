@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.11.3] - 2026-11-04 — SW 與同源子路徑 App 共存
+
+super-calculator 已部署到同一個 origin 的 `/super-calculator/`（有自己的 Workbox SW）。
+主站 `sw.js` 的 scope 是 `/`，原本的寫法會干擾它：
+
+- **`activate` 誤刪別人的快取**：原本 `caches.keys().filter(k => k !== CACHE_NAME)` 會刪掉
+  同源**所有**快取，主站每次改版都會清掉 super-calculator 的
+  `workbox-precache-v2-…/super-calculator/`、`exchange-rates`，它的離線功能就壞了。
+  改為只刪 `sigma-calc-` 開頭且不等於目前版本的快取。
+- **`fetch` 攔截子路徑**：同源請求一律 cache-first，在子路徑 SW 註冊前會攔截並快取
+  `/super-calculator/*`。新增 `EXCLUDED_PATH_PREFIXES` 陣列，命中的請求直接 return、
+  不呼叫 `respondWith`。之後其他子路徑專案也加進這個陣列。
+- 新增 `tests/sw.test.js`：在 `node:vm` 裡載入真正的 `sw.js`，守上面兩件事。
+- `CACHE_NAME` bump 為 `sigma-calc-v3.11.3`；README 版本徽章同步（原本停在 3.10.3）。
+
 ## [3.11.2] - 2026-08-27 — 修兩個潛伏 bug：SW 離線回應 + Worker 錯誤洩漏
 
 - **`sw.js` network-first 分支**：`fetch().catch(() => caches.match(request))` 在快取
