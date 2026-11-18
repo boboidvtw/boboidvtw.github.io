@@ -47,6 +47,7 @@ const FUNCTION_MARKERS = [
   'function _pastedTokensAllowed',
   'function sanitizePastedExpression',
   'function calculate(expr)',
+  'function substituteFormulaVars',
 ];
 
 const EXPORTED = [
@@ -55,6 +56,14 @@ const EXPORTED = [
   '_normalizePasted',
   '_resolveCommas',
   '_pastedTokensAllowed',
+  'substituteFormulaVars',
+];
+
+// 公式庫資料（2026-11-18 加入）：非函式，另外驗型別
+const DATA_REGIONS = [
+  ['builtInFormulas', /( *const builtInFormulas = \[[\s\S]*?\n *\];\n)/, Array.isArray],
+  ['varDescMap',      /( *const varDescMap = \{[\s\S]*?\n *\};\n)/,      v => v && typeof v === 'object'],
+  ['varTransform',    /( *const varTransform = \{[\s\S]*?\n *\};\n)/,    v => v && typeof v === 'object'],
 ];
 
 function load() {
@@ -64,6 +73,7 @@ function load() {
     // 貼上驗證用到的常數（PASTE_MAX_LEN … PASTE_NUMBER_RE）
     extractRegion(src, /( *const PASTE_MAX_LEN[\s\S]*?const PASTE_NUMBER_RE = [^\n]*\n)/, 'PASTE_* 常數'),
     ...FUNCTION_MARKERS.map(m => extractFunction(src, m)),
+    ...DATA_REGIONS.map(([name, re]) => extractRegion(src, re, name)),
   ];
 
   const code = [
@@ -71,7 +81,7 @@ function load() {
     // calculate() 讀取這個全域；測試固定用 DEG，與網站預設一致
     "let angleMode = 'DEG';",
     ...parts,
-    `module.exports = { ${EXPORTED.join(', ')} };`,
+    `module.exports = { ${[...EXPORTED, ...DATA_REGIONS.map(d => d[0])].join(', ')} };`,
   ].join('\n\n');
 
   const sandbox = { module: { exports: {} } };
@@ -82,6 +92,9 @@ function load() {
     if (typeof api[name] !== 'function') {
       throw new Error(`抽取失敗：${name} 不是函式（抽到的是 ${typeof api[name]}）`);
     }
+  }
+  for (const [name, , isValid] of DATA_REGIONS) {
+    if (!isValid(api[name])) throw new Error(`抽取失敗：${name} 型別不對（抽到的是 ${typeof api[name]}）`);
   }
   return api;
 }

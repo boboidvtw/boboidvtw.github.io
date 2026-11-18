@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/version-3.11.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.12.0-blue.svg)](CHANGELOG.md)
 [![Pro Tier](https://img.shields.io/badge/Pro-$2.99/mo_·_$19.99/yr-f59e0b?logo=paypal&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Security](https://img.shields.io/badge/license_validation-JWT_%2B_KV_backed-10b981?logo=cloudflare&logoColor=white)](#whats-new-in-v33--security-architecture)
 [![Sponsor](https://img.shields.io/badge/Sponsor-❤_GitHub_Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/boboidvtw)
@@ -14,6 +14,8 @@
 🌐 **Live demo**: https://boboidvtw.github.io/
 
 💖 **Support this project**: ∑ Calc stays **free, ad-free, tracker-free**. If you find it useful, consider sponsoring via [GitHub Sponsors](https://github.com/sponsors/boboidvtw) or [Ko-fi](https://ko-fi.com/boboidvtw) — your support directly covers Cloudflare Worker / KV monthly costs and gives me more time to add new formulas.
+
+📈 **v3.12.0 Formula expansion** (2026-11-18): Finance +8 (CAGR, inflation-adjusted real return, monthly DCA future value, dividend reinvestment, 4% rule, yield-based fair price, P/B, mortgage burden ratio) and Health +4 (waist-to-hip ratio, Tanaka max HR, Karvonen heart-rate reserve, BMI-22 ideal weight) — **112 formulas (Free 67 / Pro 45)**. See [CHANGELOG](CHANGELOG.md).
 
 ✨ **v3.8.0 Freemium launched**: 100 formulas tiered into **Free 59** (middle school / high school / college foundations) and **Pro 41** (quantum, relativity, financial engineering, TDEE, signal processing…). Pro subscription is **$2.99/mo** or **$19.99/yr** (save 44%), with a 7-day free trial via PayPal — cancel anytime. The 7 Pro plotting tools (tangent / integral / slope field / intersection / statistics / 3D / SVG export) are unlocked together with the Pro formulas.
 

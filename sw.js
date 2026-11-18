@@ -2,7 +2,7 @@
 // 只用這個前綴辨認「自己的」快取。同一個 origin 上還有別的 App（見 EXCLUDED_PATH_PREFIXES），
 // activate 清舊快取時只能動這個前綴底下的，否則會把它們的離線快取一起刪掉。
 const CACHE_PREFIX = 'sigma-calc-';
-const CACHE_NAME = CACHE_PREFIX + 'v3.11.3';
+const CACHE_NAME = CACHE_PREFIX + 'v3.12.0';
 const ASSETS = [
   '/',
   '/index.html',

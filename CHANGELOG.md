@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.0] - 2026-11-18 — 公式庫擴充：金融 +8、健康 +4（共 112 條）
+
+給 Bobo Labs 公式文章庫補新題目，優先補最接近 Pro 付費轉換的金融與健康類。
+id 從 111 起，文章內嵌的 `?formula=N` 依賴這些 id，**之後不要改號**。
+
+| id | 公式 | 分類 | Tier |
+|----|------|------|------|
+| 111 | 年化報酬率 CAGR `((V2/V1)^(1/t)-1)*100` | 金融 | Free |
+| 112 | 實質報酬率（扣通膨，Fisher）`((1+r)/(1+i)-1)*100` | 金融 | Free |
+| 113 | 定期定額終值 `PMT*((1+r)^n-1)/r`（年化 % → 月利率） | 金融 | Pro |
+| 114 | 配息再投入終值 `P*((1+g)*(1+y))^t` | 金融 | Pro |
+| 115 | 4% 法則退休本金 `E/r` | 金融 | Free |
+| 116 | 殖利率法合理股價 `D/y` | 金融 | Pro |
+| 117 | 股價淨值比 P/B `P/B` | 金融 | Free |
+| 118 | 房貸負擔率 `M/I*100` | 金融 | Free |
+| 119 | 腰臀比 WHR `waist/hip` | 健康 | Free |
+| 120 | 最大心率（Tanaka）`208-0.7*a` | 健康 | Free |
+| 121 | 儲備心率目標（Karvonen）`((220-a)-rest)*intensity/100+rest` | 健康 | Pro |
+| 122 | 理想體重（BMI 22）`22*(h/100)^2` | 健康 | Free |
+
+- 比率輸入一律為 %（與 #39–48 一致），在 `varTransform` 換算成小數。
+- 公式代入邏輯從 `calculateFormulaBtn` 的 click handler 抽成 `substituteFormulaVars()`，
+  行為不變，目的是讓測試能測到上線的同一份代入程式。
+- 新增 `tests/formulas.test.js`：12 條新公式各一組獨立算出的期望值、`%` 換算守門、
+  id 唯一、新公式的 id／分類／Tier（Bobo Labs 灰卡依賴）、變數說明齊全。
+  變異驗證：拿掉 #115 的 `varTransform`，兩個測試轉紅。
+- 站內計數同步：100 → 112 條、Free 59 → 67、Pro 41 → 45（meta、FAQ、Pricing、說明）。
+- `CACHE_NAME` bump 為 `sigma-calc-v3.12.0`；README 版本徽章同步。
+
 ## [3.11.3] - 2026-11-04 — SW 與同源子路徑 App 共存
 
 super-calculator 已部署到同一個 origin 的 `/super-calculator/`（有自己的 Workbox SW）。
